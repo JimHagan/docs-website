@@ -15,7 +15,7 @@ metaDescription: Data governance is a practice of ensuring optimal value for tel
 ## Desired outcome [#desired-outcome]
 
 ### Reduced Noise
-### Value of Data
+### Increased Transparency
 ### Alignment of Observability Need with Budget
 #### Risk Mitigation
 #### Supporting Innovation
@@ -42,6 +42,12 @@ metaDescription: Data governance is a practice of ensuring optimal value for tel
 
 ## Manage telemetry budget
 
+### Telemetry Cost Centers
+#### On Prem Overhead (Storage, Compute)
+#### Cloud Provider Service Costs
+#### Egress Costs
+#### SaaS Costs
+#### Opportunity Costs
 ### Instrumentation Governance
 ### Pipeline Governance
 ### Ingest Governance
