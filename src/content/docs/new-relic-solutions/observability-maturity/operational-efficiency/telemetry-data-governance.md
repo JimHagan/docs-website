@@ -17,6 +17,9 @@ metaDescription: Data governance is a practice of ensuring optimal value for tel
 ### Reduced Noise
 ### Value of Data
 ### Alignment of Observability Need with Budget
+#### Risk Mitigation
+#### Supporting Innovation
+#### Meeting External SLA
 ### Cross Org. Management Structure
 
 ## Establish current state [#current-state]
