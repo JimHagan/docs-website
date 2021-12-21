@@ -132,7 +132,60 @@ A JMX integration is designed to get any metric exposed by a third party applica
 
 
 ## Framework Practice: Establishing Baseline Condition & Growth Forecast [#current-state]
-### High Level Overview
+### High Level Accounting
+
+At this point it is necessary to get a high level view of all of the telemetry currently being generated in your organization.  The assumption is that any substantial organization will have a master account and multiple sub-accounts which may be dedicated to specific, teams, projects, or even separate business units.  In the context of New Relic it is necesssary to break the current ingest down by:
+
+- Organization
+- Sub account
+- Billable Telemetry Type
+
+There is value in deeper breakdowns but this one can be facilitated on any New Relic account.  Billable Telemetry Types 
+
+- Mobile Events
+- Infrastructure Hosts
+- Infrastructure Integrations
+- Infrastructure Processes
+- APM Events
+- Tracing
+- Metrics
+- Logging
+- Custom Events
+- Browser Events
+- Serverless
+
+Download [this dashboard] and install it into your NR1 Master Account or POA account.  This will allow you a fairly flexible visualization of ingest by an organizations accounts and telemetry types.  You can also visualize some built in views in New Relic's "Manage Your Data" UI.  For the purposes of transparency we will show examples of the underlying NRQL queries in this document.
+
+Let's first see what our daily average ingest has been for the past month.  Note the use of the `rate` operator.  This will be very useful when querying the NrConsumption model.
+
+```
+SELECT rate(sum(GigabytesIngested), 1 day) AS 'Daily Ingest Rate (GB)'  FROM NrConsumption WHERE productLine = 'DataPlatform' FACET usageMetric LIMIT MAX SINCE 30 days AGO
+```
+
+
+|Usage Metric|Daily Ingest Rate (GB)|
+|---|---|
+|MobileEventsBytes|9494.4826089365|
+|InfraProcessBytes|7669.19820781793|
+|ApmEventsBytes|4963.984544762140|
+|MetricsBytes|2628.792197218970|
+|InfraIntegrationBytes|2350.775419285230|
+|InfraHostBytes|1276.2645170261700|
+|CustomEventsBytes|940.0184543993|
+|LoggingBytes|807.1707645250340|
+|TracingBytes|160.5486142743330|
+|BrowserEventsBytes|79.75575001916670|
+|ServerlessBytes|6.372198490000000|
+
+Since we are trying to get a general lay of the land let's creat a time series query based on our previous query so we can see the daily ingest rates for the last six months
+
+```
+SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries  FROM NrConsumption WHERE productLine = 'DataPlatform' FACET usageMetric LIMIT MAX SINCE 180 days AGO TIMESERIES auto
+```
+
+![Daily Ingest For Org Time Series](images/oma-oe-dg-daily-ingest-for-org-timeseries.png)
+
+
 #### Critical Dashboards
 #### Change Analysis
 ### Deeper Dive
