@@ -59,7 +59,7 @@ To borrow language from *agile* methodology we will create 3 main artifacts and 
 *Artifacts*
 - Ingest Fact Report
 - Baseline Budget Sheet
-- Quarterly Growth Estimates
+- Quarterly Change Plan
 - Telemetry Standards Guide
 
 
@@ -250,7 +250,28 @@ SELECT rate(sum(GigabytesIngested), 30 day) AS avgGbIngestTimeseries  FROM NrCon
 |Marketing Technology|27633.66805779|
 
 
-#### Artifact 1: Ingest Fact Report
+#### Artifact Definition: Ingest Fact Report
+
+To some of extent we have explored the main components of an ingest fact report in the previous section.  Here we will simply codify the facts you will want to generate on at least monthly basis.  Having them in a dashboard may suffice, but it is also suitable to supplement with a spreadsheet of the most important values.  These figures should be updated at least as frequently as the chosen cadence of Check-in sessions (be it monthly or qurterly).  We suggest maintining them in dashboard form as well as a shared folder with spreadsheet versions of the most relevant ones.
+
+
+|Fact|Type|Query|
+|---|---|---|
+|consuming-accounts|Number||
+|daily-rate-30-day-full-org-num|Number||
+|daily-rate-9-month-full-org-ts|Timeseries||
+|consumption-by-month-full-org-ts|Timeseries||
+|consumption-by-month-full-org-table-tb|Table||
+|daily-rate-30-day-teltype-num|Number||
+|daily-rate-9-month-teltype-ts|Timeseries||
+|consumption-by-month-teltype-ts|Timeseries||
+|consumption-by-month-teltype-table-tb|Table||
+|daily-rate-30-day-acct-teltype-num|Number||
+|daily-rate-9-month-acct-teltype-ts|Timeseries||
+|consumption-by-month-acct-teltype-ts|Timeseries||
+|consumption-by-month-acct-teltype-table-tb|Table||
+
+
 #### Change Analysis
 #### Advanced: Deep Dive Ingest Analysis
 
