@@ -57,14 +57,15 @@ When properly executed the data governance framework will create a simple but ac
 To borrow language from *agile* methodology we will create 3 main artifacts and 2 rituals to govern the process.  In addition we will create 2 roles.
 
 *Artifacts*
+- Ingest Fact Report
 - Baseline Budget Sheet
 - Quarterly Growth Estimates
 - Telemetry Standards Guide
-- Dashboard: Real Time Ingest Tracking (By Subaccount & Telemetry Type)
 
-*Rituals*
+
+*Sessions*
 - Baseline Budget Planning Session
-- Quarterly check-in of telemetry master and telemetry managers
+- Monthly/Quarterly Check-In (Telemetry Master & Telemery Managers)
 - Ad Hoc Resolution Sessions
 
 *Roles*
@@ -156,7 +157,45 @@ There is value in deeper breakdowns but this one can be facilitated on any New R
 
 Download [this dashboard] and install it into your NR1 Master Account or POA account.  This will allow you a fairly flexible visualization of ingest by an organizations accounts and telemetry types.  You can also visualize some built in views in New Relic's "Manage Your Data" UI.  For the purposes of transparency we will show examples of the underlying NRQL queries in this document.
 
-Let's first see what our daily average ingest has been for the past month.  Note the use of the `rate` operator.  This will be very useful when querying the NrConsumption model.
+Let's first see what our daily average ingest has been for the past month.  
+
+```
+SELECT rate(sum(GigabytesIngested), 1 day) AS 'Daily Ingest Rate (GB)'  FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 30 days AGO
+```
+*Note the use of the `rate` operator.  This will be very useful when querying the NrConsumption model.*
+
+Our simple response for the entire organization is
+
+```
+Daily Ingest Rate: 30.4 k
+```
+
+That's a little over 30,000 GB or 30 TB per day or overy 900TB per month.  While that's a very impressive number and is meaningful to the procurement department and whoever needs ot know this months bill.  It is only the starting point to setup a data governance plan.   Let's assume our organization has a yearly budget for the current fiscal for 12TB per year.  We could infer that we are at about 90% of budget with the calculation but that assumes we are consuming at steady rate of 900TB each month.  Due to seasonality and observavabily needs evolving that is almost never the case.  Here is our actual consumption over the past 12 months. Let's do a simple `sum` rather than a rate since we have all the data collected.  Note that December 2021 will be incomplete since we are not all the way through the month.
+
+```
+SELECT sum(GigabytesIngested) AS 'Daily Ingest Rate (GB)'  FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO
+```
+
+The resulting table shows fairly high variability.  Note that things were fairly `hot` in `august` and September.  Some of that is our organization seasonality but also was related to some increasing the breadth of our telemetry coverage.
+
+|MONTH OF TIMESTAMP|GB INGESTED|
+|---|---|
+|December 2021*|636 k|
+|November 2021|901 k|
+|October 2021|873 k|
+|September 2021|1.05 M|
+|August 2021|1.08 M|
+|July 2021|1.05 M|
+|June 2021|887 k|
+|May 2021|881 k|
+
+There was a bit of an effort to cool things down a bit in the fall.
+Here is where a timeseries really helps
+
+
+![30 Day Ingest Last 56 Weeks](images/oma-oe-dg-30-day-ingest-last-56-weeks.png)
+
+
 
 ```
 SELECT rate(sum(GigabytesIngested), 1 day) AS 'Daily Ingest Rate (GB)'  FROM NrConsumption WHERE productLine = 'DataPlatform' FACET usageMetric LIMIT MAX SINCE 30 days AGO
@@ -185,24 +224,53 @@ SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries  FROM NrCons
 
 ![Daily Ingest For Org Time Series](images/oma-oe-dg-daily-ingest-for-org-timeseries.png)
 
+This kind of view provides a lot of visual information, especially if you have at least a little familiarity with the org.  Note the dip in InfraIntegrationBytes in late September.   A good working theory is that it's related to when the one of the teams altered the sample rate for their Postgres integration.  Looking at a vew like this periodically and comparing it to known ongoing work is a really valuable thing as we always want to be able to explain such dips (or spikes as the case may be).  
 
-#### Critical Dashboards
+One final thing we can do very easily with a simple modification of the previous queries is we can facet the queries by account.  We have a far greater ability know who made a change if we can narrow it down to a specific account and telemetry type.
+
+Let's look at the 30 day rate for all of our accounts using the last 60 days as input data.  This 30 day rate gives us the best estimate for what a customer's data ingest bill would be.
+
+
+Let's limit to 5 results to keep the example table small:
+
+```
+SELECT rate(sum(GigabytesIngested), 30 day) AS avgGbIngestTimeseries  FROM NrConsumption WHERE productLine = 'DataPlatform' FACET consumingAccountName  LIMIT 10 SINCE 60 days ago
+```
+
+|Consuming Account Name|30 Day Ingest GB|
+|---|---|
+|Master Account|154416.2783845950|
+|Streaming Video Team|147954.21967237500|
+|Cloud Platform Team|100012.83564087500|
+|Experimental Technology Team|88635.5364573755|
+|Finance and Accounting Team|78512.21037361650|
+|International_Multiplatform|51230.566752227500|
+|Shipping & Receiving|48850.56031237550|
+|Front End Development|45605.86433004600|
+|Marketing Technology|27633.66805779|
+
+
+#### Artifact 1: Ingest Fact Report
 #### Change Analysis
-### Deeper Dive
-### Assigning Roles
+#### Advanced: Deep Dive Ingest Analysis
+
+### Assigning Roles & Responsibilities
 #### Telemetry Master
 #### Telemetry Managers
 #### Telemetry SMEs
-### Ritual 1: Baseline Budget Planning Session
+
+### Session Definition: *Baseline Budget Planning*
 #### Value Mindset
 #### Understanding Growth Drivers
 #### Creative Solutioning
-### Artifact 1: Baseline Budget Sheet
-### Artifact 2: Quarterly Growth Estimates
+
+### Artifact Definition: *Baseline Budget Sheet*
+
+### Artifact Definition: *Quarterly Growth Estimates*
 
 
-## Framework Practice: Ongoing Management of Telemetry Budget
-### Artifact 3: Telemetry Standards Guide
+## Continuing Practice: Ongoing Management of Telemetry Budget
+### Artifact Definition: Telemetry Standards Guide
 #### Instrumentation Standards
 #### Observability as Code
 #### Cleanup & Tech Debt Management
@@ -212,22 +280,21 @@ SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries  FROM NrCons
 - Enforcement
 - Environment Management
 #### Authorization and Accountability
-#### Vendor Touchpoints
-### Observability as Code
-### Accountability
-### Ritual 2: Quarterly Checkin
 
-##  Framework Practice: Overage Resolution
-### Ritual 3: AD Hoc Resolution Session
-### Seek out redundant telemtry
-### Data quality validation
-### Re-assess observability needs
-### Re-assess vendor roadmap
 
-## Framework Practice: Vendor Relations
-### Ritual 4: Monthly Vendor Checkin
-### Roadmap Awareness
-### Best Practice Evolution
-### Consulting Engagements
+### Session Definition: Quarterly Checkin
+
+###  Framework Practice: Overage Resolution
+#### Session 3: AD Hoc Resolution Session
+#### Seek out redundant telemtry
+#### Data quality validation
+#### Re-assess observability needs
+#### Re-assess vendor roadmap
+
+### Framework Practice: Vendor Relations
+#### Session 4: Monthly Vendor Checkin
+#### Roadmap Awareness
+#### Best Practice Evolution
+#### Consulting Engagements
 
 
