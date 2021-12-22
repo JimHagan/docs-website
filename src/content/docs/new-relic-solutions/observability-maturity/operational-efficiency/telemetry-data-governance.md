@@ -54,16 +54,18 @@ When properly executed the data governance framework will create a simple but ac
 - Providing checks and balances on telemetry configuration
 - Tracking the telemetry footprint of newly acquired business units or restructures within the org.
 
-To borrow language from *agile* methodology we will create four main artifacts as well as several roles and rituals (which we'll call sessions).
+To borrow language from *Scrum* methodology we will create four main artifacts as well as several roles and rituals (which we'll call sessions).
 
 *Artifacts*
 - Ingest Fact Report
 - Baseline Budget Sheet
 - Quarterly Change Plan
 - Telemetry Standards Guide
+- Telemetry Backlog (optional)
 
 *Roles*
 - Telemetry Master (responsible at high level for all org. accounts)
+  - Focus on all telemetry (accross business units, teams, platforms)
   - Focus on transparency
   - Focus on empiracism
   - Represents the organizations business objectives
@@ -100,8 +102,8 @@ To borrow language from *agile* methodology we will create four main artifacts a
 
 
 
-## Key Concepts: Kinds of Telemetry Costs
-### On Prem Overhead (Storage, Compute)
+## Key Concepts: Telemetry Costs
+### Storage and Compute Overhead
 When provisioning compute on prem or in a private account within a cloud provider there are some compute and storage costs which may be incurred in the collection of telemetry.  Some examples include:
 - Storage and compute needed for a Prometheus or Elasticsearch database
 - Storage need for raw log files such as those in `/var/logs`
@@ -158,7 +160,7 @@ It is part of the continuous improvement process to expand observability.  An or
 A JMX integration is designed to get any metric exposed by a third party application with prefix "Transaction_".  With version 1.0 of the application that yields in 10 events per sample.  The team maintaining the third party application adds 10 additional metrics with the "Transaction_" prefix.  When our team installs the new code, we are a bit surprised to know what JMX events have increased 2 times.
 
 
-## Framework Practice: Establishing Baseline Condition & Growth Forecast [#current-state]
+## Establishing Baseline Condition & Growth Forecast [#current-state]
 ### High Level Accounting
 
 At this point it is necessary to get a high level view of all of the telemetry currently being generated in your organization.  The assumption is that any substantial organization will have a master account and multiple sub-accounts which may be dedicated to specific, teams, projects, or even separate business units.  In the context of New Relic it is necesssary to break the current ingest down by:
@@ -167,7 +169,9 @@ At this point it is necessary to get a high level view of all of the telemetry c
 - Sub account
 - Billable Telemetry Type
 
-There is value in deeper breakdowns but this one can be facilitated on any New Relic account.  Billable Telemetry Types 
+There is value in deeper breakdowns but this one can be facilitated on any New Relic account.  
+
+*Billable Telemetry Types*
 
 - Mobile Events
 - Infrastructure Hosts
@@ -181,7 +185,7 @@ There is value in deeper breakdowns but this one can be facilitated on any New R
 - Browser Events
 - Serverless
 
-Download [this dashboard] and install it into your NR1 Master Account or POA account.  This will allow you a fairly flexible visualization of ingest by an organizations accounts and telemetry types.  You can also visualize some built in views in New Relic's "Manage Your Data" UI.  For the purposes of transparency we will show examples of the underlying NRQL queries in this document.
+Download the [Data Ingest Analytics](dashboards/data-ingest-analytics.json) dashboard. Install it into your NR1 Master Account or POA account.  You will first need to edit the JSON to include your account id.  This will allow you a fairly flexible visualization of ingest by an organizations accounts and telemetry types.  Your view may vary depending on the number of accounts and telemetry types in your organization.  You can also visualize some built in views in New Relic's "Manage Your Data" UI.  For the purposes of transparency we will show examples of the underlying NRQL queries in this document.
 
 Let's first see what our daily average ingest has been for the past month.  
 
@@ -504,47 +508,114 @@ Running the unique host count shows us that we have 10 hosts being monitored wit
 
 
 
-### Assigning Roles & Responsibilities
-#### Telemetry Master
-#### Telemetry Managers
-#### Telemetry SMEs
+## Framework Practice: Roles & Responsibilities
 
-### Session Definition: *Baseline Budget Planning*
-#### Value Mindset
-#### Understanding Growth Drivers
-#### Creative Solutioning
+Our goal is not to mimic Scrum rigidly but to provide a structured framework with some artifacts, roles, and rituals that enable an organization to get on the path to a self organized team that improves in efficiency and works iteratively to solve problems and meet the organizations overall business objective.  As with actual Scrum it is often hards to harmonize the frameworks roles with a person's actual job description.  Be flexible and use the detailed descriptions of the responsibiliites to guide how to do it in your organization.  It's more important that responsibilities be met rather than exactly who meets them, however our proposed structure is to provide some separation of labor and concerns where possible. 
 
+### Telemetry Master
+
+The idea of a telemetry master is one who has the most vested interest in the product of this framework.  They may be the existing "account owner" in the sense that they have been the main point of contact with the observability vendor.  It's also possible they are the account owner in the sense that they have signed contracts or have a role in consulting other managers who are resonsible for the observability platform contract.  
+
+We'll expand on the previously defined highlights of this role:
+
+- Focus on all telemetry (accross business units, teams, platforms)
+  - Conflict resolver
+  - Undertands the larger business objective and cost structure
+  - Broad knowledg of observability best practice
+  - Understands how to evaluate the value of telemetry and the cost of not having it
+- Focus on transparency
+  - Communicates the budget expectations clearly to the other roles
+  - Doesn't surpress messiness in the data -- works to find interpretations collaboratively
+  - Not afraid to identify bad practices and uses the Telemetry Standards Guide as critical reference
+- Focus on empiracism
+  - Understands can be backed up by data analytics from the observability platform
+  - Where hunches or rough estimates are used these are identified
+  - Understands how to iterate monthly and quarter to improve the governance process based on prior experience
+  - Will seek out Telemetry SMEs as need to better understand growth characteristics and value of specific telemetry types
+- Represents the organizations business objectives
+  - Has an understand of value the digital platforms of the organization contribute to the bottom line
+  - Views telemetry in how well it aids uptime, reliability, innovation, and general operational efficiency
+  - Is able to fluidly understand what telemetry is required to enforce customer experience objectives
+  - Thinks in terms of service boundaries and SLAs
+- Responsible for scheduling and managing check-ins
+  - Ensures the involvement of the righ people
+  - Provides neutrality when appropriate
+  - Ensures the following artifacts are produced in a timeley manner and are available to all stakeholders:
+    - Ingest Fact Report
+    - Baseline Budget Sheet
+    - Quarterly Change Plan
+    - Telemetry Standards Guide 
+
+### Telemetry Owners
+
+To some extent the Telemetry Owners can be seen as the equivalent of Scrum's product owner.  They are responsible for maintaining and understanding the priorize set of observability objectives at the level of a team or business unit that may own one or actual accounts.  These priorities will be use to make often tough decisions about what telemetry to focus on in a given month or quarter and how to manage negotiations with other telemetry manages where there may be conflicts.  The Telemetry master will help facility.  Although not a required artifcat of the data governance framework it would be good practie for the Telemetry owner to have a a running telemetry backlog of priorities that can be used in the planning process and checkins.  If the Telemetry Master so chooses they may consolidate these backlogs into a master sheet updated at least once or twice a year.  Here is an example:
+
+|Objective|Priority|Status|Ingest Impact Estimate (GB/Month)| Ingest Impact Actual|Tech. Owner|
+|---|---|---|---|---|---|
+|Improve Awareness of Kafka Queue Saturation|1|Done|+Hi|10000|Jim|
+|Filter Health Checks from APM alerts|2|Done|+Low|0|Kim|
+|Collect Product Info In App Logs|3|In Progress|+Medium|2000|Adi|
+|Reduce Sampling Rate on Process Samples|4|Not Started|-Hi|-5000|Adi|
+
+The obove is a farely simple example, but it would make sense to track this at a high level at least.  Note because telemetry initiatives can have a positive or negative impact on ingest you'll want to include some kind of `sign` on the estimates even if it's just a quantitative hi/low estimate.  A specific technical owner may be designated.  That techical owner is someone who understands the techncial details of how the instrumentation will be configured and how success will be measured from an observability standpoint as well as how to measure the impact on ingest.
+
+Let's expand a bit on our previous summary of this role:
+
+- Focus on observability objectives
+  - By maintaining an observability backlog the Telemetry Owner knows what the team or business units goals are.
+- Focus on valuation of data
+  - In order to be able to prioritize telemetry work the Telemetry Owner will need to understand the value brough in terms of improved innnovation, improved uptime & reliability or overall improvement in operational efficiency.
+  - When there is a resource constraint such as there is time to add Logging or Kafka Topic Lag Metrics the Telemetry owner can understand how to make a ranking.
+  - When the conflict is cross-departmental the Telemetry owner will be able to negotiate and occasionally defer to the objectives of the other team based on the top level organization objectives.  In such a scenario the the Telemetry Master will help out.
+- Represents technical & business objectives of developers, SRE, and IT staff.
+  - While not necesssarily a technical manager the Telemetry Owner will be able to represent the objectives of the various developers, SRE and IT staff.   He will have good skills of delegating analysis to better understand the observability objectives.  For example he will know who to talk to to understand what Logging inititiaves should be prioritized this year.
+
+### Telemetry SMEs
+
+This is the most informal of roles within the framework.  To some extend nearly every engineer could be a Telemetry SME. It's also possible for less hands-on staff such as a product manager to be a Telemetry SME in some contexts.  The key points are:
+
+The Telemetry SME:
+
+- Knows how the telemetry in question is used in alerts and dashboards
+- Knows how the instrumentation is configured
+- Understands the growth characteristics
+- Knows how to find alternatives to a given set of telemetry and how using an alternative would impact the overall observability objective
+- Knows how the analyze the data ingest footprint for a given set of telemetry
+- Is facile in querying the data
+- Contributes to the Telemetry Standards Guide where possible especially in helping optimize configurations, and improving metadata standards 
+
+## Framework Practice: *Baseline Budget Planning*
+### Value Mindset
+### Understanding Growth Drivers
+### Creative Solutioning
 ### Artifact Definition: *Baseline Budget Sheet*
-
 ### Artifact Definition: *Quarterly Growth Estimates*
 
 
-## Continuing Practice: Ongoing Management of Telemetry Budget
-### Artifact Definition: Telemetry Standards Guide
-#### Instrumentation Standards
-#### Observability as Code
-#### Cleanup & Tech Debt Management
-#### Metadata Standards
+## Framework Practice: *Quarterly Checkin*
+### Tracking against plan
+### Escalate as needed
+### Adjusting the plan
+
+##  Framework Practice: *Anomaly Resolution*
+### Validating Data Analysis
+### Aligning to Observability Needs
+### Aligning to Business Objectives
+### Vendor Consultation
+
+## Framework Practice: *Vendor Relations*
+### Monthly Vendor Checkin
+### Roadmap Awareness
+### Best Practice Evolution
+### Consulting Engagements
+
+## Artifact Definition: *Telemetry Standards Guide*
+### Instrumentation Standards
+### Observability as Code
+### Cleanup & Tech Debt Management
+### Metadata Standards
 - Platform Ownership
 - Application Ownersihp
 - Enforcement
 - Environment Management
-#### Authorization and Accountability
-
-
-### Session Definition: Quarterly Checkin
-
-###  Framework Practice: Overage Resolution
-#### Session 3: AD Hoc Resolution Session
-#### Seek out redundant telemtry
-#### Data quality validation
-#### Re-assess observability needs
-#### Re-assess vendor roadmap
-
-### Framework Practice: Vendor Relations
-#### Session 4: Monthly Vendor Checkin
-#### Roadmap Awareness
-#### Best Practice Evolution
-#### Consulting Engagements
-
-
+### Authorization and Accountability
