@@ -1,5 +1,5 @@
 ---
-title: Telemetry Data Governance
+title: Telemetry Data Governance Framework
 tags:
   - Observability maturity
   - Operational efficiency 
@@ -12,9 +12,11 @@ metaDescription: Data governance is a practice of ensuring optimal value for tel
 
 ## Overview [#overview]
 
+Data governance is a practice of ensuring optimal value for telemetry data collected by an organization particulary a complex organization with numerous business units and working groups.  The objective is get appropriate ROI for investimate in telemetry data.  This requires a framework that combines a complex mixture of technical understand with a formal and intuitive understanding of how telemetry data supports the business objectives.
+
 ## Desired outcome [#desired-outcome]
 
-This section will describe what we can expect from a properly executed governance plan.  Keep in mind that the priorities (techncial and business) will differ between organizations.  But generally all organizations will want some of these outcomes.
+This section will describe what we can expect from a properly executed governance framework.  Keep in mind that the priorities (techncial and business) will differ between organizations.  But generally all organizations will want some of these outcomes.
 
 ### Increased Transparency
 
@@ -49,7 +51,7 @@ Objectives include:
 
 When properly executed the data governance framework will create a simple but actionable structure and continous process for executing the key actions of the framework:
 
-- Development of baseline budget
+- Development of telemetry budget
 - Aligning new telemetry to observability objectives
 - Providing checks and balances on telemetry configuration
 - Tracking the telemetry footprint of newly acquired business units or restructures within the org.
@@ -58,7 +60,7 @@ To borrow language from *Scrum* methodology we will create four main artifacts a
 
 *Artifacts*
 - Ingest Fact Report
-- Baseline Budget Sheet
+- Telemetry Budget Sheet
 - Quarterly Change Plan
 - Telemetry Standards Guide
 - Telemetry Backlog (optional)
@@ -102,7 +104,7 @@ To borrow language from *Scrum* methodology we will create four main artifacts a
 
 
 
-## Key Concepts: Telemetry Costs
+## Framework Foundation: Understanding Telemetry Costs
 ### Storage and Compute Overhead
 When provisioning compute on prem or in a private account within a cloud provider there are some compute and storage costs which may be incurred in the collection of telemetry.  Some examples include:
 - Storage and compute needed for a Prometheus or Elasticsearch database
@@ -160,7 +162,7 @@ It is part of the continuous improvement process to expand observability.  An or
 A JMX integration is designed to get any metric exposed by a third party application with prefix "Transaction_".  With version 1.0 of the application that yields in 10 events per sample.  The team maintaining the third party application adds 10 additional metrics with the "Transaction_" prefix.  When our team installs the new code, we are a bit surprised to know what JMX events have increased 2 times.
 
 
-## Establishing Baseline Condition & Growth Forecast [#current-state]
+## Framework Foundation: Understanding Baseline Data Ingest [#current-state]
 ### High Level Accounting
 
 At this point it is necessary to get a high level view of all of the telemetry currently being generated in your organization.  The assumption is that any substantial organization will have a master account and multiple sub-accounts which may be dedicated to specific, teams, projects, or even separate business units.  In the context of New Relic it is necesssary to break the current ingest down by:
@@ -542,7 +544,7 @@ We'll expand on the previously defined highlights of this role:
   - Provides neutrality when appropriate
   - Ensures the following artifacts are produced in a timeley manner and are available to all stakeholders:
     - Ingest Fact Report
-    - Baseline Budget Sheet
+    - Telemetry Budget Sheet
     - Quarterly Change Plan
     - Telemetry Standards Guide 
 
@@ -584,15 +586,15 @@ The Telemetry SME:
 - Is facile in querying the data
 - Contributes to the Telemetry Standards Guide where possible especially in helping optimize configurations, and improving metadata standards 
 
-## Framework Practice: *Baseline Budget Planning*
+## Framework Practice: *Telemetry Budget Planning*
 ### Value Mindset
 ### Understanding Growth Drivers
 ### Creative Solutioning
-### Artifact Definition: *Baseline Budget Sheet*
-### Artifact Definition: *Quarterly Growth Estimates*
+### Artifact Definition: *Telemetry Budget Sheet*
+### Artifact Definition: *Telemetry Growth Estimates*
 
 
-## Framework Practice: *Quarterly Checkin*
+## Framework Practice: *Periodic Checkin*
 ### Tracking against plan
 ### Escalate as needed
 ### Adjusting the plan
