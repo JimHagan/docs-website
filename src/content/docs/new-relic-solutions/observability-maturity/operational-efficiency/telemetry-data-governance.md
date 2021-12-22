@@ -188,6 +188,7 @@ The resulting table shows fairly high variability.  Note that things were fairly
 |July 2021|1.05 M|
 |June 2021|887 k|
 |May 2021|881 k|
+|||
 
 There was a bit of an effort to cool things down a bit in the fall.
 Here is where a timeseries really helps
@@ -215,6 +216,7 @@ SELECT rate(sum(GigabytesIngested), 1 day) AS 'Daily Ingest Rate (GB)'  FROM NrC
 |TracingBytes|160.5486142743330|
 |BrowserEventsBytes|79.75575001916670|
 |ServerlessBytes|6.372198490000000|
+|||
 
 Since we are trying to get a general lay of the land let's creat a time series query based on our previous query so we can see the daily ingest rates for the last six months
 
@@ -248,6 +250,7 @@ SELECT rate(sum(GigabytesIngested), 30 day) AS avgGbIngestTimeseries  FROM NrCon
 |Shipping & Receiving|48850.56031237550|
 |Front End Development|45605.86433004600|
 |Marketing Technology|27633.66805779|
+|||
 
 
 #### Artifact Definition: Ingest Fact Report
@@ -257,23 +260,223 @@ To some of extent we have explored the main components of an ingest fact report 
 
 |Fact|Type|Query|
 |---|---|---|
-|consuming-accounts|Number||
-|daily-rate-30-day-full-org-num|Number||
-|daily-rate-9-month-full-org-ts|Timeseries||
-|consumption-by-month-full-org-ts|Timeseries||
-|consumption-by-month-full-org-table-tb|Table||
-|daily-rate-30-day-teltype-num|Number||
-|daily-rate-9-month-teltype-ts|Timeseries||
-|consumption-by-month-teltype-ts|Timeseries||
-|consumption-by-month-teltype-table-tb|Table||
-|daily-rate-30-day-acct-teltype-num|Number||
-|daily-rate-9-month-acct-teltype-ts|Timeseries||
-|consumption-by-month-acct-teltype-ts|Timeseries||
-|consumption-by-month-acct-teltype-table-tb|Table||
-
+|consuming-accounts|Number|SELECT uniqueCount(consumingAccountName) from NrConsumption since 7 days ago|
+|avg-daily-rate-30-day-full-org-num|Number|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO|
+|daily-rate-9-month-full-org-ts|Timeseries|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 9 months AGO TIMESERIES auto|
+|consumption-by-month-full-org-ts|Timeseries|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 56 weeks AGO TIMESERIES 30 days|
+|consumption-by-month-full-org-table-tb|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO|
+|avg-daily-rate-30-day-teltype-num|Table|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet usageMetric |
+|daily-rate-9-month-teltype-ts|Timeseries|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 9 months AGO TIMESERIES auto facet usageMetric|
+|consumption-by-month-teltype-ts|Timeseries|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 56 weeks AGO TIMESERIES 30 days facet usageMetric|
+|consumption-by-month-teltype-table-tb|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp), usageMetric  LIMIT MAX SINCE 56 weeks AGO|
+|avg-daily-rate-30-day-acct-teltype-num|Table|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet usageMetric, consumingAccountName |
+|avg-daily-rate-9-month-acct-teltype-ts|Timeseries|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 9 months AGO TIMESERIES auto facet usageMetric, consumingAccountName |
+|consumption-by-month-acct-teltype-ts|Timeseries|SELECT sum(GigabytesIngested) AS FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 56 weeks AGO TIMESERIES 30 days facet usageMetric, consumingAccountName|
+|consumption-by-month-acct-teltype-table-tb|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp), usageMetric, consumingAccountName   LIMIT MAX SINCE 56 weeks AGO|
+||||
 
 #### Change Analysis
-#### Advanced: Deep Dive Ingest Analysis
+
+There are some powerful techniques we can use to understand the rate of change in certain telemetry.  These change analysis techniques can be used to develop quarter and yearly growth estimates.  Some techniques include:
+
+1. NRQL `COMPARE WITH` operator
+
+```
+SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform'  and usageMetric = 'BrowserEventsBytes' since 6 months ago until 1 week ago TIMESERIES 7 weeks COMPARE WITH 2 months ago
+```
+
+![Simple Compare With Time Series](images/oma-oe-dg-simple-compare-with-time-series.png)
+
+
+2. NRQL `SLIDING WINDOW` operator (for smoothing away certain noise)
+
+Telemetry is inherently noisy.  Real world phenomeno happen in spurts leaving with many random peaks and troughs in the signal.  This is good in a way since it lets us view the full comlexity of a phenomenon.  However when we are seeking to see trends we can be distracted by detail.  NRQL provides a powerful to smoothing out any time series by cominging each data point with slightly older points  This let's us focus on the overall temporal trend rather than one extreme `increase` or `decrease`
+
+
+Note the jaggedness of the raw timeseries for 1 day ingest rate:
+
+```
+FROM NrConsumption SELECT rate(sum(GigabytesIngested), 1 day) WHERE productLine = 'DataPlatform' since 26 weeks ago TIMESERIES 1 day
+```
+
+![Jagged Daily Rate](images/oma-oe-dg-jagged-daily-rate-timeseries.png)
+
+
+Now if we use a [sliding window](https://docs.newrelic.com/docs/query-your-data/nrql-new-relic-query-language/nrql-query-tutorials/create-smoother-charts-sliding-windows/) of 4 days to reduce the impact of single day events we will see a clearer picture.  Four days is a good choice since it will blur the impact of `weekends` so data for a Sunday will be combined somewhat with data for a Friday etc.
+
+
+```
+FROM NrConsumption SELECT rate(sum(GigabytesIngested), 1 day) WHERE productLine = 'DataPlatform' since 26 weeks ago TIMESERIES 1 DAY SLIDE BY 4 days
+```
+
+![Smoothed Daily Rate](images/oma-oe-dg-smoothed-daily-rate-timeseries.png)
+
+3. ADVANCED TREND ANALYSIS
+
+NRQL provides us some tools to assess the rate of change.  This is useful since as we see in the previous example we had a very large increase over the past several months in Browser metrics.  This rate of change analysis uses the `derivative` operator and it gives us some confidence that the main growth happened back in early September.  It seems as though our growth rate based on the 7 day derivative is somewhat negative so we may have reached a new plateau at the moment in BrowserEventsBytes ingest.
+
+```
+SELECT derivative(sum(GigabytesIngested) , 7 day) FROM NrConsumption WHERE productLine = 'DataPlatform'  and usageMetric = 'BrowserEventsBytes'  LIMIT MAX SINCE 3 MONTHS AGO UNTIL THIS MONTH TIMESERIES 1 MONTH slide by 3 days compare with 1 week ago
+```
+
+![Rate of Growth Time Series](images/oma-oe-dg-rate-of-growth-time-series.png)
+
+In this scenario the uptick was so blatant a simple time series of the rate will suffice.  However the benefit of the deriviative is it can be more sensitive at assessing the relative quanty of growth and give us a sense of when it first started.  This can be useful if we in the early stages of a major uptick.
+
+Here is the simple plot of the SUM
+
+```
+SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform'  and usageMetric = 'BrowserEventsBytes'  TIMESERIES  7 days since 6 months ago
+```
+
+![Simple SUM Time Series](images/oma-oe-dg-simple-raw-sum-time-series.png)
+
+
+#### Advanced: Drilling Deeper With `bytescountestimate()`
+
+So far our discussions of analyzing data ingest have focused on the NrConsumption model.  This is intentional since this is the one model that all NR accounts will be able to leverage in their data governance program.  The drawback of that model is that it can only be grouped by the `consumingAccount` and the `usageMetric` (i.e, high level telemetry type).  There are times when we need to drill deeper in order to inform our growth forecasts and overall governance process.  For example:
+
+- We see that InfraProcessBytes has increased dramatically accross all accounts but do not know why
+- We have started to embrace Logs but feel like we have a hard time attributing log ingest by log level.
+- We recently introduced metrics from Prometheus but can't tell easily which metrics comprise the bulk of data ingest.
+- We want a better accounting of which APM or Browser applications contribute to TDP
+- We want to know how much we are spending on MSSQL database monitoring
+
+In this section we'll show some approaches to better understanding some of these.   In order to fully exploit this technique it helps to have a proper metadata standard for your organization.  That will be disucssed in the section on the *Telemetry Standards Guide*
+
+__NOTE__: These queries will need to be run a normal consuming account.  Not a `Partnership` account.  In Partnership accounts you only have access to NrConsumption, but cannot query the underlying telemetry.
+
+**Example 1: InfraProcessBytes**
+
+
+```
+ProcessSample gathers detailed resource usage information from programs running on a single system. We take a snapshot of this data every 20 seconds (configurable) for every active process and package it into a ProcessSample event, which is then sent to New Relic.
+```
+
+Process sample volume can be controlled by drop rules, as well as agent side sample rate configurations and even regex patterns in the Infrastructure agent itself.
+
+First without faceting let's explore how many bytes of ingest are consumed by the [ProcessSample](https://docs.newrelic.com/docs/infrastructure/manage-your-data/data-instrumentation/default-infrastructure-monitoring-data/) event on our `Streaming Media Team` account in the last 7 days.
+
+With the following query:
+
+```
+FROM ProcessSample select bytecountestimate()/10e8 as 'GB Ingested' since 7 days ago
+```
+
+We get the response:
+
+```
+63.296
+GB Ingested
+```
+
+On a platform like New Relic where there is a transparent per GB ingest cost.  We can easily convert that into dollars with the formula `63.296*0.25` which yields $15.  So to collect process samples 
+
+As an example of how can attribute specific ingest amounts to specific teams or platforms we'll modify the query to facet by the `team` tag which is one of our organizations standard infrastructure tag.
+
+```
+FROM ProcessSample select bytecountestimate()/10e8 as 'GB Ingested' since 7 days ago facet team 
+```
+
+From which we get the following result:
+
+```
+8.885
+News
+
+7.65
+Entertainment
+
+47.04
+Other
+```
+
+From that we can know definitely that collecting process samples on Entertainment hosts costs $1.92 in the last 7 days.  More importantly we are now aware that the category `Other` which cost us $11.76 in the past 7 days.  This is a great argument for prioritizing metadata standards since by adhering to a consistent standard we can only account for the per-team cost of about 1/3 of our ingest for this particular telemetry type.
+
+
+**Example 2: Logs**
+
+We have recently begin to try to understand how different log sources contribute to our data ingest.  We have some written standards on attribution by application and log level, but what we've found is that there is great inconsistent even within a single account.  Some logs use `app` some use `application` others use `loglevel` others use `level` and still others use `log.level`.   Regardless we want to make sum general assessments of how many of our logs have not level indicator at all and how much those cost us each week.
+
+First let's see what we are ingesting monthly in the Fantasy Sports Team account:
+
+```
+FROM Log select bytecountestimate()/10e8 as 'GB Ingested' since 7 days ago
+```
+
+Results in:
+
+```
+2552.504
+GB Ingested
+```
+
+or about $638 in the past 7 days.  The obvious query to run is:
+
+```
+FROM Log select bytecountestimate()/10e8 as 'GB Ingested' where level = 'DEBUG' since 7 days ago facet level 
+```
+
+We know there is some inconsistency in the way in which we log `DEBUG` status so we use the like operator
+
+```
+FROM Log select bytecountestimate()/10e8 as 'GB Ingested' where level like '%DEBUG%' since 7 days ago facet level 
+```
+
+Which results in:
+
+
+```
+1.46
+DEBUG
+
+0.0253
+app.DEBUG
+
+0.000264
+security.DEBUG
+
+2252.74
+Other
+```
+
+This is a warning sign that the use of the `level` attribute is not standard enough as we are ingesting over 88% of Logs without this attribute.  After some discussion with the development teams we realize that we have the following attributes that may indicate log level:
+
+- level_value
+- loglevel
+- level
+- log.level
+
+Running the following query shows us we have 50% of our logs covered by at least one of these:
+
+```
+FROM Log select bytecountestimate()/10e8 as 'GB Ingested' since 7 days ago where level is NOT NULL or level_value is NOT NULL or loglevel is NOT NULL or log.level is not NULL
+```
+
+**Example 2: MSSQL**
+
+The higher level NrConsumption model is very useful but can often obfuscate who much individual instrumentation contribute.  We have a team that has seen a 2x uptick in the GigabytesIngested for the InfraIntegrationBytes telemetry type.  They are unsure what contributed to it.
+
+In the team account we see that the InfraIntegrationBytes for the past 7 days is 76GB.
+They have a hunch that a substantial amount of the growth came from the addition of new MSSQL instances.  However there were also some 
+The following query will provide a definitive answer as to how much of the InfraIntegrationBytes is acounted for:
+
+```
+FROM MssqlDatabaseSample, MssqlInstanceSample, MssqlWaitSample select bytecountestimate()/10e8 since 7 days ago
+```
+
+Results in:
+
+```
+49.55
+GB Ingested
+```
+
+Which confirms our assesment that they MSSQL on host integration is the reason for the increase.
+On additional query that will help us in our forecasting is to understand how many hosts we are monitoring.
+Running the unique host count shows us that we have 10 hosts being monitored with the MSSQL OHI.  Since we plan on adding an additional 5 hosts next quarter.  We can make sure that we add an additional 100GB per month of ingest or an additional $25. 
+
+
 
 ### Assigning Roles & Responsibilities
 #### Telemetry Master
