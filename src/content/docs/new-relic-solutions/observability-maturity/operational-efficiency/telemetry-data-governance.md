@@ -102,7 +102,9 @@ To borrow language from *Scrum* methodology we will create four main artifacts a
     - Changes to organization strucutre (re-organization, merger, acquisition)
     - Address critical changes in platforms, tools and observability platform architecture
 
+![DG Artifacts and Sessions](images/oma-oe-dg-artifacts-sessions.png)
 
+[Lucidchart Link](https://lucid.app/lucidchart/c8f7c004-ec86-4ec2-ac1f-06a88c41ab52/edit?invitationId=inv_418c0cda-d09d-4008-840f-db090c14951e)
 
 ## Framework Foundation: Understanding Telemetry Costs
 ### Storage and Compute Overhead
@@ -588,28 +590,191 @@ The Telemetry SME:
 
 ## Framework Practice: *Telemetry Budget Planning*
 ### Value Mindset
+
+As prequestion to the budget planning session it is important to revisit the concept of value.  Entering the sessions with the "Value" mindset means that each participant will work to make decisions in terms of value that will be delivered by each class of telemetry that is created.
+
+In our introduction to Observability Maturity we introduced the concept of *value driver*.  It is important to align observability objectives with value.  This makes it much easier to make tough decisions about priority and tradeoffs.
+
+![Oma Value Drivers](../images/oma-v-drivers.png)
+
+In our section discussing the *Telemetry Owner Role* we showed an example of a telemetry backlog.  Let's look at a revised version of that which includes value drivers as a column.
+
+
+|Objective|Priority|Status|Ingest Impact Estimate (GB/Month)| Ingest Impact Actual|Value|Tech. Owner|
+|---|---|---|---|---|---|---|
+|Improve Awareness of Kafka Queue Saturation|1|Done|+Hi|10000|Uptime/Reliability|Jim|
+|Filter Health Checks from APM alerts|2|Done|+Low|0|Uptime/Reliability|Kim|
+|Collect Product Info In App Logs|3|In Progress|+Medium|2000|Customer Experience|Adi|
+|Reduce Sampling Rate on Process Samples|4|Not Started|-Hi|-5000|Efficiency|Adi|
+
+Like all things in an agile setting there will be grey areas and there may be some "haggling" over value.  It's also possible that a telemetry objective will contribute value in multiple ways.  If you are at the haggling stage that's a good thing.  It indicates that you have adopted the value mindset.
+
 ### Understanding Growth Drivers
+
+Understanding the growth drivers of your telemetry is as important as understanding the value drivers.  With growth drivers there are ways in which they are highly correlated, but in generally we should choose the main and most direct driver.  The following growth drivers can be used to augment the telemetry backlog with information that can be used to understand the quarterly and yearly growth characteristics.
+
+- Increase in Active Users
+  - Application Transactions (user initiated)
+  - Browser Sessions
+  - User Databases, Queues, and Topics
+- Increase in Number of Products
+  - Application Transactions (inventory processing)
+  - Application Transactions (image processing/loading)
+  - Product Databases, Queues, and Topics
+- Infrastructure Scaling Initiative
+  - Kubernetes Clusters
+  - Database Instances
+  - Load Balancer Instances
+  - Containers & Hosts
+- Innovation Initiatives
+  - New in app user experiences
+  - Architecture Refactors (Maintain Old & New)
+  - Feature adopted over time
+
+If your business operation is growing it makes sense to factor in growth.  It wouldn't make sense to deploy a system and expect cloud compute costs to be flat despite growing users 20% or adding 2 times more products in a year.  This attention to growth drivers is no different.
+
+
+Hypothetical growth factors:
+
+|Telemetry Source|Growth Driver|Ingest Base|Ingest EOY Target|Growth Explanation|
+|---|---|---|---|---|
+|Registration Service|New Users/Month|100GB/Month|200GB/Month|Monthly New Users From 1000 to 2000|
+|Product Database (Postgresql)|Num Products|1000GB/Month|3000GB/Month|5x Product Increase - DB scale 3x|
+|User Chat Service (Browser)|Feature Adoption|300GB/Month|900GB/Month|Adoption Increases 3x (15% - 45%)|
+
+Coming up with a formal worksheet like this covering every item as a formal artifcat is likely going to be unfeasible.  Think of this as a worksheet going into the budget planning session.  If nothing else it will remind you of new innovation, hardening, and scaling products that will drive growth over the coming months.  Being able to justify and explain your needs will give you confidence and will also give others in the organization confidence that we are investing wisely.
+
 ### Creative Solutioning
+
+Creating solution is just another way to express compromise or managing a resource constraint or conflict.  In the budgeting process we will often come in with a fixed cap.  For example the senior leadership has already signed a contract committing to 500TB per month of data ingest.  They have 5 teams each with their own account.  Here are some real world scenarios that will require some thought to overcome.
+
+- The Streaming Media Team has alloted 150TB per month.  Their baseline ingest is currently 100TB.  They want to add logging from their streaming platform and back of the envelop calculations say it will be 50TB per month to bring it all in.  They don't want to hit their cap with this one initiative, but are will to ingest 25TB
+  - Bring in the logs and setup drop rules to intelligently thin out the number of attributes in the log payload
+  - Create Grok patterns to extract the 3 or 4 fields they really want and drop the main message
+  - Add logging to their "next generation" streaming system which currently serves about 50% of users.  Budget for more next year when all users on served by the new platform
+- The User Management Team currently ingests 20TB of process samples.  They find the data a bit overwhelming and would really like to shave it to 5TB to free up for innovation initiatives.
+  - Identify the 3 or 4 processes that MUST be monitored.  Configure regex in the agent to forward only those.
+  - Create drop rules to thin out the data on the backend, allowing it to be added back in when trouble shooting a critical incident.
+  - Adjust the current sampling rate from 10 seconds to 40 seconds, allowing all processes to be covered but with less resolution and the possible omission of short-lived processes.
+- There are custom browser events that the Product Promotions Team wants to run during special events.  These custom events ingest about 10TB per month.  The team would like to get this down < 4TB per month.
+  - Leverage observability as code to update the Javascript-based browser agent at specific times of the year, and then roll back to the standard version when the events are over.  Since these promotions are ongoing about 1/3 of the time, they are able to save nearly 7TB per month.
+- A Kubernetes team is ingesting 8TB per month on K8s monitoring (including Prometheus data).  The primary use of the montoring is to serve some alerts and the *Kubernetes Cluster Explorer*.  They want to free up 4TB to log events from some third party services like Cloudflare and Akamai.
+  - The New Relic Technical Account Manager (TAM) shows them how they can omit certain events which are not needed by the cluster explorer.
+  - The New Relic TAM helps them identify a set of Prometheus metrics which are highly redundant with data collect by the infrastructure agent.
+  - There are a number of Kubernetes events that are not needed.  They can also be omitted in their Kubernetes manifest.
+
+
 ### Artifact Definition: *Telemetry Budget Sheet*
+
+###[SHOW EXAMPLE OF BUDGET SHEET]
+
 ### Artifact Definition: *Telemetry Growth Estimates*
 
+###[SHOW EXAMPLE OF BUDGET GROWTH ESTIMATE]
 
 ## Framework Practice: *Periodic Checkin*
 ### Tracking against plan
-### Escalate as needed
-### Adjusting the plan
 
-##  Framework Practice: *Anomaly Resolution*
-### Validating Data Analysis
-### Aligning to Observability Needs
-### Aligning to Business Objectives
-### Vendor Consultation
+#### The Status Checklist
+
+- Is our overall organization over budget or under budget
+- Are certain sub-accounts that are serious over or under
+- Are there accounts that could stand to trade allotements
+- Have any major innovation or scaling initiaves been canceled
+- Have any major innovation or scaling initiates been added to the schedule
+
+#### Meeting Flow
+
+
+Suggestion is to go arround to each of the Telemetry Owners and collect the status using the status check list.
+Finally each Telemetry Owner will share the following:
+
+- I need to increase my allotment
+ - [We left something off the original budget]
+ - [We underestimated growth]
+
+- I can decrease my allotment because
+ - [An initiatve was defered or canceled]
+ - [We overestimated growth]
+
+#### Rectification
+
+ After the budget has been revised if there is still an overrage at the organization level.  If some consumption overage is allowed (for example +10% for the year) this may be okay.  If that situation is not allowed by the organization's policy this may need to be escalated.  In this situation please consult with your New Relic TAM to ensure that all the facts and figures add up.  
+
+ Prior to escalating for an increase in spend execute the following checklist.
+
+ - Validate growth assumptions.  If the perceived overage has not occured yet but is projected to occur make sure there is consensus on the validity of this projectioin.
+ - The Telemetry Master can identify several telemetry soures that he feels could be turned off or reduced.  He will work for a consensus to get the necesssary concessions.  For example:
+   - Development or Experiment Environments
+   - Telemetry that has been added but is not yet being leveraged in the operational worfklow (for example some new application logs not yet used in alerts or dashboards)
+   - Debugging data
+   - Data which is completely redundant with some other source.
+   - Data projected to be added from a newly acquired org could be deferred
+
+If we are still in an overrage condition that cannot be accomodated by organizational policy.  It may make sense to bring in some kind of arbitrator.  This is likely going to be an executive sponser who may be able to make tough decisions that wouldn't be possible within the group.  At this stage these decisions will be cutting in the value.
+The folowing impact assesment model can be used to acknowledge the impact of the cuts.
+
+- Observability Impact
+  - Innovation cycle will be impacted [y/n]
+  - Deployment velocity will be impacted [y/n]
+  - A product system will have substantially reduced observability [y/n]
+  - Mean time to discover and recover is impacted [y/n]
+
+- Business Impmact
+  - A new acquision or business unit will lack significant visibility [y/n]
+  - Our understanding of customer experience and attrition indicators is diminished [y/n]
+  - Our ability to resolve SEV1 incidents will be impacted [y/n]
+  - Changes to our product inventory and rollout schedule is impacted [y/n]
+
+This impact assessment should be used in the next fiscal budget cycle to ensure that we can remove these impacts at the earliest.
+
+[SHOW EXAMPLE OF REVISED BUDGET SHEET]
 
 ## Framework Practice: *Vendor Relations*
 ### Monthly Vendor Checkin
-### Roadmap Awareness
-### Best Practice Evolution
+
+Your technical acount manager and solution consultant are willing and ready to checkin on a regular candence including weekly.  Generally weekly checkins will be called for when major initiaves are being undertaken or some anomaly is being investigated.  At a regular checking always do the following:
+
+- Review the Data Ingest Analytics
+- Make The TAM and SC aware of any ingest budget issues you have observed
+- Identify any action items for the TAM and SC to help find solutions to those issues
+- At a monthly (and especially quarter level) you TAM and SC will be able to give product roadmap updates.  Always dicuss any telemetry ingest impacts by future revisions and ensure that we can incorporate this into future budgeting.
+
+#### Ingest Best Practice Review
+
+There are always changes in observability related to changes in the platform or changes in the entities being observed.  In addition there are often improvements made to our documentation or best practice guides that can illuminate area related to data ingest.  For examples of topics to discuss with your TAM and SC:
+
+- New Capabilities Related to Filtering Data
+- New Log Parsing Capabilities
+- New Events to Metrics and Data Rollup Capabilities
+- Changes to Instrumementation
+  - Sampling rates
+  - In agent filtering
+  - Entity Selection Rules
+  - Changes to Limits Which Could Increase / Decrease Ingest
+- New Dashboards and Visualization Techniques
+- New Cloud Integrations and Changes to Configurations for Existing Configurations
+- New Third Party SaaS Platforms That Require Observability
+- Changes to Third Party Agents Such as Prometheus, Fluentd, Logstash, Cribl, etc.
+- New In-Platform Features that Create Telemetry
+- Changes to Entity Synthethis Management
+- Egress Policy Changes for Cloud Vendors
+- Best Practice for Account Structure and User Management
+
+There is much more we could cover but using this checklist should greatly reduce any blindspots in your process.
+
+
 ### Consulting Engagements
+
+The framework described in this document would require non-trivial effort to implement fully.  The operational efficiencies gained from adopting this process can be justfied in any large enterprise account.  New Relic can work with you to setup an engagement with one of our consulting partners to help you initiatve this process in your organization including:
+
+- Initial Baseline Analysis (core engagement)
+- Initial Telemetry Budget (core engagement)
+- First Regular Checking (core engagement)
+- Enablement of Stakeholders to Perform Data Governance Roles (core engagement)
+- Ad Hoc Technical Solutioning (as needed)
+
+[MORE ON THIS]
 
 ## Artifact Definition: *Telemetry Standards Guide*
 ### Instrumentation Standards
