@@ -280,7 +280,7 @@ SELECT rate(sum(GigabytesIngested), 30 day) AS avgGbIngestTimeseries  FROM NrCon
 |Cloud Platform Team|100012.83564087500|
 |Experimental Technology Team|88635.5364573755|
 |Finance and Accounting Team|78512.21037361650|
-|International_Multiplatform|51230.566752227500|
+|International Servivces|49788.566752227500|
 |Shipping & Receiving|48850.56031237550|
 |Front End Development|45605.86433004600|
 |Marketing Technology|27633.66805779|
@@ -630,6 +630,10 @@ Understanding the growth drivers of your telemetry is as important as understand
   - New in app user experiences
   - Architecture Refactors (Maintain Old & New)
   - Feature adopted over time
+- Efficency Efforts (Reduction of Telemetry Ingest)
+  - Adding drop filters for certain telemetry
+  - Reducing the number of attributes and tags attached to telemetry
+  - Moving from a less efficient collection agent (i.e., Prometheus exporter) to a more efficient one (i.e., NR APM)
 
 If your business operation is growing it makes sense to factor in growth.  It wouldn't make sense to deploy a system and expect cloud compute costs to be flat despite growing users 20% or adding 2 times more products in a year.  This attention to growth drivers is no different.
 
@@ -666,11 +670,99 @@ Creating solution is just another way to express compromise or managing a resour
 
 ### Artifact Definition: *Telemetry Budget Sheet*
 
-###[SHOW EXAMPLE OF BUDGET SHEET]
+#### Overview
+In this section we'll work through an example telemetry budget sheet and give a broad overview of the kinds of considerations that must be taken to manage data ingest in a complex organization.
 
-### Artifact Definition: *Telemetry Growth Estimates*
+![Telemetry Budget Sheet](images/oma-oe-dg-telemetry-budget-sheet-ex.png)
 
-###[SHOW EXAMPLE OF BUDGET GROWTH ESTIMATE]
+[Example Sheet Link](https://docs.google.com/spreadsheets/d/1fVKL3H876pCsOBNKCqDKHhFeZDGQfGyKlR3LwaEBjFE/edit?usp=sharing)
+
+In this sheet we track the budget at the level of individual accounts.  In a model where many disparate teams share the same account the line items in the sheet can be `teams` and it's possible there will be more than one team per account.
+
+The minimal requirements for the sheet are:
+
+
+|Column|Description|
+|---|---|
+|Account Name|New Relic Account Name|
+|Telemetry Owner|Manages budget for a given account for one or more teams|
+|Last Thirty Days of Ingest (GB)|30 Day Ingest Total for All |
+|Ninety Day Target Forecast (GB) |Estimated 30 Day Ingest 90 Days from Now|
+|Forecast Growth %|Directly Correlated with the ninety day target|
+|Growth Warning %| Warn if growth exceeds this percentage in the 90 day forecast) -- default to 2.5%|
+|Growth Warning (GB)| Representation of a warning level 30 day ingest|
+|Growth Driver Notes| Explanation of any factors that would lead to expected increase or decrease in ingest|
+
+Let's look in more detail at the growth drivers for some of the teams
+
+|Team|Growth Driver|
+|---|---|
+|Streaming Video| This team is refactoring some K8s infrastructure.  Currently the have on-prem K8s clusters managed in their data center.  They expect to be spinning up some new clusters in their AWS VPC and for much of the quarter they may have redundant infra.  The K8s Telemetry SME helped them arrive a growth rate of just under 5% for the quarter.  In the quarter after this they may have a flat or negative reate as they bring down the on-prem clusters  |
+|Cloud Platform Team| This team has plans to reduce log volume substantiall by getting rid of some excessively chatty, low value logs from some of their cloud services.  Using a deep dive analysis using `bytecountestimate()` they came up with a plan to reduce ingest by 5% over the quarter.  So they should see negative growth rate over 90 days|
+|International Services|This teams plan to add support for two additional countries.   Working with the APM K8s and Mobile SMEs they were able to come up with an estimate of 7.5% groth, mustly coming from increased Mobile events.  Since they have good forecasts of how much user activity they should see they were able to built a relatively good model based on current ingest with the 5 countries they currently support.|
+|Shipping & Receiving|This team plans to add application logs this quarter.  Using estimates derived from the number of logs current recorded to disk and using some factors to account for the additional logs-in-context tags that will be added.  This team expects a 12.6% growth this quarter.  The Logging SME has given them excellent guidance on using New Relic drop rules as well as how to streamline the data in Fluentbit so they are confident that they will be able to steer into this estimate|
+|Marketing Technology|This team is refactoring a Java monolith into 3 or 4 separate microservices.  Based on some code analysis from other refactors and a careful audit of the Telemetry behavior of the monolith thsi team has forecast a 26.7% growth rate.  This is relatively large.  However this is the kind of refactor that should leave the code base relatively stable for another 3 to 5 years.|
+
+
+#### Developing Growth Estimates
+
+In this section we'll show how to use a more detailed telemetry worksheet to come up with the growth estimates that are used in the budget sheet previously described.  This framework does not outline a formal mechanis for development the estimates, however best practice is to do the following:
+
+- For each consuming account evaluate each telemetry type
+  - For each telemetry type assess what growth drivers are relevant in the coming months
+
+
+Let's revisit the specific growth drivers mentioned in a previous section:
+
+- Increase in Active Users
+  - Application Transactions (user initiated)
+  - Browser Sessions
+  - User Databases, Queues, and Topics
+- Increase in Number of Products
+  - Application Transactions (inventory processing)
+  - Application Transactions (image processing/loading)
+  - Product Databases, Queues, and Topics
+- Infrastructure Scaling Initiative
+  - Kubernetes Clusters
+  - Database Instances
+  - Load Balancer Instances
+  - Containers & Hosts
+- Innovation Initiatives
+  - New in app user experiences
+  - Architecture Refactors (Maintain Old & New)
+  - Feature adopted over time
+- Efficency Efforts (Reduction of Telemetry Ingest)
+  - Adding drop filters for certain telemetry
+  - Reducing the number of attributes and tags attached to telemetry
+  - Moving from a less efficient collection agent (i.e., Prometheus exporter) to a more efficient one (i.e., NR APM)
+
+
+Now let's work through the example of the "International Services" team which as we saw in the example sheet's notes is adding support for two new countries.  This implies the possibility of
+
+1. Increased Monthly Users
+2. Some New Infrastructure Hosts
+3. A small number of supporting APM Transactions
+
+
+*International Services High Level Forecast (from main budget sheet)*
+![International Services Highlighted](images/oma-oe-dg-international-services-highlighted.png)
+
+*Forecasting worksheet breaking down telemetry types*
+
+![International Services Forecast Worksheet](images/oma-oe-dg-international-services-forecast-worksheet.png)
+
+
+
+
+
+#### Growth Warning Percentage Explained
+
+This factor is used to generate an upper bound for the normally expected growth.  This is something the organization will have to have some level of consensus on.  This bound will be used to place an individual `tripwire` on a specific accounts ingest.  It is possible to provide these warning percentages on individual telemetry types as well.  The growth warning threshold can be used in an automated alert or could simply be used as part of the periodic checkin process to see if any of these have been hit.  If one or more of these have been hit the organization will need to go through a process with one of the following outcomes:
+
+- Revise upward the growth warning telemetry
+- Slow down or reverse some of the growth drivers which we an control
+- Make joint decision with `buyer approval` to go over the budget for this cycle
+- Work on a `trade` where an underconsuming account can tradeoff budget with an overconsuming account  This will result in the upward adjust of one accounts growth and a downward adjustment in another.
 
 ## Framework Practice: *Periodic Checkin*
 ### Tracking against plan
@@ -772,7 +864,8 @@ The framework described in this document would require non-trivial effort to imp
 - Initial Telemetry Budget (core engagement)
 - First Regular Checking (core engagement)
 - Enablement of Stakeholders to Perform Data Governance Roles (core engagement)
-- Ad Hoc Technical Solutioning (as needed)
+- Ad Hoc Technical Solutioning (custom engagement)
+- Development of Telemetry Standards Guide (custom engagement)
 
 [MORE ON THIS]
 
