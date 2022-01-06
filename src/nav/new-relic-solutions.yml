@@ -28,6 +28,8 @@ pages:
         pages:
           - title: Service characterization
             path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/sc-implementation-guide
+          - title: Data governance
+            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/telemetry-data-governance
   - title: New Relic solutions
     pages:
       - title: Measure devops success
