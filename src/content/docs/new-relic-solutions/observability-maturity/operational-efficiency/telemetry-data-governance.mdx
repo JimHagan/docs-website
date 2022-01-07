@@ -83,6 +83,76 @@ Objectives include:
 
 Alignment to these objectives are what allow us to make flexible and intuitive decisions about prioritizing one set of data over another and helping guide teams know where to start when instrumenting new platforms and services.
 
+## Key Performance indicators
+
+It is important to identify some simple KPIs that help to gauge the overall efficiency of your telemetry data ingest. These KPIs are optional.  The most important thing is to choose some KPIs that track data ingest in relation to unit of business value whether that is users on your site or number of sales or gross sales value.  Practioner KPIs are not directly tied to revenue or business units.  Instead they are meant to show the relationship of data ingested to `units` observed.
+
+### Business KPIs
+<CollapserGroup>
+  <Collapser
+    id="gb-ingest-per-user-on-platform"
+    title="GB Ingest Per Platform User"
+    >
+Every organization has a sense of how many users are using their digital platforms.  Let's use the example of a video streaming service.  They may track as a high level KPI the number of registered users or more likely the number of active users.  With the `GB Ingest Per Platform User` we want to understand what it costs us to monitor a certain number of users and quarter to quarter whether we are spending more or less to do so.  A similar KPI can also used by practioners for backend systems.  For example they may use this kind of KPI for the number of users of a MSSQL platform.
+ </Collapser>
+  <Collapser
+    id="gb-ingest-against-gross-revenue"
+    title="GB Ingest Against Gross Revenue"
+    >
+Since there are other revenue drivers than simply the number of users on a platform, we may wish to consider the relation of GB ingest against gross revenue.  This is useful since there are some scenarios where we have flat growth in new users, but for some reason the revenue generated per user is higher and it will likely cost us more to monitor that increase in overall business activity.
+ </Collapser>
+</CollapserGroup>
+### Practitioner KPIs
+<CollapserGroup>
+  <Collapser
+    id="gb-ingest-per-team"
+    title="GB Ingest Per Team"
+    >
+All organizations are comprised of different teams who are generally responsible for developming and maintaining services and platforms.  They are also responsible for their own instrumentation.  One way to make sure that we are not experiencing ingest bloat due to proliferation of teams and the related silos is to track our ingest efficiency per team.
+ </Collapser>
+  <Collapser
+    id="apm-gb-ingest-per-transaction"
+    title="APM GB Ingest Per Transaction"
+    >
+For organizations using APM we will want to baseline and understand our APM ingest footprint per transaction.  By tracking thise we can understand if any growth is rational based on growth in the number of transactions.  If our APM ingest doubles we will consider this explainable and reasonable given that our APM transactions doubled as well.  It is beyond the scope of the framework to determine if our applications are logging too many transactions but the framework can help start the discussion.
+
+ </Collapser>
+   <Collapser
+    id="infra-event-gb-ingest-per-transaction"
+    title="Infra Event GB Ingest Per Host"
+    >
+For organizations using Infrastructure Monitoring we will want to baseline and understand our Infra event ingest footprint per host.  By tracking these we can understand if any growth is rational based on growth in the number of hosts.  If our Infra ingest doubles we will consider this explainable and reasonable given that our hosts counts doubled as well.  It is beyond the scope of the framework to determine if we are using too many hosts but the framework can help start the discussion.
+ </Collapser>
+  <Collapser
+    id="browser-gb-ingest-per-session"
+    title="Browser GB Ingest Per Sessions"
+    >
+For organizations using Browser Monitoring we will want to baseline and understand our Browser data ingest per user session.  By tracking these we can understand if any growth is rational based on growth in the number of user sessions.  If our Browser ingest doubles we will consider this explainable and reasonable given that our number of browser sessions doubled as well.  It is beyond the scope of the framework to determine if we are using too many hosts but the framework can help start the discussion.
+
+ </Collapser>
+  <Collapser
+    id="mobile-gb-ingest-per-mau"
+    title="Mobile GB Ingest Per MAU"
+    >
+For organizations using Mobile Monitoring we will want to baseline and understand our Mobile event ingest footprint per monthly active user.  By tracking these we can understand if any growth is rational based on growth in the number of hosts.  If our Mobile ingest doubles we will consider this explainable and reasonable given that our mobile active users counts doubled as well.  It is beyond the scope of the framework to determine if we are using too many hosts but the framework can help start the discussion.
+ </Collapser>
+  <Collapser
+    id="observability-automation-rate"
+    title="Observabilty Automation Rate"
+    >
+This KPI is unique in that it tracks our implementation of a methodology.  We are of the strong opinion that observability as code through automation is a key prequisite to achieving maximum observability maturity.  The way in which this can computed will vary by team.  But it could take into consideration things like
+
+- The percentage of applications instrumented through a config management or CI/CD framework
+- The percentag of hosts instrumentedd through a config management
+
+The list could grow extremely long, but it suffices that maximum automation is an objective.
+ </Collapser>
+</CollapserGroup>
+
+One way in which this framework is like scrum is that we really can't assess our efficiency until we start iterating.  We can't just look at a number in in isolation to know if it is good or bad.  We need to be able able to generate some consistent KPIs over time to know if we are maintaining or improving our efficincies or falling behind.  Often with KPIs we are looking for the outliers that jump out at us.  For example.  Let's say in a given quarter we saw Mobile GB Ingest increase 200% yet the number of montly active users on our Mobile Platforms stayed the same or declined.  This would be something we would call out at our quarterly checkin.  Those checkins are part of the framework definition and are discussed in detail later.  The KPIs listed above OR the KPIs your organization chooses should be presented and discussed as needed at each checkin.
+
+## Framework Definitions and Practices
+
 <CollapserGroup>
   <Collapser
     id="data-governance-framework-summary"
