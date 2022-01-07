@@ -28,6 +28,8 @@ At minimum implementing data governance practices in your organization will incr
  - Working accross silos for the benefit of the broader organization
 - Standardizing and Optimization of Telemetry Practice
 
+It is not an exaggeration to say that for some implemntations DG will yield millions of dollars in business value through reduced waste and inproved value per GB of ingested data.
+
 ## Why do we need data governance?
 
 When an organization adopts an observability platform it does not take long for developers and SREs to begin filling it up with a variety of telemetry.  When integration is fairly easy it will often be the case that in time no one person or group will know exactly what telemetry is present.  One outcome of data governance is to increase transparency in terms of the following telemetry attributes:
@@ -175,13 +177,15 @@ There are some scenarios where a change in application code will cause a sudden 
 - A monolithic application is broken into 5 microservices with the resulting APM and distriubuted trace data being emitted for each.
 
 #### Instrumentation Misconfiguration
-Later on we will discuss telemetry standards.  One of the thing often governed by a telemetry standard is the sampling rate for various monitoring activities.  Let's assume an organization uses a 30s sampling rate for core operating system metrics for about 2000 hosts.  A misconfiguration or unauthorized change to 10s could easily triple the OS metrics telemetry captured from those hosts.
+Field Example: An organization previously used a 30s sampling rate for core operating system metrics for about 2000 hosts.  A misconfiguration or unauthorized change to 10s tripled the OS metrics telemetry captured from those hosts.
+
+Later on we will discuss telemetry standards. One of the thing often governed by a telemetry standard is the sampling rate for various monitoring activities.
 
 #### Increasing Breadth of Observability
-It is part of the continuous improvement process to expand observability.  An organization that was monitoring Kafka broker health for nearly two years decided to start monitoring Kafa topic offsets.  Not realizing the verbosity of topic monitoring data they are surprised when the telemetry footprint from Kafka monitoring increase 5 times.  
+Field Example: It is part of the continuous improvement process to expand observability.  An organization that was monitoring Kafka broker health for nearly two years decided to start monitoring Kafa topic offsets.  Not realizing the verbosity of topic monitoring data they are surprised when the telemetry footprint from Kafka monitoring increase 5 times.  
 
 #### Unexpected Third Party Change
-A JMX integration is designed to get any metric exposed by a third party application with prefix "Transaction_".  With version 1.0 of the application that yields in 10 events per sample.  The team maintaining the third party application adds 10 additional metrics with the "Transaction_" prefix.  When our team installs the new code, we are a bit surprised to know what JMX events have increased 2 times.
+Field Example: A JMX integration is designed to get any metric exposed by a third party application with prefix "Transaction_".  With version 1.0 of the application that yields in 10 events per sample.  The team maintaining the third party application adds 10 additional metrics with the "Transaction_" prefix.  When our team installs the new code, we are a bit surprised to know what JMX events have increased 2 times.
 
 
   </Collapser>
