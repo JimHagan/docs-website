@@ -3,10 +3,14 @@ title: Telemetry Data Governance Framework
 tags:
   - Observability maturity
   - Operational efficiency 
-  - Data Ingest
-  - Data Governance
-  - Right Sizing
+  - Data ingest cost
+  - Data governance
+  - Sampling rate
+  - Drop rules
+  - Observability as code
+  - Value drivers
   - Implementation guide
+  - Bill and Usage Data
 metaDescription: Data governance is a practice of ensuring optimal value for telemetry data collected by an organization particulary a complex organization with numerous business units and working groups.
 redirects:
   - /docs/agents/manage-apm-agents/agent-data/custom-instrumentation/
@@ -20,7 +24,7 @@ Data governance is a practice of ensuring optimal value for telemetry data colle
 
 At minimum implementing data governance practices in your organization will increase the predictability, and repeatibility of your data ingest.  However we also expect you to get some higher order benefits such as:
 
-- Transition to a value first approach
+- Transition to a value centered approach
  - Map telemetry to technical objectives
  - Map telemetry to business objectives
  - Improved transparency (Where does it come from? Who uses it?  Who needs it)
@@ -32,17 +36,30 @@ It is not an exaggeration to say that for some implemntations DG will yield mill
 
 ## Why do we need data governance?
 
-When an organization adopts an observability platform it does not take long for developers and SREs to begin filling it up with a variety of telemetry.  When integration is fairly easy it will often be the case that in time no one person or group will know exactly what telemetry is present.  One outcome of data governance is to increase transparency in terms of the following telemetry attributes:
+Consumption based observability platforms have revolutionized the way in which organizations can achieve maximum visibility in to their cloud-based and on-prem platforms and services.  Like with a migration to cloud compute consumption based SaaS platforms give business fine grained control over what they pay.  This enables them to align costs more closesly to identifid business value.  However this paradigm does require some additional thought into the value of collected telemtry in order to exploit the benefits.
 
-- What group within the organization configured this telemetry
+Some organizations express hesitancy to focus on telemetry standards and the value discussion in general.  Although the old black box model of observability was not as cost-effective they didn't have to think much about what was ingested.  However consumption based models allow vendors to scale more fluidly with their customer's growth.
 
-- What platform or application does it monitor
+One outcome of data governance is to increase transparency in terms of the following telemetry attributes:
 
-- What are the growth characteristics of this data
+- What group within the organization configured this telemetry?
 
-- What value quadrant(s) does it support.
+- Does it meet organizational standards for quality instrumentation?
+
+- What platform or application does it monitor?
+
+- What are the growth characteristics of this data?
+
+- What value driver(s) does it support?
+
+- How is data growth correlated to revenue growth or provable cost efficiencies?
 
 When executed properly this framework will allow us to move beyond reactive efforts to reduce and troubhleshoot unexplained increases or low value telemetry.  Such an organization will have achieved an explicitly proactive and value driven approach which is the ultimate goal of *observability maturity*.
+
+<Callout variant="tip">
+This may be a good time to familiarize yourself with the [observability maturity principles](/docs/new-relic-solutions/observability-maturity/introduction/).  This will make the concept of `value` more concrete from an observability standpoint.
+</Callout>
+
 
 ### Reduced Noise
 
@@ -64,7 +81,14 @@ Objectives include:
 - Business Process Health Monitoring
 - Other Compliance Requirements
 
-## Data Governance Framework Summarized
+Alignment to these objectives are what allow us to make flexible and intuitive decisions about prioritizing one set of data over another and helping guide teams know where to start when instrumenting new platforms and services.
+
+<CollapserGroup>
+  <Collapser
+    id="data-governance-framework-summary"
+    title="Formal Framework Definition"
+    >
+## Formal Framework Definition
 
 When properly executed the data governance framework will create a simple but actionable structure and continous process for executing the key actions of the framework:
 
@@ -73,12 +97,15 @@ When properly executed the data governance framework will create a simple but ac
 - Providing checks and balances on telemetry configuration
 - Tracking the telemetry footprint of newly acquired business units or restructures within the org.
 
-To borrow language from *Scrum* methodology we will create four main artifacts as well as several roles and rituals (which we'll call sessions).
+To borrow language from *Scrum* methodology we will create three main artifacts as well as several roles and rituals (which we'll call sessions).
+
+<Callout variant="tip">
+If your organization uses scrum it is a great idea to invite some of your scrum masters or other scrum practice experts to view this framework and setup an internal meeting to discuss how existing backlog management tools like Jira and modes of communication like Slack and Microsoft Teams may be leveraged to manage telemetry change in a similar way how you manage and track backlogs from platforms and services.
+</Callout>
 
 *Artifacts*
 - Ingest Fact Report
 - Telemetry Budget Sheet
-- Quarterly Change Plan
 - Telemetry Standards Guide
 - Telemetry Backlog (optional)
 
@@ -124,14 +151,16 @@ To borrow language from *Scrum* methodology we will create four main artifacts a
 [Lucidchart Link](https://lucid.app/documents/view/c8f7c004-ec86-4ec2-ac1f-06a88c41ab52)
 
 
-<CollapserGroup>
+  </Collapser>
   <Collapser
     id="telemetry-ingest-drivers"
     title="Telemetry Ingest Drivers"
     >
 
 ## Framework Foundation: Understanding Telemetry Costs
+
 ### Storage and Compute Overhead
+
 When provisioning compute on prem or in a private account within a cloud provider there are some compute and storage costs which may be incurred in the collection of telemetry.  Some examples include:
 - Storage and compute needed for a Prometheus or Elasticsearch database
 - Storage need for raw log files such as those in `/var/logs`
@@ -140,6 +169,7 @@ When provisioning compute on prem or in a private account within a cloud provide
 All storage and compute is priced differently depending on the host profile.  The only major distinction are those costs that are incurred to persist adn large amounts of data (e.g., Prometheus or Elasticsearch) vs. those used to forward data onto a SaaS provider where the long term persistence takes place.
 
 ### Cloud Provider Service Costs
+
 Most cloud providers offer some different native monitoring solutions such as AWS CloudWatch. The provider will provide a per host or volume based fee for using these products.
 
 ### Egress Costs
@@ -170,6 +200,10 @@ When executing this framework it is also critical to understand the sources of t
 #### Business Transaction & User Growth
 This class of user growth is often welcome but can also seem overwhelming if we have not data governance plan in place.  Our business is growing and we are bringing in new users and the activity of each of those users is causing additional Browser, APM, and Log data to be emitted.  The need to scale K8s clusters, load balancers, and supporting platforms like Kafka also cause an increase in the emitted telemetry.  Another type of growth is caused by an increase in business transactions without an obvious increase in the number of users.  For example a website that sells one type of product (Shoes) has now broadened its inventory to offer Hats and Gloves.  This results in more business transactions per user causing a similar cascade in telemetry as an increase in users.
 
+<Callout variant="tip">
+One optional exercise you may want to context is to review each of your major platforms and services and come up with some estimate of how the scale of that application is correlated with growth in your users/customers and the amount of business activity generated by them.  This will help make planning for growth a more intuitive process.
+</Callout>
+
 #### Code Logic Change
 There are some scenarios where a change in application code will cause a sudden increase in telemetry volume without any additional users or business transactions.  Some examples:
 
@@ -186,6 +220,10 @@ Later on we will discuss telemetry standards. One of the thing often governed by
 #### Increasing Breadth of Observability
 Field Example: It is part of the continuous improvement process to expand observability.  An organization that was monitoring Kafka broker health for nearly two years decided to start monitoring Kafa topic offsets.  Not realizing the verbosity of topic monitoring data they are surprised when the telemetry footprint from Kafka monitoring increase 5 times.  
 
+<Callout variant="caution">
+Mergers and acquisitions are a common way in which telemetry growth "sneaks up" on an organization.  We suggest you incorporate observability consolidation as a formal action item as part of the integration process.  This is no different then adding *cloud compute consolidation* to your overall integration plans.  This is also an area where you should fall back on your New Relic account team since there are times when these events are somewhat unexpected.
+</Callout>
+
 #### Unexpected Third Party Change
 Field Example: A JMX integration is designed to get any metric exposed by a third party application with prefix "Transaction_".  With version 1.0 of the application that yields in 10 events per sample.  The team maintaining the third party application adds 10 additional metrics with the "Transaction_" prefix.  When our team installs the new code, we are a bit surprised to know what JMX events have increased 2 times.
 
@@ -198,6 +236,7 @@ Field Example: A JMX integration is designed to get any metric exposed by a thir
   >
 
 ## Framework Foundation: Understanding Baseline Data Ingest [#current-state]
+
 ### High Level Accounting
 
 At this point it is necessary to get a high level view of all of the telemetry currently being generated in your organization.  The assumption is that any substantial organization will have a master account and multiple sub-accounts which may be dedicated to specific, teams, projects, or even separate business units.  In the context of New Relic it is necesssary to break the current ingest down by:
@@ -221,6 +260,11 @@ There is value in deeper breakdowns but this one can be facilitated on any New R
 - Custom Events
 - Browser Events
 - Serverless
+
+<Callout variant="tip">
+The remainder of this section will show some custom NRQL queries and dashboards that we can use to customize our view of data ingest.  However, we recommend you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
+</Callout>
+
 
 Download the [Data Ingest Analytics](dashboards/data-ingest-analytics.json) dashboard. Install it into your NR1 Master Account or POA account.  You will first need to edit the JSON to include your account id.  This will allow you a fairly flexible visualization of ingest by an organizations accounts and telemetry types.  Your view may vary depending on the number of accounts and telemetry types in your organization.  You can also visualize some built in views in New Relic's "Manage Your Data" UI.  For the purposes of transparency we will show examples of the underlying NRQL queries in this document.
 
@@ -319,6 +363,13 @@ SELECT rate(sum(GigabytesIngested), 30 day) AS avgGbIngestTimeseries  FROM NrCon
 |Marketing Technology|27633.66805779|
 |||
 
+### Alerting on Consumption anomalies
+ 
+<Callout variant="tip">
+Most organizations will want to setup some automated `tripwires` which will give early warning of unforseen.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
+</Callout>
+
+ 
 
 #### Artifact Definition: Ingest Fact Report
 
@@ -552,7 +603,7 @@ Running the unique host count shows us that we have 10 hosts being monitored wit
   >
 
 
-## Framework Practice: Roles & Responsibilities
+## Framework Practice: Roles and Responsibilities
 
 Our goal is not to mimic Scrum rigidly but to provide a structured framework with some artifacts, roles, and rituals that enable an organization to get on the path to a self organized team that improves in efficiency and works iteratively to solve problems and meet the organizations overall business objective.  As with actual Scrum it is often hards to harmonize the frameworks roles with a person's actual job description.  Be flexible and use the detailed descriptions of the responsibiliites to guide how to do it in your organization.  It's more important that responsibilities be met rather than exactly who meets them, however our proposed structure is to provide some separation of labor and concerns where possible. 
 
@@ -924,7 +975,7 @@ The framework described in this document would require non-trivial effort to imp
 
 <Collapser
     id="telemetry-standards-guide"
-    title="Telemetry Standards Guide: Enforcing Consitency and Quality"
+    title="Enforcing Consitency and Quality"
   >
 
 
