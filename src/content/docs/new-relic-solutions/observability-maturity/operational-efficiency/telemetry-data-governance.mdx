@@ -154,12 +154,12 @@ The list could grow extremely long, but it suffices that maximum automation is a
 
 One way in which this framework is like scrum is that we really can't assess our efficiency until we start iterating.  We can't just look at a number in in isolation to know if it is good or bad.  We need to be able able to generate some consistent KPIs over time to know if we are maintaining or improving our efficincies or falling behind.  Often with KPIs we are looking for the outliers that jump out at us.  For example.  Let's say in a given quarter we saw Mobile GB Ingest increase 200% yet the number of montly active users on our Mobile Platforms stayed the same or declined.  This would be something we would call out at our quarterly checkin.  Those checkins are part of the framework definition and are discussed in detail later.  The KPIs listed above OR the KPIs your organization chooses should be presented and discussed as needed at each checkin.
 
-## Framework Definitions and Practices
+## Framework Definition and Practices
 
 <CollapserGroup>
   <Collapser
     id="data-governance-framework-summary"
-    title="Formal Framework Definition"
+    title="DG Defined"
     >
 ## Formal Framework Definition
 
@@ -225,12 +225,99 @@ If your organization uses scrum it is a great idea to invite some of your scrum 
 
 
   </Collapser>
+<Collapser
+    id="roles-and-responsibilities"
+    title="DG Roles and Responsibiliities"
+  >
+
+
+## Framework Practice: Roles and Responsibilities
+
+Our goal is not to mimic Scrum rigidly but to provide a structured framework with some artifacts, roles, and rituals that enable an organization to get on the path to a self organized team that improves in efficiency and works iteratively to solve problems and meet the organizations overall business objective.  As with actual Scrum it is often hards to harmonize the frameworks roles with a person's actual job description.  Be flexible and use the detailed descriptions of the responsibiliites to guide how to do it in your organization.  It's more important that responsibilities be met rather than exactly who meets them, however our proposed structure is to provide some separation of labor and concerns where possible. 
+
+![Roles and Responsibilities](images/oma-dg-roles-responsibilities.png)
+
+[Lucidchart Link](https://lucid.app/documents/view/463f6334-cb29-4953-a130-3de57ec6982e)
+
+### Telemetry Master (one per organization)
+
+The idea of a telemetry master is one who has the most vested interest in the product of this framework.  They may be the existing "account owner" in the sense that they have been the main point of contact with the observability vendor.  It's also possible they are the account owner in the sense that they have signed contracts or have a role in consulting other managers who are resonsible for the observability platform contract.  
+
+We'll expand on the previously defined highlights of this role:
+
+- Focus on all telemetry (accross business units, teams, platforms)
+  - Conflict resolver
+  - Undertands the larger business objective and cost structure
+  - Broad knowledg of observability best practice
+  - Understands how to evaluate the value of telemetry and the cost of not having it
+- Focus on transparency
+  - Communicates the budget expectations clearly to the other roles
+  - Doesn't surpress messiness in the data -- works to find interpretations collaboratively
+  - Not afraid to identify bad practices and uses the Telemetry Standards Guide as critical reference
+- Focus on empiracism
+  - Understands can be backed up by data analytics from the observability platform
+  - Where hunches or rough estimates are used these are identified
+  - Understands how to iterate monthly and quarter to improve the governance process based on prior experience
+  - Will seek out Telemetry SMEs as need to better understand growth characteristics and value of specific telemetry types
+- Represents the organizations business objectives
+  - Has an understand of value the digital platforms of the organization contribute to the bottom line
+  - Views telemetry in how well it aids uptime, reliability, innovation, and general operational efficiency
+  - Is able to fluidly understand what telemetry is required to enforce customer experience objectives
+  - Thinks in terms of service boundaries and SLAs
+- Responsible for scheduling and managing check-ins
+  - Ensures the involvement of the righ people
+  - Provides neutrality when appropriate
+  - Ensures the following artifacts are produced in a timeley manner and are available to all stakeholders:
+    - Ingest Baseline Report
+    - Telemetry Budget Sheet
+    - Quarterly Change Plan
+    - Telemetry Standards Guide 
+
+### Telemetry Owners (one per sub-account)
+
+To some extent the Telemetry Owners can be seen as the equivalent of Scrum's product owner.  They are responsible for maintaining and understanding the priorize set of observability objectives at the level of a team or business unit that may own one or actual accounts.  These priorities will be use to make often tough decisions about what telemetry to focus on in a given month or quarter and how to manage negotiations with other telemetry manages where there may be conflicts.  The Telemetry master will help facility.  Although not a required artifcat of the data governance framework it would be good practie for the Telemetry owner to have a a running telemetry backlog of priorities that can be used in the planning process and checkins.  If the Telemetry Master so chooses they may consolidate these backlogs into a master sheet updated at least once or twice a year.  Here is an example:
+
+|Objective|Priority|Status|Ingest Impact Estimate (GB/Month)| Ingest Impact Actual|Tech. Owner|
+|---|---|---|---|---|---|
+|Improve Awareness of Kafka Queue Saturation|1|Done|+Hi|10000|Jim|
+|Filter Health Checks from APM alerts|2|Done|+Low|0|Kim|
+|Collect Product Info In App Logs|3|In Progress|+Medium|2000|Adi|
+|Reduce Sampling Rate on Process Samples|4|Not Started|-Hi|-5000|Adi|
+
+The obove is a farely simple example, but it would make sense to track this at a high level at least.  Note because telemetry initiatives can have a positive or negative impact on ingest you'll want to include some kind of `sign` on the estimates even if it's just a quantitative hi/low estimate.  A specific technical owner may be designated.  That techical owner is someone who understands the techncial details of how the instrumentation will be configured and how success will be measured from an observability standpoint as well as how to measure the impact on ingest.
+
+Let's expand a bit on our previous summary of this role:
+
+- Focus on observability objectives
+  - By maintaining an observability backlog the Telemetry Owner knows what the team or business units goals are.
+- Focus on valuation of data
+  - In order to be able to prioritize telemetry work the Telemetry Owner will need to understand the value brough in terms of improved innnovation, improved uptime & reliability or overall improvement in operational efficiency.
+  - When there is a resource constraint such as there is time to add Logging or Kafka Topic Lag Metrics the Telemetry owner can understand how to make a ranking.
+  - When the conflict is cross-departmental the Telemetry owner will be able to negotiate and occasionally defer to the objectives of the other team based on the top level organization objectives.  In such a scenario the the Telemetry Master will help out.
+- Represents technical & business objectives of developers, SRE, and IT staff.
+  - While not necesssarily a technical manager the Telemetry Owner will be able to represent the objectives of the various developers, SRE and IT staff.   He will have good skills of delegating analysis to better understand the observability objectives.  For example he will know who to talk to to understand what Logging inititiaves should be prioritized this year.
+
+### Telemetry SMEs (multiple / as needed)
+
+This is the most informal of roles within the framework.  To some extend nearly every engineer could be a Telemetry SME. It's also possible for less hands-on staff such as a product manager to be a Telemetry SME in some contexts.  The key points are:
+
+The Telemetry SME:
+
+- Knows how the telemetry in question is used in alerts and dashboards
+- Knows how the instrumentation is configured
+- Understands the growth characteristics
+- Knows how to find alternatives to a given set of telemetry and how using an alternative would impact the overall observability objective
+- Knows how the analyze the data ingest footprint for a given set of telemetry
+- Is facile in querying the data
+- Contributes to the Telemetry Standards Guide where possible especially in helping optimize configurations, and improving metadata standards 
+
+ </Collapser>
   <Collapser
     id="telemetry-ingest-drivers"
-    title="Telemetry Ingest Drivers"
+    title="Prerequisite Work: Understanding Ingest Drivers"
     >
 
-## Framework Foundation: Understanding Telemetry Costs
+## Understanding Ingest Drivers
 
 ### Storage and Compute Overhead
 
@@ -305,10 +392,10 @@ Field Example: A JMX integration is designed to get any metric exposed by a thir
 
 <Collapser
     id="baselining-data-ingest"
-    title="Baselining Data Ingest"
+    title="Prerequisite Work: Baselining Data Ingest"
   >
 
-## Framework Foundation: Understanding Baseline Data Ingest [#current-state]
+## Baselining Data Ingest [#current-state]
 
 ### High Level Accounting
 
@@ -668,100 +755,9 @@ On additional query that will help us in our forecasting is to understand how ma
 Running the unique host count shows us that we have 10 hosts being monitored with the MSSQL OHI.  Since we plan on adding an additional 5 hosts next quarter.  We can make sure that we add an additional 100GB per month of ingest or an additional $25. 
 
  </Collapser>
-
-
-<Collapser
-    id="roles-and-responsibilities"
-    title="Roles and Responsibiliities"
-  >
-
-
-## Framework Practice: Roles and Responsibilities
-
-Our goal is not to mimic Scrum rigidly but to provide a structured framework with some artifacts, roles, and rituals that enable an organization to get on the path to a self organized team that improves in efficiency and works iteratively to solve problems and meet the organizations overall business objective.  As with actual Scrum it is often hards to harmonize the frameworks roles with a person's actual job description.  Be flexible and use the detailed descriptions of the responsibiliites to guide how to do it in your organization.  It's more important that responsibilities be met rather than exactly who meets them, however our proposed structure is to provide some separation of labor and concerns where possible. 
-
-![Roles and Responsibilities](images/oma-dg-roles-responsibilities.png)
-
-[Lucidchart Link](https://lucid.app/documents/view/463f6334-cb29-4953-a130-3de57ec6982e)
-
-### Telemetry Master (one per organization)
-
-The idea of a telemetry master is one who has the most vested interest in the product of this framework.  They may be the existing "account owner" in the sense that they have been the main point of contact with the observability vendor.  It's also possible they are the account owner in the sense that they have signed contracts or have a role in consulting other managers who are resonsible for the observability platform contract.  
-
-We'll expand on the previously defined highlights of this role:
-
-- Focus on all telemetry (accross business units, teams, platforms)
-  - Conflict resolver
-  - Undertands the larger business objective and cost structure
-  - Broad knowledg of observability best practice
-  - Understands how to evaluate the value of telemetry and the cost of not having it
-- Focus on transparency
-  - Communicates the budget expectations clearly to the other roles
-  - Doesn't surpress messiness in the data -- works to find interpretations collaboratively
-  - Not afraid to identify bad practices and uses the Telemetry Standards Guide as critical reference
-- Focus on empiracism
-  - Understands can be backed up by data analytics from the observability platform
-  - Where hunches or rough estimates are used these are identified
-  - Understands how to iterate monthly and quarter to improve the governance process based on prior experience
-  - Will seek out Telemetry SMEs as need to better understand growth characteristics and value of specific telemetry types
-- Represents the organizations business objectives
-  - Has an understand of value the digital platforms of the organization contribute to the bottom line
-  - Views telemetry in how well it aids uptime, reliability, innovation, and general operational efficiency
-  - Is able to fluidly understand what telemetry is required to enforce customer experience objectives
-  - Thinks in terms of service boundaries and SLAs
-- Responsible for scheduling and managing check-ins
-  - Ensures the involvement of the righ people
-  - Provides neutrality when appropriate
-  - Ensures the following artifacts are produced in a timeley manner and are available to all stakeholders:
-    - Ingest Baseline Report
-    - Telemetry Budget Sheet
-    - Quarterly Change Plan
-    - Telemetry Standards Guide 
-
-### Telemetry Owners (one per sub-account)
-
-To some extent the Telemetry Owners can be seen as the equivalent of Scrum's product owner.  They are responsible for maintaining and understanding the priorize set of observability objectives at the level of a team or business unit that may own one or actual accounts.  These priorities will be use to make often tough decisions about what telemetry to focus on in a given month or quarter and how to manage negotiations with other telemetry manages where there may be conflicts.  The Telemetry master will help facility.  Although not a required artifcat of the data governance framework it would be good practie for the Telemetry owner to have a a running telemetry backlog of priorities that can be used in the planning process and checkins.  If the Telemetry Master so chooses they may consolidate these backlogs into a master sheet updated at least once or twice a year.  Here is an example:
-
-|Objective|Priority|Status|Ingest Impact Estimate (GB/Month)| Ingest Impact Actual|Tech. Owner|
-|---|---|---|---|---|---|
-|Improve Awareness of Kafka Queue Saturation|1|Done|+Hi|10000|Jim|
-|Filter Health Checks from APM alerts|2|Done|+Low|0|Kim|
-|Collect Product Info In App Logs|3|In Progress|+Medium|2000|Adi|
-|Reduce Sampling Rate on Process Samples|4|Not Started|-Hi|-5000|Adi|
-
-The obove is a farely simple example, but it would make sense to track this at a high level at least.  Note because telemetry initiatives can have a positive or negative impact on ingest you'll want to include some kind of `sign` on the estimates even if it's just a quantitative hi/low estimate.  A specific technical owner may be designated.  That techical owner is someone who understands the techncial details of how the instrumentation will be configured and how success will be measured from an observability standpoint as well as how to measure the impact on ingest.
-
-Let's expand a bit on our previous summary of this role:
-
-- Focus on observability objectives
-  - By maintaining an observability backlog the Telemetry Owner knows what the team or business units goals are.
-- Focus on valuation of data
-  - In order to be able to prioritize telemetry work the Telemetry Owner will need to understand the value brough in terms of improved innnovation, improved uptime & reliability or overall improvement in operational efficiency.
-  - When there is a resource constraint such as there is time to add Logging or Kafka Topic Lag Metrics the Telemetry owner can understand how to make a ranking.
-  - When the conflict is cross-departmental the Telemetry owner will be able to negotiate and occasionally defer to the objectives of the other team based on the top level organization objectives.  In such a scenario the the Telemetry Master will help out.
-- Represents technical & business objectives of developers, SRE, and IT staff.
-  - While not necesssarily a technical manager the Telemetry Owner will be able to represent the objectives of the various developers, SRE and IT staff.   He will have good skills of delegating analysis to better understand the observability objectives.  For example he will know who to talk to to understand what Logging inititiaves should be prioritized this year.
-
-### Telemetry SMEs (multiple / as needed)
-
-This is the most informal of roles within the framework.  To some extend nearly every engineer could be a Telemetry SME. It's also possible for less hands-on staff such as a product manager to be a Telemetry SME in some contexts.  The key points are:
-
-The Telemetry SME:
-
-- Knows how the telemetry in question is used in alerts and dashboards
-- Knows how the instrumentation is configured
-- Understands the growth characteristics
-- Knows how to find alternatives to a given set of telemetry and how using an alternative would impact the overall observability objective
-- Knows how the analyze the data ingest footprint for a given set of telemetry
-- Is facile in querying the data
-- Contributes to the Telemetry Standards Guide where possible especially in helping optimize configurations, and improving metadata standards 
-
- </Collapser>
-
-
 <Collapser
     id="budget-planning"
-    title="Budget Planning"
+    title="DG in Practice: Creating a Telemetry Budget Plan"
   >
 
 ## Framework Practice: *Telemetry Budget Planning*
@@ -1052,7 +1048,7 @@ The framework described in this document would require non-trivial effort to imp
 
 <Collapser
     id="telemetry-standards-guide"
-    title="Enforcing Consitency and Quality"
+    title="Enforcing Consistency and Quality"
   >
 
 
