@@ -1,0 +1,92 @@
+---
+title: Telemetry Data Governance Framework
+tags:
+  - Observability maturity
+  - Operational efficiency 
+  - Data ingest cost
+  - Data governance
+  - Sampling rate
+  - Drop rules
+  - Observability as code
+  - Value drivers
+  - Bill and Usage Data
+  - Data ingest cost
+metaDescription: Data governance is a practice of ensuring optimal value for telemetry data collected by an organization particulary a complex organization with numerous business units and working groups.
+redirects:
+  - /docs/telemetry-data-platform/manage-data/data-governance
+  - /docs/data-governance
+  - /docs/telemetry-data-platform/get-started/manage-data/data-governance
+  - /telemetry-data-platform/get-started/manage-data/data-governance
+---
+
+## Overview [#overview]
+
+Data governance is a practice of ensuring optimal value for telemetry data collected by an organization particulary a complex organization with numerous business units and working groups.  The objective is get appropriate ROI for investimate in telemetry data.
+
+The New Relic framework is built around several separate modules that can be adopted independently or as part of a complete practice.  These include:
+
+- [Baselining & Optimization](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining)
+  - Visualize current ingest
+  - Attribute data to different sub-accounts, teams, applications, and infrastructure
+  - Identify areas where ingest can be reduced without sacrificing core observability objectives 
+- [Analyzing Growth Drivers](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-growth-drivers)
+  - Proactively understand when ingest growth can be expected
+  - Understanding unexpected sources of ingest growth
+  - Correlating telemetry growth with business growth
+- [Planning & Forecasting](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-planning)
+  - Develop a high level observability plan accross the organization
+  - Ensure that each class of incoming data is aligned to value
+  - Estimate impact of new instrumentation
+  - Estimate impact of organic growth in your users and your platform
+  - Allocate time and resources to iterate on this plan on a regular cadence
+
+## Desired outcome [#desired-outcome]
+
+
+When executed properly this framework will allow us to move beyond reactive efforts to reduce and troubhleshoot unexplained increases or low value telemetry.  Such an organization will have achieved an explicitly proactive and value driven approach which is the ultimate goal of *observability maturity*.
+
+We can summarize most or all of the ROI yielded by this framework in terms of the following broad groups
+
+### Reduced Waste
+
+In addition to raising the transparency of data and data sources data governance aims to reduce what "noise" in data streams.  This will follow on by the introduction of metadata standards and also through apply a value based approach to telemetry we may be able to reduce unnecessary redundancy.  As part of the right sizing process we will often drop unnecessary attributes and metadata from an otherwise valuable data source.  By creating baseline budgets and conducting regular check ins we'll see how erratic telemetry will be identified and potentially removed or refined if it does not provide adequate value.
+
+### Alignment of Ingested Data With Real Business Benefits
+
+<Callout variant="tip">
+This is a good time to familiarize yourself with the [observability maturity principles](/docs/new-relic-solutions/observability-maturity/introduction/).  This will make the concept of `value` more concrete from an observability standpoint.
+</Callout>
+
+
+One of the most important parts of the data governance framework is to align collected telemetry with *value drivers*.  What we mean here is to ensure that we understand what the primary observability objective is when we configure new telemetry.
+
+![Oma Value Drivers](../images/oma-v-drivers.png)
+
+When we introduce new telemetry we will want to understand what it delivers to our overall observability solution.  There will be overlap, but if we are considering introducing telemetry that we can align to any of the key objectives we may reconsider introducing that data.
+
+Objectives include:
+
+- Meeting an Internal SLA
+- Meeting an External SLA
+- Supporting Feature Innovation (A/B Perfomance & Adoption Testing)
+- Monitor Customer Experience
+- Hold Vendors and Internal Service Providers to Their SLA
+- Business Process Health Monitoring
+- Other Compliance Requirements
+
+Alignment to these objectives are what allow us to make flexible and intuitive decisions about prioritizing one set of data over another and helping guide teams know where to start when instrumenting new platforms and services.
+
+
+## Additional Technical Resources [#data-ingest-tech-resources]
+
+[Manage Incoming Data](https://docs.newrelic.com/docs/data-apis/manage-data/manage-data-coming-new-relic/)
+
+[Data Management Hub](https://docs.newrelic.com/docs/data-apis/manage-data/manage-your-data/)
+
+[Drop Data Using Nerdgraph](https://docs.newrelic.com/docs/data-apis/manage-data/drop-data-using-nerdgraph/)
+
+[Alert on Data Ingest Anomalies](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/)
+
+[Automating Telemetry Workflows](https://developer.newrelic.com/automate-workflows/)
+
+[Metrics Aggregation and Events to Metrics](https://docs.newrelic.com/docs/data-apis/convert-to-metrics/create-metrics-other-data-types/)

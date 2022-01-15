@@ -28,8 +28,6 @@ pages:
         pages:
           - title: Service characterization
             path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/sc-implementation-guide
-          - title: Data governance
-            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/telemetry-data-governance
   - title: New Relic solutions
     pages:
       - title: Measure devops success
@@ -109,6 +107,18 @@ pages:
             path: /docs/new-relic-solutions/new-relic-solutions/optimize-your-cloud-native-environment/customer-experience-improvement-track-experience-indicators
           - title: Optimize cloud architecture
             path: /docs/new-relic-solutions/new-relic-solutions/optimize-your-cloud-native-environment/optimize-cloud-architecture-spend-continuously-improve-your-modern-cloud-environment
+      - title: Data governance
+        path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
+        pages:
+          - title: Introduction 
+            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
+          - title: 1. Baselining & Optimization
+            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining
+          - title: 2. Analyzing Growth Drivers
+            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-growth
+          - title: 3. Planning Framework
+            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-planning
+ 
   - title: Best practices guides
     path: /docs/new-relic-solutions/best-practices-guides
     pages:
