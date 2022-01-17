@@ -51,38 +51,189 @@ Technical KPIs are more familar and these are the ones we'll focus on the most. 
 
   <Collapser
     id="ingest-by-account"
-    title="Ingest By Account"
+    title="Ingest By Sub-Account"
     >
+
+*Thirty Day Sum*
+
+
+```SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' since 30 days ago facet facet consumingAccountName```
+
+
+*Average Daily Rate*
+
+```SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' since 30 days ago facet consumingAccountName```
+
+
+*Calendar Month Tabulation*
+
+```SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' since 56 weeks ago facet monthOf(timestamp), consumingAccountName```
+
   </Collapser>
   <Collapser
     id="ingest-by-account-and-telemetry type"
-    title="Ingest By Account & Telemetry Type"
+    title="Ingest By Sub-Account & Telemetry Type"
     >
+
+*Thirty Day Sum*
+
+
+```SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' since 30 days ago facet facet consumingAccountName, usageMetric```
+
+
+*Average Daily Rate*
+
+```SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' since 30 days ago facet consumingAccountName, usageMetric```
+
+
+*Calendar Month Tabulation*
+
+```SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' since 56 weeks ago facet monthOf(timestamp), consumingAccountName, usageMetric```
+
+
   </Collapser>
   <Collapser
     id="ingest-by-application"
     title="Ingest By Application (APM|Browser|Mobile)"
     >
+
+Run these queies in each sub-account or in a dashboard with account-specific charts
+
+*Daily Rate*
+
+_APM_
+
+```
+FROM Transaction, TransactionError, TransactionTrace, SqlTrace, ErrorTrace, Span select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks Days Ago
+```
+
+_BROWSER_
+
+```
+FROM PageAction, PageView, PageViewTiming, AjaxRequest, JavaScriptError select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks Ago
+```
+
+_MOBILE_
+
+```
+FROM Mobile, MobileRequestError, MobileSession select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks ago 
+```
+
+*Seven Day Sum*
+
+_APM_
+
+```
+FROM Transaction, TransactionError, TransactionTrace, SqlTrace, ErrorTrace, Span select bytecountestimate()/10e8 as 'GB Ingest' facet appName since 7 days ago
+```
+
+_BROWSER_
+
+```
+FROM PageAction, PageView, PageViewTiming, AjaxRequest, JavaScriptError select bytecountestimate()/10e8 as 'GB Ingest' facet appName since 7 days ago
+```
+
+_MOBILE_
+
+```
+FROM Mobile, MobileRequestError, MobileSession select bytecountestimate()/10e8 as 'GB Ingest' facet appName since 7 days ago
+```
   </Collapser>
   <Collapser
     id="ingest-by-k8s-cluster"
     title="Ingest By K8s Cluster"
     >
+
+*Daily Rate*
+
+```
+FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSample, K8sEndpointSample, K8sHpaSample, K8sNamespaceSample, K8sNodeSample, K8sPodSample, K8sReplicasetSample, K8sServiceSample, K8sVolumeSample select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet clusterName since 2 weeks ago
+```
+
+*Seven Day Sum*
+
+```
+FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSample, K8sEndpointSample, K8sHpaSample, K8sNamespaceSample, K8sNodeSample, K8sPodSample, K8sReplicasetSample, K8sServiceSample, K8sVolumeSample select bytecountestimate()/10e8 as 'GB Ingest' facet clusterName since 1 week ago
+```
+
   </Collapser>
   <Collapser
     id="ingest-by-data-center"
     title="Ingest By Data Center"
     >
+    This KPI is going to vary depending on how your organization classifies data center.  It wil depend on your cloud provider and whether you have a mixture of cloud and on-prem data centers.  Here is where having metadata standards will help. 
+    This is just an example to show how you can account for ingest cost by data center.  Often times you'll have a mixture of attributes like `zone`, 'datacenter', 'dc', etc.
+
+
+    *Daily Rate*
+
+    ```
+    FROM ProcessSample select rate(bytecountestimate()/10e8, 1 day) facet zone since 2 weeks ago  
+    ```
+
+    *Seven Day Sum*
+
+    ```
+    FROM ProcessSample select bytecountestimate()/10e8 facet zone 7 days ago
+    ```
+
   </Collapser>
   <Collapser
     id="ingest-per-ohi"
-    title="Ingest Per OHI"
+    title="Ingest Per OHI or Cloud Integration"
     >
-  </Collapser>
-  <Collapser
-    id="ingest-per-cloud-integration"
-    title="Ingest Per Cloud Integration"
-    >
+
+    Data from On Host Interations or Cloud Integrations will show under NrConsumption as the usageMetric InfraIntegrationBytes.
+
+    It will help to understand for a given set of accounts how much ingest is being consumed overall.
+
+    ```
+    FROM NrConsumption select sum(GigabytesIngested) where usageMetric = 'InfraIntegrationBytes' sinc 7 days ago
+    ```
+
+    Now to break it down further we will need to know a little more about the integrations that are actually used.
+
+    Here are some examples...
+
+    *Daily Rate*
+
+    __MSSSQL__
+
+    ```
+    FROM MssqlDatabaseSample select rate(bytecountestimate()/10e8, 1 day) since 2 weeks ago
+    ```
+
+     __MongoDB__
+
+     ```
+     FROM MongoCollectionSample, MongoDatabaseSample, MongodSample, MongodTopSample select rate(bytecountestimate()/10e8, 1 day) since 2 weeks ago
+     ```
+
+     __GCP Big Table__
+
+     ```
+    FROM GcpBigtableClusterSample, GcpBigtableTableSample select rate(bytecountestimate(), 1 day)/10e8 since 2 weeks ago
+     ```
+
+     *Seven Day Sum*
+
+     __MSSSQL__
+
+    ```
+    FROM MssqlDatabaseSample select bytecountestimate()/10e8 since 7 days ago
+    ```
+
+     __MongoDB__
+
+    ```
+    FROM MongoCollectionSample, MongoDatabaseSample, MongodSample, MongodTopSample select bytecountestimate()/10e8 since 7 days ago
+    ```
+
+    __GCP Big Table__
+
+    FROM GcpBigtableClusterSample, GcpBigtableTableSample select bytecountestimate()/10e8 since 7 days ago
+
+    To find out exactly which event or metric data is delivered from each integration view [this documentation](https://docs.newrelic.com/docs/infrastructure/host-integrations/get-started/introduction-host-integrations/).  From their brose the list nad there will be a breakdown of the data structure created by each.
   </Collapser>
 
 ### Business KPIs

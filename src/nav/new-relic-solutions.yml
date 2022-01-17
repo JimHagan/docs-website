@@ -28,6 +28,19 @@ pages:
         pages:
           - title: Service characterization
             path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/sc-implementation-guide
+          - title: Data governance
+            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
+            pages:
+              - title: Introduction 
+                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
+              - title: 1. Baselining
+                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining
+              - title: 2. Optimizing
+                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing
+              - title: 3. Analyzing Growth
+                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-growth
+              - title: 3. Budgeting Framework
+                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-budgeting
   - title: New Relic solutions
     pages:
       - title: Measure devops success
@@ -107,19 +120,6 @@ pages:
             path: /docs/new-relic-solutions/new-relic-solutions/optimize-your-cloud-native-environment/customer-experience-improvement-track-experience-indicators
           - title: Optimize cloud architecture
             path: /docs/new-relic-solutions/new-relic-solutions/optimize-your-cloud-native-environment/optimize-cloud-architecture-spend-continuously-improve-your-modern-cloud-environment
-      - title: Data governance
-        path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
-        pages:
-          - title: Introduction 
-            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
-          - title: 1. Baselining
-            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining
-          - title: 2. Optimizing
-            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing
-          - title: 3. Analyzing Growth
-            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-growth
-          - title: 3. Data Budgeting
-            path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-planning
  
   - title: Best practices guides
     path: /docs/new-relic-solutions/best-practices-guides
