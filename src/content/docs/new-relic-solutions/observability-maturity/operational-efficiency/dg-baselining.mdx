@@ -40,6 +40,12 @@ We'll show how to generate baselines for the following dimenions.
 - Custom Events
 - Browser Events
 - Serverless
+
+<CollapserGroup>
+  <Collapser
+    id="key-performance-indicators"
+    title="Key Performance Indicators"
+    >
 ## Key Performance indicators [#key-performance-indicators]
 
 These KPIs will be suitable in most organizations.  We assume you'll need to customize them to some extent.
@@ -287,7 +293,87 @@ Business KPIs will vary greatly between organizations and it's likely each org w
 
   </Collapser>
 </CollapserGroup>
+</Collapser>
 
+  <Collapser
+    id="ingest-related-data-types"
+    title="Ingest Related Data Types"
+    >
+
+## Ingest-related data types
+
+Ingest data is attached to the following events
+
+* `NrConsumption` records usage every hour, and is the equivalent of "real-time" usage. Use this event to observe usage trends over time. 
+* `NrMTDConsumption` generates aggregate values from the `NrConsumption` event. Use this event to see usage or estimated cost by monthly billing period. For organizations on the core user release, this is the best event for querying user count. 
+
+
+Below are some of the most important attributes attached to `NrConsumption`.
+
+<table>
+  <thead>
+    <tr>
+      <th style={{ width: "200px" }}>
+        Attribute
+      </th>
+ 
+      <th>
+        Description
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        `productLine`
+      </td>
+
+      <td>
+        The category of usage. There are three options: `DataPlatform`, `FullStackObservability`, and `ProactiveDetection`. (Starting November 1, 2021, `IncidentIntelligence` is no longer a billing factor.) For more details about these categories, see [New Relic platform](https://newrelic.com/platform).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        `metric`
+      </td>
+
+      <td>
+        This consolidates multiple categories of usage into a single metric. Helpful when faceting by `productLine`. It's an enum with possible values of `BasicUsers`, `FullUsers`, and `GigabytesIngested`. Values for the core user release include `FullPlatformUsers` and `CoreUsers`. 
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        `consumingAccountId`
+      </td>
+
+      <td>
+        ID of the New Relic account directly responsible for the stored events, as determined from the license key used.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        `estimatedCost`
+      </td>
+
+      <td>
+        Calculates a cost estimate based on usage and metric cost. This is an estimate of costs to date, not your monthly invoice.
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+
+</Collapser>
+
+
+<Collapser
+  id="ingest-related-data-types"
+  title="Ingest Related Data Types"
+>
 
 ## Visualizations
 
@@ -312,6 +398,16 @@ Individual dashboards installed by this pakage include:
 - Kubernetes
 
 ![Infrastructure Integrations IO](images/oma-oe-dg-infra-integrations-nr-io.png)
+
+</Collapser>
+</CollapserGroup>
+
+## Alerting on Consumption Anomalies
+
+Most organizations will want to setup some automated `tripwires` which will give early warning of unforseen.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
+
+In addition to using NR alerts to identify consumption anomalies, you can use New Relic's Lookout anomaly visualization tool to explore for any potential ingest anomalies.  This is particular useful against the NrConsumption data model.
+
 
 ## Creating a Simple Baseline Report
 
@@ -394,18 +490,6 @@ The resulting table shows fairly high variability.  Note that things were fairly
 ![30 Day Ingest Last 56 Weeks](images/oma-oe-dg-30-day-ingest-last-56-weeks.png)
 
 </Collapser>
-<Collapser
-   id="alerting-on-consumption-anomalies"
-   title="Alerting on Consumption Anomalies"
-   > 
-
-Most organizations will want to setup some automated `tripwires` which will give early warning of unforseen.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
-
-In addition to using NR alerts to identify consumption anomalies, you can use New Relic's Lookout anomaly visualization tool to explore for any potential ingest anomalies.  This is particular useful against the NrConsumption data model.
-
-</Collapser>
-
-
 <Collapser
    id="deeper-dive-using-bytecountestimate"
    title="bytecountestimate"
