@@ -236,6 +236,11 @@ FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSampl
     ```
 
     To find out exactly which event or metric data is delivered from each integration view [this documentation](https://docs.newrelic.com/docs/infrastructure/host-integrations/get-started/introduction-host-integrations/).  From their brose the list nad there will be a breakdown of the data structure created by each.
+  
+    <Callout variant="tip">
+    Infrasructure integrations are one of the most complex types of telemetry to track.  It helps to understand how to form your own ingest tracking queries as shown above, but we strongly suggest installing [this quickstarts dashboard library](https://onenr.io/0EPwJJO9Ow7).
+    </Callout>
+  
   </Collapser>
 
 ### Business KPIs
@@ -257,15 +262,26 @@ Business KPIs will vary greatly between organizations and it's likely each org w
 
 ## Visualizations
 
+### High Level Account Overview
 Download the [Data Ingest Analytics](dashboards/data-ingest-analytics.json) dashboard. Install it into your NR1 Master Account or POA account.  You will first need to edit the JSON to include your account id.  This will allow you a fairly flexible visualization of ingest by an organizations accounts and telemetry types.  Your view may vary depending on the number of accounts and telemetry types in your organization.  You can also visualize some built in views in New Relic's "Manage Your Data" UI.  For the purposes of transparency we will show examples of the underlying NRQL queries in this document.
 
 ![Org Wide View](images/oma-dg-org-wide-dashboard.png)
 
-
-
 <Callout variant="tip">
 In addition to the custom queries used in the next section we suggest you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
 </Callout>
+
+### Infrastructure Integration Overview
+
+This powerful dashboard set of dashboards can be installed [directly from New Relic I/O](https://onenr.io/0EPwJJO9Ow7).
+Individual dashboards installed by this pakage include:
+
+- AWS Integrations
+- Azure Integrations
+- GCP Integrations
+- On-Host Integrations
+
+![Infrastructure Integrations IO](images/oma-oe-dg-infra-integrations-nr-io.png)
 
 ## Creating a Simple Baseline Report
 
