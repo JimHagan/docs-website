@@ -309,6 +309,7 @@ Individual dashboards installed by this pakage include:
 - Azure Integrations
 - GCP Integrations
 - On-Host Integrations
+- Kubernetes
 
 ![Infrastructure Integrations IO](images/oma-oe-dg-infra-integrations-nr-io.png)
 
@@ -393,6 +394,18 @@ The resulting table shows fairly high variability.  Note that things were fairly
 ![30 Day Ingest Last 56 Weeks](images/oma-oe-dg-30-day-ingest-last-56-weeks.png)
 
 </Collapser>
+<Collapser
+   id="alerting-on-consumption-anomalies"
+   title="Alerting on Consumption Anomalies"
+   > 
+
+Most organizations will want to setup some automated `tripwires` which will give early warning of unforseen.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
+
+In addition to using NR alerts to identify consumption anomalies, you can use New Relic's Lookout anomaly visualization tool to explore for any potential ingest anomalies.  This is particular useful against the NrConsumption data model.
+
+</Collapser>
+
+
 <Collapser
    id="deeper-dive-using-bytecountestimate"
    title="bytecountestimate"
