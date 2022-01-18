@@ -211,9 +211,9 @@ FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSampl
 
      __GCP Big Table__
 
-     ```
+    ```
     FROM GcpBigtableClusterSample, GcpBigtableTableSample select rate(bytecountestimate(), 1 day)/10e8 since 2 weeks ago
-     ```
+    ```
 
      *Seven Day Sum*
 
@@ -231,14 +231,16 @@ FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSampl
 
     __GCP Big Table__
 
+    ```
     FROM GcpBigtableClusterSample, GcpBigtableTableSample select bytecountestimate()/10e8 since 7 days ago
+    ```
 
     To find out exactly which event or metric data is delivered from each integration view [this documentation](https://docs.newrelic.com/docs/infrastructure/host-integrations/get-started/introduction-host-integrations/).  From their brose the list nad there will be a breakdown of the data structure created by each.
   </Collapser>
 
 ### Business KPIs
 
-Business KPIs will vary greatly between organizations and it's likely each org would have several very distinct business KPIs for each business unit and customer facing platform.  In this case we've identified two fairly simple ones that are wroth tracking in order to relate ingest costs to overall size of the supported business activity.
+Business KPIs will vary greatly between organizations and it's likely each org would have several very distinct business KPIs for each business unit and customer facing platform.  In this case we've identified two fairly simple ones that are wroth tracking in order to relate ingest costs to overall size of the supported business activity.  The key goal of these business KPIs is to link together your business growth with ingest growth to tie ingest directly to value.
 
   <Collapser
     id="ingest-per-customer"
