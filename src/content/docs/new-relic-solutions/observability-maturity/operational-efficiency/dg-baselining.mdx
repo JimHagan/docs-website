@@ -249,13 +249,42 @@ Business KPIs will vary greatly between organizations and it's likely each org w
 
   <Collapser
     id="ingest-per-customer"
-    title="Ingest Per Customer"
+    title="Ingest Per Customer or MAU"
     >
+
+    It's likely in each organization there are a number of important platforms with separate customer bases.  The goal here is not to have perfect coverage, but use the example of a video streaming platform that shows movies an televeision series.  There may be a set of infrastructure and apps to maint that.  For example:
+
+    - A set of microservices
+    - A set of K8s clusters
+    - A set of relational and non-relation Databases
+    - Load balancers
+    - A variety of logs
+    - Backend video processing services
+    - Message brokers
+    - Mobile and Browser applications
+
+    For this use case we could use a number of proxies for customers or MAU.  We may use unique session from browser or mobile.  We may also use login transactions for a variety of services to indicate how many customers are active in our platform.
+
   </Collapser>
   <Collapser
     id="ingest-per-business-transaction"
     title="Ingest Per Business Transaction (Order|Sale|Registration)"
     >
+
+    Example: An ecommerce company has pushed to increase sales per customer so sales are growing at a higher rate than new customers.  They can identify all relevant apps and infrastructure that service the ecommerce platform:
+
+    - A set of microservices
+    - A set of K8s clusters
+    - A set of relational and non-relation Databases
+    - Load balancers
+    - A variety of logs
+    - Image processing services for product thumbnails etc.
+    - Mobile and Browser applications
+    
+    They may use a proxy for sales such as some key transactions from a subset of APM or Mobile transactions.  Using the video streaming example from the previous KPI, we may also seek out key transactions that indicate videos viewed since it's possible for viewing activity could increase at a higher rate than the number of active users.
+    
+    
+
   </Collapser>
 </CollapserGroup>
 
