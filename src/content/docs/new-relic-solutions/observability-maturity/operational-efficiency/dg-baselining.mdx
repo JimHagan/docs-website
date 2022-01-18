@@ -269,20 +269,28 @@ In addition to the custom queries used in the next section we suggest you famila
 
 To some of extent we have explored the main components of an ingest baseline report in the previous section.  Here we will simply codify the facts you will want to generate on at least monthly basis.  Having them in a dashboard may suffice, but it is also suitable to supplement with a spreadsheet of the most important values.  These figures should be updated at least as frequently as the chosen cadence of Check-in sessions (be it monthly or qurterly).  We suggest maintining them in dashboard form as well as a shared folder with spreadsheet versions of the most relevant ones.
 
+*Consumption by calendar month for a variety of facets*
+
+|Metric|Scope|Type|Query|
+|---|---|---|--|
+|Consumption By Month (12 Month)|Full Org|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO|
+|Consumption By Month (12 Month)|Sub Account|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp), consumingAccount LIMIT MAX SINCE 56 weeks AGO|
+|Consumption By Month (12 Month)|Telemetry Type|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO facet usageMetric|
+|Consumption By Month (12 Month)|Sub Account & Telemetry Type|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp), consumingAccount, usageMetric LIMIT MAX SINCE 56 weeks AGO|
+||||
+
+*Average daily rate for a variety of faets*
 
 |Metric|Scope|Type|Query|
 |---|---|---|--|
 |Avg. Daily Rate (12 Month)|Full Org|Number|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO|
-|Consumption By Month (12 Month)|Full Org|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO|
 |Avg. Daily Rate (12 Month)|Sub Account|Number|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet consumingAccount|
-|Consumption By Month (12 Month)|Sub Account|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp), consumingAccount LIMIT MAX SINCE 56 weeks AGO|
 |Avg. Daily Rate (12 Month)|Telemetry Type|Number|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet usageMetric|
-|Consumption By Month (12 Month)|Telemetry Type|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO facet usageMetric|
 |Avg. Daily Rate (12 Month)|Sub Account & Telemetry Type|Number|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet consumingAccount, usageMetric|
-|Consumption By Month (12 Month)|Sub Account & Telemetry Type|Table|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp), consumingAccount, usageMetric LIMIT MAX SINCE 56 weeks AGO|
 ||||
 
-## Important NRQL Operators
+
+## Important NRQL Operators for Baselining & Change Modeling
 
 <CollapserGroup>
   <Collapser
