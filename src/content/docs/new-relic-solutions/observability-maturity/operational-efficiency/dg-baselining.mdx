@@ -371,8 +371,8 @@ Below are some of the most important attributes attached to `NrConsumption`.
 
 
 <Collapser
-  id="ingest-related-data-types"
-  title="Ingest Related Data Types"
+  id="visualizations"
+  title="Visualizations"
 >
 
 ## Visualizations
@@ -400,16 +400,23 @@ Individual dashboards installed by this pakage include:
 ![Infrastructure Integrations IO](images/oma-oe-dg-infra-integrations-nr-io.png)
 
 </Collapser>
-</CollapserGroup>
+<Collapser
+  id="alerting-on-consumption-anomalies"
+  title="Alerting on Consumption Anomalies"
+>
 
 ## Alerting on Consumption Anomalies
 
 Most organizations will want to setup some automated `tripwires` which will give early warning of unforseen.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
 
 In addition to using NR alerts to identify consumption anomalies, you can use New Relic's Lookout anomaly visualization tool to explore for any potential ingest anomalies.  This is particular useful against the NrConsumption data model.
+</Collapser>
+<Collapser
+  id="baseline-report-template"
+  title="A Simple Baseline Report Template"
+>
 
-
-## Creating a Simple Baseline Report
+## A Simple Baseline Report Template
 
 To some of extent we have explored the main components of an ingest baseline report in the previous section.  Here we will simply codify the facts you will want to generate on at least monthly basis.  Having them in a dashboard may suffice, but it is also suitable to supplement with a spreadsheet of the most important values.  These figures should be updated at least as frequently as the chosen cadence of Check-in sessions (be it monthly or qurterly).  We suggest maintining them in dashboard form as well as a shared folder with spreadsheet versions of the most relevant ones.
 
@@ -433,6 +440,12 @@ To some of extent we have explored the main components of an ingest baseline rep
 |Avg. Daily Rate (12 Month)|Sub Account & Telemetry Type|Number|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet consumingAccount, usageMetric|
 ||||
 
+
+</Collapser>
+<Collapser
+  id="nrql-operators-for-baselining"
+  title="Important NRQL Operators for Baselining & Change Modeling"
+>
 
 ## Important NRQL Operators for Baselining & Change Modeling
 
@@ -712,7 +725,8 @@ SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatfo
 
 </Collapser>
 </CollapserGroup>
-
+</Collapser>
+</CollapserGroup>
 
 
 
