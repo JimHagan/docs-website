@@ -25,23 +25,217 @@ We'll show how to generate baselines for the following dimenions.
 - Organization
 - Sub account
 - Billable Telemetry Type
+- Application (APM|Browser|Mobile)
 - Infrastructure Integration
 
-*Billable Telemetry Types Include:*
-
-- Mobile Events
-- Infrastructure Hosts
-- Infrastructure Integrations
-- Infrastructure Processes
-- APM Events
-- Tracing
-- Metrics
-- Logging
-- Custom Events
-- Browser Events
-- Serverless
-
 <CollapserGroup>
+<Collapser
+    id="understanding-nr-consumption-metrics"
+    title="Understanding the NrConsumption and NrMTDConsumption Metrics"
+    >
+
+All billable telemetry is tracked in the `NrConsumption` events.  In each of those events the attribute `usageMetric` denotes a general group of billable telemetry. 
+
+*Billable Telemetry Classification:*
+
+<table>
+  <thead>
+    <tr>
+      <th style={{ width: "200px" }}>
+        Usage Metric
+      </th>
+      <th style={{ width: "200px" }}>
+        Underlying Events
+      </th>
+      <th>
+        Source
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        `InfraHostBytes`
+      </td>
+      <td>
+        `SystemSample`, `StorageSample`, `ContainerSample`, `InfrastructureEvent`
+      </td>
+      <td> 
+        Infrastructure Agent
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `InfraProcessBytes`
+      </td>
+      <td>
+        `ProcessSample`
+      </td>
+      <td>
+        Infrastructure Agent
+      </td>
+    </tr>
+    <tr>
+      <td>
+        ApmEventsBytes
+      </td>
+      <td>
+        `Transaction`, `TransactionError`
+      </td>
+      <td>
+        APM Agent(s)
+      </td>
+    </tr>
+    <tr>
+      <td>
+        TracingBytes
+      </td>
+      <td>
+        `Span`, `SpanEvent`
+      </td>
+      <td>
+        APM Agent(s) and OTEL
+      </td>
+    </tr>
+    <tr>
+      <td>
+        BrowserEventBytes
+      </td>
+      <td>
+        `Browser`, `Browser:EventLog`, `Browser:JSErrors`, `PcvPerf`, `PageViewTiming`
+      </td>
+      <td>
+        Browser Agent
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+|Usage Metric|Underlying Events|Source|
+|---|---|---|
+|InfraHostBytes|||
+|InfraProcessBytes|||
+|ApmEventsBytes|Transaction,TransactionError||
+|TracingBytes|||
+|BrowserEventsBytes|||
+|MobileEventsBytes|Mobile,MobileRequestError,MobileSession,MobileHandleException,MobileCrash|Mobile|
+|ServerlessBytes|||
+|CustomEventsBytes|||
+|LoggingBytes|||
+|Metrics|||
+
+View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-data-coming-new-relic/) for reference.
+
+
+## Ingest-related data types
+
+Ingest data is attached to the following events
+
+* `NrConsumption` records usage every hour, and is the equivalent of "real-time" usage. Use this event to observe usage trends over time. 
+* `NrMTDConsumption` generates aggregate values from the `NrConsumption` event. Use this event to see usage or estimated cost by monthly billing period. For organizations on the core user release, this is the best event for querying user count. 
+
+
+Below are some of the most important attributes attached to `NrConsumption`.
+
+<table>
+  <thead>
+    <tr>
+      <th style={{ width: "200px" }}>
+        Attribute
+      </th>
+ 
+      <th>
+        Description
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        `productLine`
+      </td>
+
+      <td>
+        The category of usage. There are three options: `DataPlatform`, `FullStackObservability`, and `ProactiveDetection`. (Starting November 1, 2021, `IncidentIntelligence` is no longer a billing factor.) For more details about these categories, see [New Relic platform](https://newrelic.com/platform).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        `metric`
+      </td>
+
+      <td>
+        This consolidates multiple categories of usage into a single metric. Helpful when faceting by `productLine`. It's an enum with possible values of `BasicUsers`, `FullUsers`, and `GigabytesIngested`. Values for the core user release include `FullPlatformUsers` and `CoreUsers`. 
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        `consumingAccountId`
+      </td>
+
+      <td>
+        ID of the New Relic account directly responsible for the stored events, as determined from the license key used.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        `estimatedCost`
+      </td>
+
+      <td>
+        Calculates a cost estimate based on usage and metric cost. This is an estimate of costs to date, not your monthly invoice.
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+
+This is an example of the complete JSON structure of an NrConsumption event.
+
+```
+        {
+          "BytesIngested": 10284371464,
+          "GigabytesIngested": 10.284371464,
+          "consumingAccountId": 2106306,
+          "consumingAccountName": "Banking Platform Team",
+          "consumption": 10.284371464,
+          "dpBytesIngested": 10284371464,
+          "dpGigabytesIngested": 10.284371464,
+          "masterAccountId": 766473,
+          "masterAccountName": "Big Bank",
+          "metric": "GigabytesIngested",
+          "month": "January 2022",
+          "monthTimestamp": 1640995200000,
+          "nr.accountType": "non_cpm",
+          "nr.aggregationEntityId": 2321606,
+          "nr.averageUnitPrice": 0.25,
+          "nr.billableEntityId": 2321606,
+          "nr.consumption": 10.284371464,
+          "nr.environment": "PRODUCTION",
+          "nr.kafkaOffset": 7735934651,
+          "nr.kafkaPartition": 6,
+          "nr.legacyMetric": "dpGigabytesIngested",
+          "nr.processedTime": 1642601787336,
+          "nr.rawConsumption": 10284371464,
+          "nr.usageRatingHost": "38f7cf2306d2",
+          "partnershipOwningAccountId": 2321606,
+          "partnershipOwningAccountName": "Big Bank Management Account",
+          "productLine": "DataPlatform",
+          "timestamp": 1642600799999,
+          "type": "count",
+          "usageMetric": "MetricsBytes",
+          "version": "0.4.2"
+        }
+
+It's important to note that our granularity is to the `usageMetric` and `consumingAccountName`.  The NrMTDConsumption event is a more aggregated data strucutre that does not include that level of granularity.
+
+```
+
+</Collapser>
   <Collapser
     id="key-performance-indicators"
     title="Key Performance Indicators"
@@ -294,82 +488,6 @@ Business KPIs will vary greatly between organizations and it's likely each org w
   </Collapser>
 </CollapserGroup>
 </Collapser>
-
-  <Collapser
-    id="ingest-related-data-types"
-    title="Ingest Related Data Types"
-    >
-
-## Ingest-related data types
-
-Ingest data is attached to the following events
-
-* `NrConsumption` records usage every hour, and is the equivalent of "real-time" usage. Use this event to observe usage trends over time. 
-* `NrMTDConsumption` generates aggregate values from the `NrConsumption` event. Use this event to see usage or estimated cost by monthly billing period. For organizations on the core user release, this is the best event for querying user count. 
-
-
-Below are some of the most important attributes attached to `NrConsumption`.
-
-<table>
-  <thead>
-    <tr>
-      <th style={{ width: "200px" }}>
-        Attribute
-      </th>
- 
-      <th>
-        Description
-      </th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        `productLine`
-      </td>
-
-      <td>
-        The category of usage. There are three options: `DataPlatform`, `FullStackObservability`, and `ProactiveDetection`. (Starting November 1, 2021, `IncidentIntelligence` is no longer a billing factor.) For more details about these categories, see [New Relic platform](https://newrelic.com/platform).
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        `metric`
-      </td>
-
-      <td>
-        This consolidates multiple categories of usage into a single metric. Helpful when faceting by `productLine`. It's an enum with possible values of `BasicUsers`, `FullUsers`, and `GigabytesIngested`. Values for the core user release include `FullPlatformUsers` and `CoreUsers`. 
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        `consumingAccountId`
-      </td>
-
-      <td>
-        ID of the New Relic account directly responsible for the stored events, as determined from the license key used.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        `estimatedCost`
-      </td>
-
-      <td>
-        Calculates a cost estimate based on usage and metric cost. This is an estimate of costs to date, not your monthly invoice.
-      </td>
-    </tr>
-
-  </tbody>
-</table>
-
-</Collapser>
-
-
 <Collapser
   id="visualizations"
   title="Visualizations"

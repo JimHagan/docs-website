@@ -1,5 +1,5 @@
 ---
-title: Baselining
+title: Optimzing Data Ingest
 tags:
   - Observability maturity
   - Operational efficiency 
@@ -19,5 +19,58 @@ redirects:
   - /telemetry-data-platform/get-started/manage-data/data-governance
 ---
 
-### Reducing Low Value or Unwanted Data
+## Overview
 
+Optimizing is a very overloaded term.  However in our context it means maximimizing observability value of delivered data.  In the process of optimizing ingest there can be really reductions in overall spend, but the goal starts from the standpoint of prioritizing different telemetry data and if needed to reduce the volume of certain data to meet certain budgetary guidelines.  In this section we will focus on:
+
+
+## Aligning to Value
+Consumption based observability platforms have revolutionized the way in which organizations can achieve maximum visibility in to their cloud-based and on-prem platforms and services.  Like with a migration to cloud compute consumption based SaaS platforms give business fine grained control over what they pay.  This enables them to align costs more closesly to identifid business value.  However this paradigm does require some additional thought into the value of collected telemtry in order to exploit the benefits.
+
+Some organizations express hesitancy to focus on telemetry standards and the value discussion in general.  Although the old black box model of observability was not as cost-effective they didn't have to think much about what was ingested.  However consumption based models allow vendors to scale more fluidly with their customer's growth.
+
+One outcome of data governance is to increase transparency in terms of the following telemetry attributes:
+
+- What group within the organization configured this telemetry?
+
+- Does it meet organizational standards for quality instrumentation?
+
+- What platform or application does it monitor?
+
+- What are the growth characteristics of this data?
+
+- What value driver(s) does it support?
+
+- How is data growth correlated to revenue growth or provable cost efficiencies?
+
+When executed properly this framework will allow us to move beyond reactive efforts to reduce and troubhleshoot unexplained increases or low value telemetry.  Such an organization will have achieved an explicitly proactive and value driven approach which is the ultimate goal of *observability maturity*.
+
+<Callout variant="tip">
+This may be a good time to familiarize yourself with the [observability maturity principles](/docs/new-relic-solutions/observability-maturity/introduction/).  This will make the concept of `value` more concrete from an observability standpoint.
+</Callout>
+
+
+## Three Main Steps for Optimizing
+
+### Identifying our Observability Objectives
+
+One of the most important parts of the data governance framework is to align collected telemetry with *observability objectives*.  What we mean here is to ensure that we understand what the primary observability objective is when we configure new telemetry.
+
+When we introduce new telemetry we will want to understand what it delivers to our overall observability solution.  There will be overlap, but if we are considering introducing telemetry that we can align to any of the key objectives we may reconsider introducing that data.
+
+Objectives include:
+
+- Meeting an Internal SLA
+- Meeting an External SLA
+- Supporting Feature Innovation (A/B Perfomance & Adoption Testing)
+- Monitor Customer Experience
+- Hold Vendors and Internal Service Providers to Their SLA
+- Business Process Health Monitoring
+- Other Compliance Requirements
+
+Alignment to these objectives are what allow us to make flexible and intuitive decisions about prioritizing one set of data over another and helping guide teams know where to start when instrumenting new platforms and services.
+
+
+### Identifying Areas for Reduction
+
+### Techniques for Reduction
