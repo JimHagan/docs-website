@@ -27,33 +27,21 @@ Optimizing is a very overloaded term.  However in our context it means maximimiz
 ## Aligning to Value
 Consumption based observability platforms have revolutionized the way in which organizations can achieve maximum visibility in to their cloud-based and on-prem platforms and services.  Like with a migration to cloud compute consumption based SaaS platforms give business fine grained control over what they pay.  This enables them to align costs more closesly to identifid business value.  However this paradigm does require some additional thought into the value of collected telemtry in order to exploit the benefits.
 
-Some organizations express hesitancy to focus on telemetry standards and the value discussion in general.  Although the old black box model of observability was not as cost-effective they didn't have to think much about what was ingested.  However consumption based models allow vendors to scale more fluidly with their customer's growth.
-
-One outcome of data governance is to increase transparency in terms of the following telemetry attributes:
-
-- What group within the organization configured this telemetry?
-
-- Does it meet organizational standards for quality instrumentation?
-
-- What platform or application does it monitor?
-
-- What are the growth characteristics of this data?
-
-- What value driver(s) does it support?
-
-- How is data growth correlated to revenue growth or provable cost efficiencies?
-
-When executed properly this framework will allow us to move beyond reactive efforts to reduce and troubhleshoot unexplained increases or low value telemetry.  Such an organization will have achieved an explicitly proactive and value driven approach which is the ultimate goal of *observability maturity*.
+When executed properly this approach will allow us to move beyond purely reactive efforts to reduce and troubhleshoot unexplained increases or low value telemetry.  Adopting a value driven approach to optimization is a clear indicator of *observability maturity*.
 
 <Callout variant="tip">
 This may be a good time to familiarize yourself with the [observability maturity principles](/docs/new-relic-solutions/observability-maturity/introduction/).  This will make the concept of `value` more concrete from an observability standpoint.
 </Callout>
 
 
-## Three Main Steps for Optimizing
+## Three Steps for Optimizing
 
-### Identifying our Observability Objectives
 
+<CollapserGroup>
+<Collapser
+  id="prioritize-your-observability-objectives"
+  title="Prioritizing your Observability Objectives"
+>
 One of the most important parts of the data governance framework is to align collected telemetry with *observability objectives*.  What we mean here is to ensure that we understand what the primary observability objective is when we configure new telemetry.
 
 When we introduce new telemetry we will want to understand what it delivers to our overall observability solution.  There will be overlap, but if we are considering introducing telemetry that we can align to any of the key objectives we may reconsider introducing that data.
@@ -70,7 +58,124 @@ Objectives include:
 
 Alignment to these objectives are what allow us to make flexible and intuitive decisions about prioritizing one set of data over another and helping guide teams know where to start when instrumenting new platforms and services.
 
+</Collapser>
+<Collapser
+  id="prioritize-your-telemetry"
+  title="Prioritize Your Telemetry"
+>
 
-### Identifying Areas for Reduction
+In this section we'll make two core assumptions
 
-### Techniques for Reduction
+- We have the tools and techniques from the [Baselining](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining) section to have a proper accounting of where our ingset comes from.
+- We have a good understanding of the [OM Value Drivers](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/introduction/) as presented in New Relic's OMA framework.  This will be crucial in applying a value and a priority to groups of telemetry
+
+
+<CollapserGroup>
+<Collapser
+  id="case-study-1"
+  title="Example 1: Prioritize Uptime and Reliability"
+>
+
+### Prioritizing Exercise 1: Top Priority - Uptime and Reliability
+
+An account is ingesting about 20% more than they had budgeted for.  They have been asked by a manager to find some way to reduce consumption.  Their most important value driver is `Uptime and Reliability`
+Their estate includes:
+
+- APM (Dev, Staging, Prod)
+- Distributed Tracing
+- Browser
+- Infrastructure Monitoring 100 hosts
+- K8s Monitoring (Dev, Staging, Prod)
+- Logs (Dev, Staging, Prod - Including Debug)
+
+Upon going through a baselining exercise they understand where the ingest is coming from.  Their decision is as follows:
+
+- Omit debug logs (knowning they can be turned on if there is an issue) (saves 5%)
+- Omit several K8s events which are not required to display the Kubernetes Cluster Explore (saves 10%)
+- Drop some custom Browser events they were collecting back when they were doing a lot of A/B testing of new features (saves 10%)
+
+After executing those changes the team is 5% below their budget and has freed up some space to do a NPM pilot.  Their manager is satisfied they are not losing any signifanct `Uptime and Reliability` observability.
+
+Final Outcome
+
+- 10% under their original budget
+- headroom created for an NPM pilot which servers Uptime and Reliability Objectives
+- No loss of Uptime and Reliability observability
+
+</Collapser>
+<Collapser
+  id="case-study-2"
+  title="Example 2: Prioritize Customer Experience"
+>
+
+### Prioritizing Exercise 2: Top Priority - Customer Experience
+
+A team responsible for a new user facing platform with an emphasis on Mobile and Browser is running 50% over budget.  They will need to right size their ingest, but they are adament about not sacrificing any `User Experience` observability.
+
+Their estate includes:
+
+- Mobile
+- Browser
+- APM
+- Distributed Tracing
+- Infrastructure on 30 Hosts Including Process Samples
+- Serverless monitoring for some backend asynchronous processes
+- Logs from their serverless functions
+- Various cloud integrations
+
+Upon going through the baselining exercie they come to the following decisions:
+
+- Omit the serverless logs (they are basically redundant to what they get from their Lambda integration)
+- Decrease the process sample rate on their hosts to every one minute
+- Turn off EC2 integration which is highly redundant with other infrastructure monitoring provided by the New Relic infra agent.
+
+Final Outcome
+
+- 5% over their original budget
+- Sufficent to get them trough peak season
+- No loss of customer experience observability
+
+After executing the changes they are now just 5% over their original budget, but they conclude this will be sufficient to carry them through peak season.
+
+</Collapser>
+<Collapser
+  id="case-study-3"
+  title="Exapmple 3: Prioritize Innovation"
+>
+
+A team is in the process of refactoring a large Python monolith to four microservices.  The monolith shares much infrastructure with the new architecture including a customer database, and a cache layer.  They are 70% over budget and have two months to go before they can officially decommision the monolith.
+
+Their estate includes:
+
+- K8s Monitoring (microservices)
+- New Relic Host Monitoring (monolith)
+- APM (microservices and host monitoring)
+- Distributed Tracing (microservices and host monitoring)
+- Postgresql (shared)
+- Redis(shared)
+- MSSQL (future DB for the microservice architecture)
+- Load Balancer Logging (microservices and host monitoring)
+
+Upon going through the baselining exercie they come to the following decisions:
+
+- Configure load balancer logging to only monitor 5xx response codes (monolith)
+- Disable ProcessSample, StorageSample, and NetworkSample for hosts running the monolith
+- Disable MSSQL monitoring since currently the new architecture does not use it.
+- Disable Distributed Tracing for the monolith as it's far less useful then it will be for the microservice architecture.
+
+Final Outcome
+
+- 1% under their original budget
+- No loss of Innovation observability
+
+</Collapser>
+</CollapserGroup>
+</Collapser>
+<Collapser
+  id="techniques-for-reduction"
+  title="Re-Configure, Filter, Transform, and Drop as Needed"
+>
+
+
+</Collapser>
+</CollapserGroup>
