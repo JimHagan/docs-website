@@ -1,5 +1,5 @@
 ---
-title: Analyzing Growth Drivers
+title: Forecasting
 tags:
   - Observability maturity
   - Operational efficiency 
@@ -18,6 +18,9 @@ redirects:
   - /docs/telemetry-data-platform/get-started/manage-data/data-governance
   - /telemetry-data-platform/get-started/manage-data/data-governance
 ---
+
+
+In order to begin forecasting our future data ingest we must develop an understand of the kinds of growth drivers that will potentially impact some or all of of our data sources.  The following sections describe what we call general growth drivers.  Finally we introduce the concept of a growth driver worksheet that can be used in your ingest [Budgeting](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-budgeting) process.
 
 ## General Growth Drivers
 
@@ -49,6 +52,9 @@ Mergers and acquisitions are a common way in which telemetry growth "sneaks up" 
 ### Unexpected Third Party Change
 Field Example: A JMX integration is designed to get any metric exposed by a third party application with prefix "Transaction_".  With version 1.0 of the application that yields in 10 events per sample.  The team maintaining the third party application adds 10 additional metrics with the "Transaction_" prefix.  When our team installs the new code, we are a bit surprised to know what JMX events have increased 2 times.
 
+### Growth in User Counts or in Overall User Activity
+
+[TBD]
 
 ## Growth Driver Worksheet
 
