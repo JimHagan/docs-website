@@ -132,6 +132,7 @@ Upon going through the baselining exercie they come to the following decisions:
 
 - Omit the serverless logs (they are basically redundant to what they get from their Lambda integration)
 - Decrease the process sample rate on their hosts to every one minute
+- Drop process sample data in DEV environments
 - Turn off EC2 integration which is highly redundant with other infrastructure monitoring provided by the New Relic infra agent.
 
 Final Outcome
@@ -145,7 +146,7 @@ After executing the changes they are now just 5% over their original budget, but
 </Collapser>
 <Collapser
   id="case-study-3"
-  title="Exapmple 3: Prioritize Innovation"
+  title="Example 3: Prioritize Innovation"
 >
 
 A team is in the process of refactoring a large Python monolith to four microservices.  The monolith shares much infrastructure with the new architecture including a customer database, and a cache layer.  They are 70% over budget and have two months to go before they can officially decommision the monolith.
@@ -261,26 +262,139 @@ We will break them up into three different approaches:
   title="Optimization With Drop Rules"
 >
 
-Talk about drop rules
+*If you can query it you can drop it*
+
+Drop filter rules help you accomplish several important goals:
+
+- Lower costs by storing only the logs relevant to your account.
+- Protect privacy and security by removing personal identifiable information (PII).
+- Reduce noise by removing irrelevant events and attributes.
+
+*A note of caution*
+
+When creating drop rules, you are responsible for ensuring that the rules accurately identify and discard the data that meets the conditions that you have established. You are also responsible for monitoring the rule, as well as the data you disclose to New Relic.
 
 <CollapserGroup>
 <Collapser
   id="logs"
   title="Logs"
 >
-### Example: Debug Logs
+
+All New Relic drop rules are implemented by the same backend data model and API.  However New Relic Log Management provides a powerful UI that makes it very easy to create and monitor drop rules.
+In our previous section on prioritizing telemetry we ran through some exercises to show ways in which we could deprecate certain data.   Let's revisit this example:
+
+```
+Omit debug logs (knowning they can be turned on if there is an issue) (saves 5%)
+```
+
+#### Method 1: [Log UI](https://docs.newrelic.com/docs/logs/ui-data/drop-data-drop-filter-rules/)
+
+- Identify the logs we care about using a filter in the Log UI: `level: DEBUG`
+- Make sure it finds the logs we want to drop
+- Check some alternative syntax such as `level:debug` and `log_level:Debug`.  These variations are common.
+- Under *Manage Data* click *Drop filters* and create and enable a filter named 'Drop Debug Logs'
+- Verify the rule works
+
+#### Method 2: [GraphQL API](https://docs.newrelic.com/docs/data-apis/manage-data/drop-data-using-nerdgraph/)
+
+- Create the relevant NRQL query: `SELECT count(*) FROM Log WHERE `level` = 'DEBUG'`
+- Make sure it finds the logs we want to drop
+- Check variations on the attribute name and value (Debug vs DEBUG)
+- Execute the following NerdGraph statement and make sure it works:
+
+```
+mutation {
+    nrqlDropRulesCreate(accountId: YOUR_ACCOUNT_ID, rules: [
+        {
+            action: DROP_DATA
+            nrql: "SELECT * FROM Log WHERE `level` = 'DEBUG'"
+            description: "Drops DEBUG logs.  Disable if needed for troubleshooting."
+        }
+    ])
+    {
+        successes { id }
+        failures {
+            submitted { nrql }
+            error { reason description }
+        }
+    }
+}
+```
+
 </Collapser>
 <Collapser
   id="process-samples"
   title="Process Samples"
 >
-### Example: Dev Enviroment Process Samples
+
+Let's implement the recommendation: `Drop process sample data in DEV environments`.
+
+- Create the relevant query: 'SELECT * FROM ProcessSample WHERE `env` = 'DEV''
+- Make sure it finds the process samples we want to drop
+- Check for other variations on `env` such as `ENV` and `Environment`
+- Check for various of `DEV` such as `Dev` and `Development`
+- Use the NerGraph API to execute the following statement and make sure it works:
+
+```
+mutation {
+    nrqlDropRulesCreate(accountId: YOUR_ACCOUNT_ID, rules: [
+        {
+            action: DROP_DATA
+            nrql: "SELECT * FROM ProcessSample WHERE `env` = 'DEV'"
+            description: "Drops ProcessSample from development environments"
+        }
+    ])
+    {
+        successes { id }
+        failures {
+            submitted { nrql }
+            error { reason description }
+        }
+    }
+}
+```
+
+
 </Collapser>
 <Collapser
   id="cloud-metrics"
   title="Cloud Metrics"
 >
-### Example: Specific Cloud Metrics Records
+
+In some cases we can economize on data where we have redundant coverage.  For example in an environment where I have the AWS RDS integration running as well as the New Relic OHI I maybe be able to discard some overlapping metrics.
+For quick exploration we can run a query like this:
+
+```
+FROM Metric select count(*) where metricName like 'aws.rds%' facet metricName limit max
+```
+
+I see from the results there is a high volume of metrics of the pattern `aws.rds.cpu%`.  Let's drop those since we have other insrtrumentation for those.
+
+- Create the relevant query: 'FROM Metric select * where metricName like 'aws.rds.cpu%' facet metricName limit max since 1 day ago'
+- Make sure it finds the process samples we want to drop
+- Use the NerGraph API to execute the following statement and make sure it works:
+
+```
+mutation {
+    nrqlDropRulesCreate(accountId: YOUR_ACCOUNT_ID, rules: [
+        {
+            action: DROP_DATA
+            nrql: "FROM Metric select * where metricName like 'aws.rds.cpu%' facet metricName limit max since 1 day ago"
+            description: "Drops rds cpu related metrics"
+        }
+    ])
+    {
+        successes { id }
+        failures {
+            submitted { nrql }
+            error { reason description }
+        }
+    }
+}
+```
+
+
+
 </Collapser>
 </CollapserGroup>
 </Collapser>
