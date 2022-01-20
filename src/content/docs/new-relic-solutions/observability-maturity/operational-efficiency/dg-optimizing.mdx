@@ -177,46 +177,139 @@ Final Outcome
 
 </Collapser>
 </CollapserGroup>
+
 </Collapser>
+
 <Collapser
   id="techniques-for-reduction"
   title="Re-Configure, Filter, Transform, and Drop as Needed"
 >
 
-NOTES:
+At this stage we assume you've given some good thought to all of the kinds of telemetry in your account(s) and how they relate to your value drivers.  This section will provide detailed technical instructions and examples on how to reduce a variety of telemetry types.
+We will break them up into three different approaches:
 
-Config Optimizations
-- New Relic Agents
--- APM
--- Infrastructure
--- Mobile
--- Browser
+<CollapserGroup>
+<Collapser
+  id="optimization-through-configuration"
+  title="Optimization Through Configuration"
+>
 
-- K8s Manifest
-- Log Forwarders
-- Cloud Metrics Streams
-- Prometheus Configurations
+<CollapserGroup>
+<Collapser
+  id="apm-agent"
+  title="APM Agent"
+>
+#### APM Agent
 
-Drop Rules
-- Examples
--- Process Samples
--- Transaction Error
--- Mobile Event
--- Debug Logs
--- Logs Part of Low Value Patterns
+</Collapser>
 
-Transformations
--- Normalization
--- Grok Parse / Drop Rule Combo
--- ETL Compression
+<Collapser
+  id="infrastructure-agent"
+  title="Infrastructure Agent"
+>
+#### Infrastructure Agent
+</Collapser>
 
-Prioritizing Pre-Production Environments
+<Collapser
+  id="mobile-agent"
+  title="Mobile Agent"
+>
+#### Mobile Agent
+</Collapser>
 
-Tag Reduction
+<Collapser
+  id="browser-agent"
+  title="Browser Agent"
+>
+#### Browser Agent
+</Collapser>
 
-Coming Soon: ETL
-- Cold Storage
-- Aggregation
+<Collapser
+  id="k8s-manifest"
+  title="K8s Manifest"
+>
+#### K8s Manifest
+</Collapser>
 
+
+<Collapser
+  id="log-forwarders"
+  title="Log Forwarders"
+>
+#### Log Forwarders
+</Collapser>
+
+<Collapser
+  id="cloud-integration"
+  title="Cloud Integrations"
+>
+#### Cloud Metrics Integrations
+</Collapser>
+
+<Collapser
+  id="prometheus"
+  title="Prometheus"
+>
+#### Prometheus Configurations
+</Collapser>
+</CollapserGroup>
+</Collapser>
+
+
+<Collapser
+  id="optimization-with-drop-rules"
+  title="Optimization With Drop Rules"
+>
+
+Talk about drop rules
+
+<CollapserGroup>
+<Collapser
+  id="logs"
+  title="Logs"
+>
+### Example: Debug Logs
+</Collapser>
+<Collapser
+  id="process-samples"
+  title="Process Samples"
+>
+### Example: Dev Enviroment Process Samples
+</Collapser>
+<Collapser
+  id="cloud-metrics"
+  title="Cloud Metrics"
+>
+### Example: Specific Cloud Metrics Records
+</Collapser>
+</CollapserGroup>
+</Collapser>
+
+<Collapser
+  id="optimization-with-sampling-and-transformation"
+  title="Optimization With Sampling and Transformation"
+>
+<CollapserGroup>
+<Collapser
+  id="compression"
+  title="Compression"
+>
+</Collapser>
+
+<Collapser
+  id="sampling"
+  title="Sampling"
+>
+</Collapser>
+
+<Collapser
+  id="aggregation"
+  title="Aggregation"
+>
+</Collapser>
+</CollapserGroup>
+</Collapser>
+
+</CollapserGroup>
 </Collapser>
 </CollapserGroup>
