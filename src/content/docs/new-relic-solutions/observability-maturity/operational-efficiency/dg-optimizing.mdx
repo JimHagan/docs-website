@@ -183,7 +183,7 @@ Final Outcome
 
 <Collapser
   id="techniques-for-reduction"
-  title="Re-Configure, Filter, Transform, and Drop as Needed"
+  title="Reduce Telemetry Based on Priorities"
 >
 
 At this stage we assume you've given some good thought to all of the kinds of telemetry in your account(s) and how they relate to your value drivers.  This section will provide detailed technical instructions and examples on how to reduce a variety of telemetry types.
@@ -368,7 +368,9 @@ For quick exploration we can run a query like this:
 FROM Metric select count(*) where metricName like 'aws.rds%' facet metricName limit max
 ```
 
-I see from the results there is a high volume of metrics of the pattern `aws.rds.cpu%`.  Let's drop those since we have other insrtrumentation for those.
+That will show us all metricNames matching the pattern.
+
+We see from the results there is a high volume of metrics of the pattern `aws.rds.cpu%`.  Let's drop those since we have other insrtrumentation for those.
 
 - Create the relevant query: 'FROM Metric select * where metricName like 'aws.rds.cpu%' facet metricName limit max since 1 day ago'
 - Make sure it finds the process samples we want to drop
