@@ -39,8 +39,6 @@ pages:
                 path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing
               - title: Forecasting
                 path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-growth
-              - title: Budgeting Framework
-                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-budgeting
   - title: New Relic solutions
     pages:
       - title: Measure devops success
