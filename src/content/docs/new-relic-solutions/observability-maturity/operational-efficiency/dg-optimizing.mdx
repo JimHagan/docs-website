@@ -34,15 +34,15 @@ This may be a good time to familiarize yourself with the [observability maturity
 </Callout>
 
 
-## Three Steps for Optimizing
+## Three Steps to Optimization
 
 
 <CollapserGroup>
 <Collapser
   id="prioritize-your-observability-objectives"
-  title="Prioritizing your Observability Objectives"
+  title="Prioritize your Observability Value Drivers"
 >
-One of the most important parts of the data governance framework is to align collected telemetry with *observability objectives*.  What we mean here is to ensure that we understand what the primary observability objective is when we configure new telemetry.
+One of the most important parts of the data governance framework is to align collected telemetry with *observability value drivers*.  What we mean here is to ensure that we understand what the primary observability objective is when we configure new telemetry.
 
 When we introduce new telemetry we will want to understand what it delivers to our overall observability solution.  There will be overlap, but if we are considering introducing telemetry that we can align to any of the key objectives we may reconsider introducing that data.
 
@@ -79,6 +79,9 @@ In this section we'll make two core assumptions
 ### Prioritizing Exercise 1: Top Priority - Uptime and Reliability
 
 An account is ingesting about 20% more than they had budgeted for.  They have been asked by a manager to find some way to reduce consumption.  Their most important value driver is `Uptime and Reliability`
+
+![Value Drivers Uptime](images/oma-oe-dg-value-driver-uptime.png)
+
 Their estate includes:
 
 - APM (Dev, Staging, Prod)
@@ -110,7 +113,9 @@ Final Outcome
 
 ### Prioritizing Exercise 2: Top Priority - Customer Experience
 
-A team responsible for a new user facing platform with an emphasis on Mobile and Browser is running 50% over budget.  They will need to right size their ingest, but they are adament about not sacrificing any `User Experience` observability.
+A team responsible for a new user facing platform with an emphasis on Mobile and Browser is running 50% over budget.  They will need to right size their ingest, but they are adament about not sacrificing any `Customer Experience` observability.
+
+![Value Drivers Uptime](images/oma-oe-dg-value-driver-customer.png)
 
 Their estate includes:
 
@@ -144,6 +149,8 @@ After executing the changes they are now just 5% over their original budget, but
 >
 
 A team is in the process of refactoring a large Python monolith to four microservices.  The monolith shares much infrastructure with the new architecture including a customer database, and a cache layer.  They are 70% over budget and have two months to go before they can officially decommision the monolith.
+
+![Value Drivers Uptime](images/oma-oe-dg-value-driver-innovation.png)
 
 Their estate includes:
 
