@@ -183,7 +183,7 @@ Final Outcome
 
 <Collapser
   id="techniques-for-reduction"
-  title="Reduce Ingest Based on Priorities"
+  title="Reduce Ingest Based on Your Priorities"
 >
 
 At this stage we assume you've given some good thought to all of the kinds of telemetry in your account(s) and how they relate to your value drivers.  This section will provide detailed technical instructions and examples on how to reduce a variety of telemetry types.
@@ -610,22 +610,220 @@ Below are some detailed routing and filtering resources:
 
 
 </Collapser>
-
-<Collapser
-  id="cloud-integration"
-  title="Cloud Integrations"
->
-
-*TBD*
-
-</Collapser>
-
 <Collapser
   id="prometheus-metrics-sources"
   title="Prometheus Metrics Sources"
 >
 
-*TBD*
+New Relic provides two primary options for sending Prometheus metrics to NRDB.  The best practices for managing metric ingest in this document will be focused primarily on Option 2, the Prometheus OpenMetrics Integration (POMI), as this component was created by New Relic.
+
+### Option 1: [Prometheus Remote Write](https://docs.newrelic.com/docs/integrations/prometheus-integrations/install-configure-remote-write/set-your-prometheus-remote-write-integration)
+
+Prometheus Server scrape config options are [fully documented here](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config).  These scrape configs determine which metrics are collected by Prometheus Server and by configuring the [remote_write](https://docs.newrelic.com/docs/integrations/prometheus-integrations/install-configure-remote-write/set-your-prometheus-remote-write-integration) parameter, the collected metrics can be written to NRDB via the New Relic Metrics API. 
+
+### Option 2: [Prometheus OpenMetrics Integration (POMI)](https://docs.newrelic.com/docs/integrations/prometheus-integrations/install-configure-openmetrics/install-update-or-uninstall-your-prometheus-openmetrics-integration)
+
+POMI is a standalone integration that scrapes metrics from both dynamically discovered and static Prometheus endpoints.  POMI then sends this data to NRDB via the New Relic Metrics API.  This integration is ideal for customers not currently running Prometheus Server.
+
+#### POMI: Scrape Label
+
+POMI will discover any Prometheus endpoint containing the label or annotation “prometheus.io/scrape=true” by default.  Depending upon what is deployed in the cluster, this can be a large number of endpoints and thus, a large number of metrics ingested.  
+It is suggested that the scrape_enabled_label parameter be modified to something custom (e.g. “newrelic/scrape”) and that the Prometheus endpoints be selectively labeled or annotated when data ingest is of utmost concern.
+
+see [nri-prometheus-latest.yaml](https://download.newrelic.com/infrastructure_agent/integrations/kubernetes/nri-prometheus-latest.yaml) for the latest reference config.
+
+*POMI Config Parameter*
+
+```
+# Label used to identify scrapable targets. 
+# Defaults to "prometheus.io/scrape"
+   scrape_enabled_label: "prometheus.io/scrape"
+
+```
+POMI will discover any Prometheus endpoint exposed at the node-level by default.  This typically includes metrics coming from Kubelet and cAdvisor.  
+
+If you are running the New Relic Kubernetes Daemonset, it is import that you set require_scrape_enabled_label_for_nodes: true so that POMI does not collect duplicate metrics.  
+The endpoints targeted by the New Relic Kubernetes Daemonset are outlined [here](https://github.com/newrelic/nri-kubernetes/blob/main/README.md).
+
+
+#### POMI: Scrape Label for Nodes
+
+POMI will discover any Prometheus endpoint exposed at the node-level by default.  This typically includes metrics coming from Kubelet and cAdvisor.  
+
+If you are running the New Relic Kubernetes Daemonset, it is import that you set require_scrape_enabled_label_for_nodes: true so that POMI does not collect duplicate metrics.  
+The endpoints targeted by the New Relic Kubernetes Daemonset are outlined [here](https://github.com/newrelic/nri-kubernetes/blob/main/README.md).
+
+*POMI Config Parameters*
+
+```
+# Whether k8s nodes needs to be labeled to be scraped or not. 
+# Defaults to false.
+  require_scrape_enabled_label_for_nodes: false
+```
+
+#### POMI: Co-existing with *nri-kubernetes*
+
+New Relic’s [Kubernetes Integration](https://docs.newrelic.com/docs/integrations/kubernetes-integration/get-started/introduction-kubernetes-integration) collects a [number of metrics](https://docs.newrelic.com/docs/integrations/kubernetes-integration/understand-use-data/find-use-your-kubernetes-data#metrics) OOTB, however, it does not collect every possible metric available from a Kubernetes Cluster.  
+
+In the POMI config, you’ll see a section similar to this which will *disable* metric collection for a subset of metrics that the New Relic Kubernetes integration is already collecting from *Kube State Metrics*.
+
+It’s also very important to set `require_scrape_enabled_label_for_node: true` so that Kubelet and cAdvisor metrics are not duplicated.
+
+*POMI Config Parameters*
+
+```
+transformations:
+    - description: "Uncomment if running New Relic Kubernetes Integration"
+      ignore_metrics:
+        - prefixes:
+          - kube_daemonset_
+          - kube_deployment_
+          - kube_endpoint_
+          - kube_namespace_
+          - kube_node_
+          - kube_persistentvolume_
+          - kube_persistentvolumeclaim_
+          - kube_pod_
+          - kube_replicaset_
+          - kube_service_
+          - kube_statefulset_
+
+```
+
+#### POMI: Request/Limit Settings
+
+When running POMI, it’s recommended to apply the following [Resource limits](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/) for clusters generating approximately 500k DPM:
+
+- CPU Limit: 1 core (1000m)
+- Memory Limit: 1Gb 1024 (1G)
+
+The Resource request for CPU and Memory should be set at something reasonable so that POMI receives enough resources from the cluster.  Setting this to something extremely low (e.g. cpu: 50m) can result in cluster resources being consumed by “noisy neighbors”.
+
+An example query for determining the DPM (post-ingest) can be found [here](coming_soon). 
+
+*POMI Config Parameter*
+
+```
+…
+
+spec:
+  serviceAccountName: nri-prometheus
+  containers:
+  - name: nri-prometheus
+    image: newrelic/nri-prometheus:2.2.0
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 500m
+      limits:
+        memory: 1G
+        cpu: 1000m
+
+…
+```
+
+### POMI: Estimating DPM and Cardinality
+
+Although cardinality is not associated directly with billable per GB ingest, NR1 does maintain certain rate limits on cardinality and data points per minute.  Being able to visualize cardinality and DPM from a Prometheus cluster can be very important.
+
+<Callout variant="tip">
+Trial and paid accounts receive a 1M DPM and 1M cardinality limit for trial purposes, but you can request up to 15M DPM and 15M cardinality for your account. To request changes to your metric rate limits, contact your New Relic account representative.  View this [doc](https://docs.newrelic.com/docs/data-apis/ingest-apis/metric-api/metric-api-limits-restricted-attributes/) for infor.
+</Callout>
+
+If you’re already running Prometheus Server, you can run DPM and Cardinality estimates there prior to enabling POMI or remote_write.
+
+
+*Data Points Per Minute (DPM)*
+
+rate(prometheus_tsdb_head_samples_appended_total[10m]) * 60
+
+
+*Top 20 Metrics (Highest Cardinality)*
+
+topk(20, count by (__name__, job)({__name__=~".+"}))
+
+
+
+</Collapser>
+<Collapser
+  id="cloud-integration"
+  title="Cloud Integrations"
+>
+
+New Relic cloud integrations get data from cloud providers' APIs. Data is generally collected from monitoring APIs such as AWS CloudWatch, Azure Monitor, and GCP Stackdriver, and inventory metadata is collected from the specific services' APIs.  More more our integrations get their data from streaming metrics that are pushed via a streaming service such as AWS Kinesis.
+
+### Polling API Based Integrations
+
+If you want to report more or less data from your cloud integrations, or if you need to control the use of the cloud providers' APIs to prevent reaching rate and throttling limits in your cloud account, you can change the configuration settings to modify the amount of data they report. The two main controls are:
+
+- [Change polling frequency](https://docs.newrelic.com/docs/infrastructure/infrastructure-integrations/cloud-integrations/configure-polling-frequency-data-collection-cloud-integrations/#polling)
+- [Change what data is reported](https://docs.newrelic.com/docs/infrastructure/infrastructure-integrations/cloud-integrations/configure-polling-frequency-data-collection-cloud-integrations/#filter-data)
+
+Examples of business reasons for wanting to change your polling frequency include:
+
+- *Billing*: If you need to manage your AWS CloudWatch bill, you may want to decrease the polling frequency. Before you do this, make sure that any alert conditions set for your cloud integrations are not affected by this reduction.
+- *New services*: If you are deploying a new service or configuration and you want to collect data more often, you may want to increase the polling frequency temporarily.
+
+<Callout variant="caution">
+Changing the configuration settings for your integrations may impact alert conditions and chart trends.
+</Callout>
+
+View [this doc](https://docs.newrelic.com/docs/infrastructure/infrastructure-integrations/cloud-integrations/configure-polling-frequency-data-collection-cloud-integrations/) for more details.
+
+### *Streaming* or *Pushed* Metrics
+
+More and more cloud integrations are offering the option of having the data pushed via a [streaming service]](https://docs.newrelic.com/docs/infrastructure/amazon-integrations/aws-integrations-list/aws-metric-stream/).  This has proven to cut down on latency drastically.  One issue some users have observed is that it's not as easy to control volume since sampling rate cannot be configured.
+
+*Drop rules* will be well covered in the next section.  They are the primary way of filtering out streaming metrics that are too high volume.  However there are some things that can be done on the cloud provider side to limit the stream volume somewhat.
+
+For example in AWS it's possible to use *condition keys* to [limit access to CloudWatch* namespaces](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/iam-cw-condition-keys-namespace.html).
+
+The following policy limits the user to publishing metrics only in the namespace named *MyCustomNamespace*.
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Allow",
+        "Resource": "*",
+        "Action": "cloudwatch:PutMetricData",
+        "Condition": {
+            "StringEquals": {
+                "cloudwatch:namespace": "MyCustomNamespace"
+            }
+        }
+    }
+}
+```
+
+The following policy allows the user to publish metrics in any namespace except for *CustomNamespace2*.
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Resource": "*",
+            "Action": "cloudwatch:PutMetricData"
+        },
+        {
+            "Effect": "Deny",
+            "Resource": "*",
+            "Action": "cloudwatch:PutMetricData",
+            "Condition": {
+                "StringEquals": {
+                    "cloudwatch:namespace": "CustomNamespace2"
+                }
+            }
+        }
+    ]
+}
+```
+
+
+
+
 
 </Collapser>
 </CollapserGroup>
