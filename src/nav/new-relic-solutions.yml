@@ -28,7 +28,7 @@ pages:
         pages:
           - title: Service characterization
             path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/sc-implementation-guide
-          - title: Data governance
+          - title: Data Ingest Governance
             path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
             pages:
               - title: Introduction 

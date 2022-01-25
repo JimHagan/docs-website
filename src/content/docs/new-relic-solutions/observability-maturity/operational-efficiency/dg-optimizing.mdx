@@ -509,10 +509,55 @@ They are powerful and useful but if the data is not well organized or has become
 
 </Collapser>
 <Collapser
-  id="k8s-manifest"
-  title="K8s Manifest"
+  id="k8s-integration"
+  title="Kubernetes Integration"
 >
-#### K8s Manifest
+
+It's not surprising that a complex and decentralized system like Kubernetes has the potentially to generate a lot of telemetry fast.  There are a few good approaches to managing data ingest in Kubernetes.  These will be very straighforward if you are using observability as code in your K8s deployments.
+
+### Scrape Interval
+
+Depending on your observability objectives you may consider adjusting the scrape interval.  The default is 15s.  Now the Kubernetes Cluster Explore only refreshes every 45s.  If your primary use of the K8s data is to support the KCE visusalizations you may consider changing your scrape interval to 20s.  That change from 15s to 20s can have a substantial impact.
+
+![Update Scrape Interval](images/oma-oe-dg-update-k8s-scrape-interval.png)
+
+### Kube State Metrics
+
+The Kubernetes Cluster Explorer requires only the following kube state metrics (KSM):
+```
+Container Data
+Cluster Data
+Node Data
+Pod Data
+Volume Data
+API Server Data*
+Controller Manager Data*
+ETCD Data*
+Scheduler Data*
+
+
+*Not collected in a managed Kubernetes environment (EKS, GKE, AKS, etc.)
+**Used in the default alert: “ReplicaSet doesn't have desired amount of pods”
+```
+
+You may consider disabling some of the following:
+
+```
+DaemonSet Data
+Deployment Data
+Endpoint Data
+Namespace Data
+ReplicaSet Data**
+Service Data
+StatefulSet Data
+```
+
+*Updating the Manifest*
+![Kube State Metrics - Manifest](images/oma-oe-dg-update-k8s-kube-state-metrics.png)
+
+*Updating the Helm chart*
+
+![Kube State Metrics - Helm](images/oma-oe-dg-update-k8s-kube-state-metrics.png)
 </Collapser>
 
 
@@ -542,7 +587,22 @@ This field works in a way similar to grep -E in Unix systems. For example, for a
   pattern: WARN|ERROR
 ```
 
-Detailed routing and filtering resources:
+If you have pre-written fluentd configurations for Fluentbit that do valuable filtering or parsing.  It is possible to import those into our New Relic logging config.  This is done by means of the `config_file` and `parsers` parameter.
+
+`config_file`: path to an existing Fluent Bit configuration file. Note that any overlapping source results in duplicate messages in New Relic Logs.
+
+`parsers_file`: path to an existing Fluent Bit parsers file. The following parser names are reserved: `rfc3164`, `rfc3164-local` and `rfc5424`.
+
+
+Learning how to inject attributes (or tags) into your logs in your data pipeline and to perform transformations can help with downstream feature dropping using New Relic drop rules.  By augmenting your logs with metadata about the source, we can make centralized and easily reversible decisions about what to drop on the backend.  Some fairly obvious attributes that should be present on your logs in one form or another are:
+
+- Team
+- Environment (Dev/Stage/Prod)
+- Application
+- Data Center
+- Log Level
+
+Below are some detailed routing and filtering resources:
 
 - [Common filter and routing patterns in Fluentd](https://docs.fluentd.org/configuration/routing-examples)
 - [Fluentbit data pipeline](https://docs.fluentbit.io/manual/concepts/data-pipeline)
@@ -555,14 +615,18 @@ Detailed routing and filtering resources:
   id="cloud-integration"
   title="Cloud Integrations"
 >
-#### Cloud Metrics Integrations
+
+*TBD*
+
 </Collapser>
 
 <Collapser
-  id="prometheus"
-  title="Prometheus"
+  id="prometheus-metrics-sources"
+  title="Prometheus Metrics Sources"
 >
-#### Prometheus Configurations
+
+*TBD*
+
 </Collapser>
 </CollapserGroup>
 </Collapser>
