@@ -560,7 +560,197 @@ StatefulSet Data
 ![Kube State Metrics - Helm](images/oma-oe-dg-update-k8s-kube-state-metrics.png)
 </Collapser>
 
+<Collapser
+  id="on-host-integrations"
+  title="On Host Integrations"
+>
+New Relic's On Host Integrations (OHI for short) represent a diverse set of integrations for third party services such as Postgresql, MySQL, Kafka, RabbitMQ etc.  It's not possible to provide every optimization technique in the scope of this document, but we can provide these generally applicable techniques:
 
+- Manage sampling rate
+- Manage those parts of the config that can increase or decrease breadth of collection
+- Manage those parts of the config that allow for custom queries
+- Manage the Infra Agents custom attributes since they will be applied to all OHI data.
+
+We'll use a few examples to demonstrate.
+
+### [PostgreSQL Integration](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/postgresql-monitoring-integration/#example-postgresSQL-collection-config)
+
+The PostgreSQL OHI configuration provides these adjustable settings that can help manage data volume:
+
+- interval: Default is 15s
+- COLLECTION_LIST: list of tables to monitor (use ALL to monitor ALL)
+- COLLECT_DB_LOCK_METRICS: Collect `dblock` metrics
+- PGBOUNCER: Collect `pgbouncer` metrics
+- COLLECT_BLOAT_METRICS: Collect bloat metrics
+- METRICS: Set to `true` to collect only metrics
+- INVENTORY: Set to `true` to enable only inventory collection
+- CUSTOM_METRICS_CONFIG: Config file containing custom collection queries
+
+*Sample Config*
+
+```
+integrations:
+  - name: nri-postgresql
+    env:
+      USERNAME: postgres
+      PASSWORD: pass
+      HOSTNAME: psql-sample.localnet
+      PORT: 6432
+      DATABASE: postgres
+
+      COLLECT_DB_LOCK_METRICS: false
+      COLLECTION_LIST: '{"postgres":{"public":{"pg_table1":["pg_index1","pg_index2"],"pg_table2":[]}}}'
+      TIMEOUT:  10
+    interval: 15s
+    labels:
+      env: production
+      role: postgresql
+    inventory_source: config/postgresql
+```
+
+### [Kafka Integration](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/kafka-monitoring-integration/)
+
+The Kafka OHI configuration provides these adjustable settings that can help manage data volume:
+
+- interval: Default is 15s
+- TOPIC_MODE: Determines how many topics we collect. Options are `all`, `none`, `list`, or `regex`.
+- METRICS: Set to `true` to collect only metrics
+- INVENTORY: Set to `true` to enable only inventory collection
+- TOPIC_LIST: JSON array of topic names to monitor. Only in effect if topic_mode is set to list.
+- COLLECT_TOPIC_SIZE: Collect the metric Topic size. Options are `true` or `false`, defaults to `false`.
+- COLLECT_TOPIC_OFFSET:Collect the metric Topic offset. Options are `true` or `false`, defaults to `false`.
+
+It should be noted that collection of topic level metrics especiallly offsets can be resource intensive to collect and can have an impact on data volume.  It is very possible that a clusters ingest can increase by an order of magnitude simply by the addition of new Kafka topics to the cluster.
+
+
+### [MongoDB Integration](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/mongodb-monitoring-integration)
+
+The MongoDB integration provides these adjustable settings that can help manage data volume:
+
+- interval: Default is 15s
+- METRICS: Set to `true` to collect only metrics
+- INVENTORY: Set to `true` to enable only inventory collection
+- FILTERS: A JSON map of database names to an array of collection names. If empty, defaults to all databases and collections.
+
+For any OHI you use it's important to be aware of parameters like `FILTERS` where the default is to collect metrics form all databases.  This is an area where you can use your monitoring priorities to streamline collected data.
+
+*Example configuration with different intervals for METRIC and INVENTORY*
+
+```
+integrations:
+  - name: nri-mongodb
+    env:
+      METRICS: true
+      CLUSTER_NAME: my_cluster
+      HOST: localhost
+      PORT: 27017
+      USERNAME: mongodb_user
+      PASSWORD: mongodb_password
+    interval: 15s
+    labels:
+      environment: production
+
+  - name: nri-mongodb
+    env:
+      INVENTORY: true
+      CLUSTER_NAME: my_cluster
+      HOST: localhost
+      PORT: 27017
+      USERNAME: mongodb_user
+      PASSWORD: mongodb_password
+    interval: 60s
+    labels:
+      environment: production
+    inventory_source: config/mongodb
+```
+
+### [Elasticsearch Integration](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/elasticsearch-monitoring-integration)
+
+The Elasticsearch integration provides these adjustable settings that can help manage data volume:
+
+- interval: Default is 15s
+- METRICS: Set to `true` to collect only metrics
+- INVENTORY: Set to `true` to enable only inventory collection
+- COLLECT_INDICES: Signals whether to collect indices metrics or not.
+- COLLECT_PRIMARIES: Signals whether to collect primaries metrics or not.
+- INDICES_REGEX: Filter which indices are collected.
+- MASTER_ONLY: Collect cluster metrics on the elected master only.
+
+*Example configuration with different intervals for METRIC and INVENTORY*
+
+```
+integrations:
+  - name: nri-elasticsearch
+    env:
+      METRICS: true
+      HOSTNAME: localhost
+      PORT: 9200
+      USERNAME: elasticsearch_user
+      PASSWORD: elasticsearch_password
+      REMOTE_MONITORING: true
+    interval: 15s
+    labels:
+      environment: production
+
+  - name: nri-elasticsearch
+    env:
+      INVENTORY: true
+      HOSTNAME: localhost
+      PORT: 9200
+      USERNAME: elasticsearch_user
+      PASSWORD: elasticsearch_password
+      CONFIG_PATH: /etc/elasticsearch/elasticsearch.yml
+    interval: 60s
+    labels:
+      environment: production
+    inventory_source: config/elasticsearch
+```
+
+### [JMX Integration](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/jmx-monitoring-integration)
+
+The JMX integration is inherently generic.  It allows us to scrape metrics from any JMX instance.  We have a good amount of control over what gets collected by this integration.  In some enterprise New Relic environments JMX metrics reprepresent a relatively high proportion of all data collected.
+
+The JMX integration provides these adjustable settings that can help manage data volume:
+
+- interval: Default is 15s
+- METRICS: Set to `true` to collect only metrics
+- INVENTORY: Set to `true` to enable only inventory collection
+- METRIC_LIMIT: Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit.
+- LOCAL_ENTITY: Collect all metrics on the local entity. Only use when monitoring localhost.
+- COLLECTION_FILES: A comma-separated list of full file paths to the metric collection definition files. For on-host install, the default JVM metrics collection file is at /etc/newrelic-infra/integrations.d/jvm-metrics.yml.
+- COLLECTION_CONFIG: Configuration of the metrics collection as a JSON.
+
+It is the COLLECTION_CONFIG entries that most govern the amount of data ingested.  Understanding the JMX model you are scraping will help you optimize.
+
+*COLLECTION_CONFIG example for JVM metrics*
+
+```
+COLLECTION_CONFIG='{"collect":[{"domain":"java.lang","event_type":"JVMSample","beans":[{"query":"type=GarbageCollector,name=*","attributes":["CollectionCount","CollectionTime"]},{"query":"type=Memory","attributes":["HeapMemoryUsage.Committed","HeapMemoryUsage.Init","HeapMemoryUsage.Max","HeapMemoryUsage.Used","NonHeapMemoryUsage.Committed","NonHeapMemoryUsage.Init","NonHeapMemoryUsage.Max","NonHeapMemoryUsage.Used"]},{"query":"type=Threading","attributes":["ThreadCount","TotalStartedThreadCount"]},{"query":"type=ClassLoading","attributes":["LoadedClassCount"]},{"query":"type=Compilation","attributes":["TotalCompilationTime"]}]}]}'
+```
+
+Omitting any one entry from that config such as `NonHeapMemoryUsage.Init` will have a tangible impact on the overall data volume collected.
+
+*COLLECTION_CONFIG example for Tomcat metrics*
+
+```
+COLLECTION_CONFIG={"collect":[{"domain":"Catalina","event_type":"TomcatSample","beans":[{"query":"type=UtilityExecutor","attributes":["completedTaskCount"]}]}]}
+```
+
+### Other On Host Integrations
+
+There many other OHIs having configuration options that will help you optimize collection.  
+Some commonly used ones are:
+
+- [NGINX](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/nginx/nginx-advanced-config)
+- [MySQL](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/mySQL/mysql-integration)
+- [Redis](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/redis-monitoring-integration)
+- [Apache](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/apache-monitoring-integration)
+- [RabbitMQ](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/rabbitmq-monitoring-integration)
+
+This is a good [starting point](https://docs.newrelic.com/docs/infrastructure/infrastructure-integrations/get-started/introduction-infrastructure-integrations#on-host) to learn more.
+
+
+</Collapser>
 <Collapser
   id="log-forwarders"
   title="Log Forwarders"
