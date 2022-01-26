@@ -91,19 +91,20 @@ Their estate includes:
 - K8s Monitoring (Dev, Staging, Prod)
 - Logs (Dev, Staging, Prod - Including Debug)
 
-Upon going through a baselining exercise they understand where the ingest is coming from.  Their decision is as follows:
 
+<Callout variant='IMPORTANT' title='Optimization Recommendations'>
 - Omit debug logs (knowning they can be turned on if there is an issue) (saves 5%)
-- Omit several K8s events which are not required to display the Kubernetes Cluster Explore (saves 10%)
+- Omit several K8s state merics which are not required to display the Kubernetes Cluster Explore (saves 10%)
 - Drop some custom Browser events they were collecting back when they were doing a lot of A/B testing of new features (saves 10%)
+</Callout>
 
 After executing those changes the team is 5% below their budget and has freed up some space to do a NPM pilot.  Their manager is satisfied they are not losing any signifanct `Uptime and Reliability` observability.
 
-Final Outcome
-
+<Callout variant='IMPORTANT' title='Final Outcome'>
 - 10% under their original budget
 - headroom created for an NPM pilot which servers Uptime and Reliability Objectives
 - No loss of Uptime and Reliability observability
+</Callout>
 
 </Collapser>
 <Collapser
@@ -128,18 +129,18 @@ Their estate includes:
 - Logs from their serverless functions
 - Various cloud integrations
 
-Upon going through the baselining exercie they come to the following decisions:
-
+<Callout variant='IMPORTANT' title='Optimization Recommendations'>
 - Omit the serverless logs (they are basically redundant to what they get from their Lambda integration)
 - Decrease the process sample rate on their hosts to every one minute
 - Drop process sample data in DEV environments
 - Turn off EC2 integration which is highly redundant with other infrastructure monitoring provided by the New Relic infra agent.
+</Callout>
 
-Final Outcome
-
+<Callout variant='IMPORTANT' title='Final Outcome'>
 - 5% over their original budget
 - Sufficent to get them trough peak season
 - No loss of customer experience observability
+</Callout>
 
 After executing the changes they are now just 5% over their original budget, but they conclude this will be sufficient to carry them through peak season.
 
@@ -164,17 +165,17 @@ Their estate includes:
 - MSSQL (future DB for the microservice architecture)
 - Load Balancer Logging (microservices and host monitoring)
 
-Upon going through the baselining exercie they come to the following decisions:
-
+<Callout variant='IMPORTANT' title='Optimization Recommendations'>
 - Configure load balancer logging to only monitor 5xx response codes (monolith)
-- Disable ProcessSample, StorageSample, and NetworkSample for hosts running the monolith
+- Cust sample rate on ProcessSample, StorageSample, and NetworkSample to 60s for hosts running the monolith
 - Disable MSSQL monitoring since currently the new architecture does not use it.
 - Disable Distributed Tracing for the monolith as it's far less useful then it will be for the microservice architecture.
+</Callout>
 
-Final Outcome
-
+<Callout variant='IMPORTANT' title='Final Outcome'>
 - 1% under their original budget
 - No loss of Innovation observability
+</Callout>
 
 </Collapser>
 </CollapserGroup>
