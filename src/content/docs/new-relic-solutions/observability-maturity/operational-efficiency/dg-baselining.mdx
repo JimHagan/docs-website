@@ -316,7 +316,11 @@ View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-da
   title="Install Dashboard"
 >
 
-Download the [Data Ingest Analytics](dashboards/data-ingest-analytics.json) dashboard. Install it into your NR1 Master Account or POA account.  You will first need to edit the JSON to include your account id.  This will allow you a fairly flexible visualization of ingest by an organizations accounts and telemetry types.  Your view may vary depending on the number of accounts and telemetry types in your organization.  You can also visualize some built in views in New Relic's "Manage Your Data" UI.  For the purposes of transparency we will show examples of the underlying NRQL queries in this document.
+1. <a href="data-governance-baseline-dashboard.json" download>Download</a> the *Data Governance Baseline* dashboard.  
+2. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
+3. Install it into your NR1 Master Account or POA account using the [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
+
+The main tab shows a variety of charts.  The second tab is for tabular baseline reports.
 
 ![Org Wide View](images/oma-dg-org-wide-dashboard.png)
 
@@ -329,40 +333,32 @@ In addition to the custom queries used in the next section we suggest you famila
 
 ## Generating Your Report
 
-To some of extent we have explored the main components of an ingest baseline report in the previous section.  Here we will simply codify the facts you will want to generate on at least monthly basis.  Having them in a dashboard may suffice, but it is also suitable to supplement with a spreadsheet of the most important values.  These figures should be updated at least as frequently as the chosen cadence of Check-in sessions (be it monthly or qurterly).  We suggest maintining them in dashboard form as well as a shared folder with spreadsheet versions of the most relevant ones.
+1. Open *Data Governance Baseline* Dashboard.
+2. Click on the *Baseline Report* tab.
+3. Click on `...` in the upper right of the table and chose `Export as CSV`
+4. Import the sheet into *Google Sheets* or the spreadsheet of your choice.
 
-*Consumption by calendar month for a variety of facets*
+Below is an example of a sheet we imported into Google Sheets.  Feel free to view it [here](https://docs.google.com/spreadsheets/d/16HxvpAsPoLu3nJgApsN9zfMPF65ikCF1vAUBk9b_F7g/edit?usp=sharing).
 
-|Metric|Scope|Query|
-|---|---|---|--|
-|Consumption By Month (12 Month)|Full Org|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO|
-|Consumption By Month (12 Month)|Sub Account|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp), consumingAccount LIMIT MAX SINCE 56 weeks AGO|
-|Consumption By Month (12 Month)|Telemetry Type|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO facet usageMetric|
-|Consumption By Month (12 Month)|Sub Account & Telemetry Type|SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp), consumingAccount, usageMetric LIMIT MAX SINCE 56 weeks AGO|
-||||
+![DG Baseline Sheet](images/oma-oe-dg-baseline-sheet.png)
 
-*Average daily rate for a variety of facets*
+The screenshot shows the table shorted by 30 day ingest total.
 
-|Metric|Scope|Query|
-|---|---|---|--|
-|Avg. Daily Rate (12 Month)|Full Org|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO|
-|Avg. Daily Rate (12 Month)|Sub Account|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet consumingAccount|
-|Avg. Daily Rate (12 Month)|Telemetry Type|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet usageMetric|
-|Avg. Daily Rate (12 Month)|Sub Account & Telemetry Type|SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 1 month AGO facet consumingAccount, usageMetric|
-||||
+The whole table can be reproduced with a single query:
 
+```
+SELECT sum(GigabytesIngested) AS 'gb_ingest_30_day_sum', rate(sum(GigabytesIngested), 1 day) AS 'gb_ingest_daily_rate', derivative(GigabytesIngested, 90 day) as 'gb_ingest_90_day_derivative' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago facet consumingAccountName, usageMetric  limit max
+```
 
-Deeper breakdowns will be done on a more ad hoc basis and should be done for "areas of concern".  This means those areas are highly volatile or have great potentially to increase unextedly.
-This is an example breakdown sheet for this kind of telemetry.  These queries come off of raw telemetry and due to retention we'll confine these to most recent daily rates.
+Feel free to adjust your timeline and some of the details as needed.  For example, we chose to extract a *90 day derivative* to have some sense of change over the past few months.  You could easily alter the time period of the derivative to suite your objectives.
 
-|Metric|Scope|Query|
-|---|---|---|--|
-|Daily Rate 1 Week|Per Metric Integration (single account)|FROM Metric select rate(bytecountestimate()/10e8, 1 day) facet usage.integrationName since 2 weeks ago|
-|Daily Rate 1 Week|Per K8s Cluster (single account)|FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSample, K8sEndpointSample, K8sHpaSample, K8sNamespaceSample, K8sNodeSample, K8sPodSample, K8sReplicasetSample, K8sServiceSample, K8sVolumeSample select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet clusterName since 2 weeks ago|
-|Daily Rate 1 Week|Per APM App|FROM Transaction, TransactionError, TransactionTrace, SqlTrace, ErrorTrace, Span select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks Days Ago|
-|Daily Rate 1 Week|Per Browser App|FROM PageAction, PageView, PageViewTiming, AjaxRequest, JavaScriptError select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks Ago|
-|Daily Rate 1 Week|Per Mobile App|FROM Mobile, MobileRequestError, MobileSession select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks ago|
-||||
+## Customizing Your Report
+
+We recommend adding useful columns to your report in order to facility other phases of data governance such as *optimizing* and *forecasting*.  For example the following fields will help guide optimization and planning decisions:
+
+- Notes: Note any growth anomalies and any relevant explanations for them.  Indicate any major expected growth if foreseen.
+- Technical Contact: Name of the manager of a given sub-account or someone related to a specific telemtry type.
+
 
 
 ## Advanced Topics
@@ -375,51 +371,7 @@ This is an example breakdown sheet for this kind of telemetry.  These queries co
 We assume you'll need to customize them to some extent to match the organization specifics.
 
 <CollapserGroup>
-### Examples
-
-  <Collapser
-    id="ingest-by-account"
-    title="Ingest By Sub-Account"
-    >
-
-*Thirty Day Sum*
-
-
-```SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' since 30 days ago facet facet consumingAccountName```
-
-
-*Average Daily Rate*
-
-```SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' since 30 days ago facet consumingAccountName```
-
-
-*Calendar Month Tabulation*
-
-```SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' since 56 weeks ago facet monthOf(timestamp), consumingAccountName```
-
-  </Collapser>
-  <Collapser
-    id="ingest-by-account-and-telemetry type"
-    title="Ingest By Sub-Account & Telemetry Type"
-    >
-
-*Thirty Day Sum*
-
-
-```SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' since 30 days ago facet facet consumingAccountName, usageMetric```
-
-
-*Average Daily Rate*
-
-```SELECT rate(sum(GigabytesIngested), 1 day) FROM NrConsumption WHERE productLine = 'DataPlatform' since 30 days ago facet consumingAccountName, usageMetric```
-
-
-*Calendar Month Tabulation*
-
-```SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' since 56 weeks ago facet monthOf(timestamp), consumingAccountName, usageMetric```
-
-
-  </Collapser>
+### Examples    
   <Collapser
     id="ingest-by-application"
     title="Ingest By Application (APM|Browser|Mobile)"
