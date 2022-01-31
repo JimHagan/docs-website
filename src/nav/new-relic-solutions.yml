@@ -37,10 +37,10 @@ pages:
                 path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
               - title: Baselining
                 path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining
-              - title: Optimizing
-                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing
-              - title: Forecasting
-                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-growth
+              - title: Optimizing - coming soon!
+                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
+              - title: Forecasting - coming soon!
+                path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
   - title: New Relic solutions
     pages:
       - title: Create application baselines
