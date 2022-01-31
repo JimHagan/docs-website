@@ -316,9 +316,10 @@ View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-da
   title="Install Dashboard"
 >
 
-1. [Download](dashboards/data-governance-baseline-dashboard.json) the *Data Governance Baseline* dashboard.  
-2. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
-3. Install it into your NR1 Master Account or POA account using the [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
+1. In a new tab [open](dashboards/data-governance-baseline-dashboard.json) the *Data Governance Baseline* dashboard.
+2. Download the file locally  
+3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
+4. Install it into your NR1 Master Account or POA account using the [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
 
 The main tab shows a variety of charts.  The second tab is for tabular baseline reports.
 
@@ -333,10 +334,16 @@ In addition to the custom queries used in the next section we suggest you famila
 
 ## Generating Your Report
 
-1. Open *Data Governance Baseline* Dashboard.
+1. Open the previously installed *Data Governance Baseline* Dashboard.
 2. Click on the *Baseline Report* tab.
 3. Click on `...` in the upper right of the table and chose `Export as CSV`
 4. Import the sheet into *Google Sheets* or the spreadsheet of your choice.
+
+*Alternatively* if you did not install the dashboard you may simply use this query to create a custom chart in [Query Builder](https://docs.newrelic.com/docs/query-your-data/explore-query-data/query-builder/introduction-query-builder/):
+
+```
+SELECT sum(GigabytesIngested) AS 'gb_ingest_30_day_sum', rate(sum(GigabytesIngested), 1 day) AS 'gb_ingest_daily_rate', derivative(GigabytesIngested, 90 day) as 'gb_ingest_90_day_derivative' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago facet consumingAccountName, usageMetric  limit max
+```
 
 Below is an example of a sheet we imported into Google Sheets.  Feel free to view it [here](https://docs.google.com/spreadsheets/d/16HxvpAsPoLu3nJgApsN9zfMPF65ikCF1vAUBk9b_F7g/edit?usp=sharing).
 
