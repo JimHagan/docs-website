@@ -864,14 +864,30 @@ Individual dashboards installed by this pakage include:
 </Collapser>
 <Collapser
   id="alerting-on-consumption-anomalies"
-  title="Alerting on Consumption Anomalies"
+  title="Detecting Consumption Anomalies"
 >
 
-## Alerting on Consumption Anomalies
+### Alerts
 
 Most organizations will want to setup some automated `alerts` that will give early warning of unexpected spikes in ingest usually on a day over day, week over week, or month over month basis.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
 
 In addition to using NR alerts to identify consumption anomalies, you can use New Relic's Lookout anomaly visualization tool to explore for any potential ingest anomalies.  This is particular useful against the NrConsumption data model.
+
+### Lookout View
+
+New Relic's Lookout allows you to provide nearly any NRQL query and it will search for anomalies over a given period of time.
+This view is based on the query
+
+```
+SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngest FROM NrConsumption WHERE productLine='DataPlatform' facet usageMetric 
+```
+
+![Lookout View Usage Metric](images/oma-oe-dg-lookout-view-telem-type.png)
+
+Simply changing the facet field to `consumingAcountName` gives us this view:
+
+![Lookout View Consuming Account](images/oma-oe-dg-lookout-view-consuming-account.png)
+
 </Collapser>
 
 </CollapserGroup>
