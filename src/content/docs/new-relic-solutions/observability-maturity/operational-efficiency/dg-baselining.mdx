@@ -355,12 +355,6 @@ Below is an example of a sheet we imported into Google Sheets.  Feel free to vie
 
 The screenshot shows the table sorted by 30 day ingest total.
 
-The whole table can be reproduced with a single query:
-
-```
-SELECT sum(GigabytesIngested) AS 'gb_ingest_30_day_sum', rate(sum(GigabytesIngested), 1 day) AS 'gb_ingest_daily_rate', derivative(GigabytesIngested, 90 day) as 'gb_ingest_90_day_derivative' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago facet consumingAccountName, usageMetric  limit max
-```
-
 Feel free to adjust your timeline and some of the details as needed.  For example, we chose to extract a *90 day derivative* to have some sense of change over the past few months.  You could easily alter the time period of the derivative to suite your objectives.
 
 ## Customizing Your Report
