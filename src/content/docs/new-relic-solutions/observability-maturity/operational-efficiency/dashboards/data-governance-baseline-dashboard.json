@@ -56,9 +56,7 @@
                 }
               ]
             },
-            "linkedEntityGuids": [
-              "Mjg3MjE3OHxWSVp8REFTSEJPQVJEfDMzNzgwMjY"
-            ]
+            "linkedEntityGuids": null
           },
           {
             "visualization": {
@@ -82,9 +80,7 @@
                 }
               ]
             },
-            "linkedEntityGuids": [
-              "Mjg3MjE3OHxWSVp8REFTSEJPQVJEfDMzNzgwMjY"
-            ]
+            "linkedEntityGuids": null
           },
           {
             "visualization": {
@@ -112,7 +108,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Daily Ingest Rate (By Data Type)",
+            "title": "Daily Ingest Rate (Compare With 3 Months Prior)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -120,7 +116,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries FROM NrConsumption WHERE productLine='DataPlatform' TIMESERIES AUTO since 9 months ago limit max"
+                  "query": "SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries FROM NrConsumption WHERE productLine='DataPlatform' TIMESERIES AUTO since 9 months ago limit max COMPARE WITH 3 months ago"
                 }
               ],
               "yAxisLeft": {
@@ -192,7 +188,7 @@
         ]
       },
       {
-        "name": "Baseline Report",
+        "name": "Baseline Reports",
         "description": null,
         "widgets": [
           {
@@ -202,10 +198,10 @@
             "layout": {
               "column": 1,
               "row": 1,
-              "height": 9,
+              "height": 4,
               "width": 12
             },
-            "title": "Baseline Report",
+            "title": "Last 30 Days",
             "rawConfiguration": {
               "dataFormatters": [],
               "facet": {
@@ -214,7 +210,32 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "SELECT sum(GigabytesIngested) AS 'gb_ingest_30_day_sum', rate(sum(GigabytesIngested), 1 day) AS 'gb_ingest_daily_rate', derivative(GigabytesIngested, 90 day) as 'gb_ingest_90_day_derivative' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago facet consumingAccountName, usageMetric  limit max"
+                  "query": "SELECT sum(GigabytesIngested) AS 'gb_ingest_30_day_sum', rate(sum(GigabytesIngested), 1 day) AS 'gb_ingest_daily_rate', derivative(GigabytesIngested, 90 day) as 'gb_ingest_90_day_derivative' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago facet consumingAccountId, consumingAccountName, usageMetric  limit max"
+                }
+              ]
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 5,
+              "height": 6,
+              "width": 12
+            },
+            "title": "Last Six Months (By Calendar Month)",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine='DataPlatform' since 210 days ago facet consumingAccountId, consumingAccountName, usageMetric, monthOf(timestamp)  limit max"
                 }
               ]
             },

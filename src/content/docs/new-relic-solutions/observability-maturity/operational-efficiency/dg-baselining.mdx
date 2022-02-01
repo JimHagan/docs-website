@@ -313,7 +313,7 @@ View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-da
 </Collapser>
 <Collapser
   id="install-dashboard"
-  title="Install Dashboard"
+  title="Install Data Governance Dashboard"
 >
 
 1. In a new tab [open](dashboards/data-governance-baseline-dashboard.json) the *Data Governance Baseline* dashboard.
@@ -321,9 +321,13 @@ View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-da
 3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
 4. Install it into your NR1 Master Account or POA account using the [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
 
-The main tab shows a variety of charts.  The second tab is for tabular baseline reports.
+The main tab shows a variety of charts including some powerful time series views.  
 
-![Org Wide View](images/oma-dg-org-wide-dashboard.png)
+![Org Wide View](images/oma-dg-org-wide-dashboard-dark.png)
+
+The second tab is for tabular baseline reports. 
+
+![Org Wide Tabular](images/oma-dg-org-wide-dashboard-tabular-dark.png)
 
 <Callout variant="tip">
 In addition to the custom queries used in the next section we suggest you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
@@ -336,8 +340,8 @@ In addition to the custom queries used in the next section we suggest you famila
 
 1. Open the previously installed *Data Governance Baseline* Dashboard.
 2. Click on the *Baseline Report* tab.
-3. Click on `...` in the upper right of the table and chose `Export as CSV`
-4. Import the sheet into *Google Sheets* or the spreadsheet of your choice.
+3. Click on `...` in the upper right of the "Last 30 Days" table and choose `Export as CSV`
+4. Import the CSV into *Google Sheets* or the spreadsheet of your choice.
 
 *Alternatively* if you did not install the dashboard you may simply use this query to create a custom chart in [Query Builder](https://docs.newrelic.com/docs/query-your-data/explore-query-data/query-builder/introduction-query-builder/):
 
