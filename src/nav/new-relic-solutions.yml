@@ -35,11 +35,11 @@ pages:
             pages:
               - title: Introduction 
                 path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
-              - title: Baselining
+              - title: Baseline your ingest data
                 path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining
-              - title: Optimizing - coming soon!
+              - title: Optimize your ingest data - coming soon!
                 path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
-              - title: Forecasting - coming soon!
+              - title: Forecast your ingest data - coming soon!
                 path: /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-intro
   - title: New Relic solutions
     pages:
