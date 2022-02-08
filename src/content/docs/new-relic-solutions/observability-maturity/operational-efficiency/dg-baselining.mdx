@@ -303,7 +303,7 @@ FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSampl
 </Collapser>
 <Collapser
   id="nrql-operators-for-baselining"
-  title="Understand These NRQL Operators for Baselining & Change Modeling"
+  title="Understand These 5 NRQL Operators for Baselining & Change Modeling"
 >
 
 ## Important NRQL Operators for Baselining & Change Modeling
@@ -367,29 +367,6 @@ The resulting table shows fairly high variability.  Note that things were fairly
 |||
 
 ![30 Day Ingest Last 56 Weeks](images/oma-oe-dg-30-day-ingest-last-56-weeks.png)
-
-</Collapser>
-<Collapser
-   id="deeper-dive-using-bytecountestimate"
-   title="bytecountestimate"
-   >
-<Callout variant='IMPORTANT' title='When to Use'>
-When you need to estimate the bytes ingest overhead for a low level telemetry event or metrics record.
-</Callout>
-
-*Compute ingest overhead for specific data points*
-
-**Example: InfraProcessBytes**
-```
-FROM ProcessSample select bytecountestimate()/10e8 as 'GB Ingested' since 7 days ago
-```
-
-We get the response:
-
-```
-63.296
-GB Ingested
-```
 
 </Collapser>
 <Collapser
