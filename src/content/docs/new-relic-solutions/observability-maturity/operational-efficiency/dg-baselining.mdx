@@ -38,7 +38,7 @@ In the advanced topics section you'll see how to create some highly granular bre
 <CollapserGroup>
 <Collapser
     id="understand-nr-consumption-metrics"
-    title="Understand New Relic's built-in ingest tracking"
+    title="Understand NrConsumption: New Relic's built-in ingest model"
     >
 
 All billable telemetry is tracked in the `NrConsumption` and `NrMTDConsumption` events.  In each of those events the attribute `usageMetric` denotes a general group of billable telemetry. 
@@ -207,6 +207,101 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
 
 View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-data-coming-new-relic/) for reference.
 </Collapser>
+
+  <Collapser
+    id="baseline-query-examples"
+    title="Understand bytecountestimate() for more granular breakdown"
+    >
+
+We assume you'll need to customize them to some extent to match the organization specifics.
+
+<CollapserGroup>
+### Examples    
+  <Collapser
+    id="ingest-by-application"
+    title="Ingest By Application (APM|Browser|Mobile)"
+    >
+
+Run these queies in each sub-account or in a dashboard with account-specific charts.  The queries estimate a 30 day rate based on 1 week of collection.
+
+*Estimate 30 Day Rate*
+
+_APM_
+
+```
+FROM Transaction, TransactionError, TransactionTrace, SqlTrace, ErrorTrace, Span select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingest' facet appName since 1 week ago
+```
+
+_BROWSER_
+
+```
+FROM PageAction, PageView, PageViewTiming, AjaxRequest, JavaScriptError select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingest' facet appName since 1 week ago
+```
+
+_MOBILE_
+
+```
+FROM Mobile, MobileRequestError, MobileSession select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingest' facet appName since 1 week ago 
+```
+
+  </Collapser>
+  <Collapser
+    id="metric-ingest-by-integration"
+    title="Metric Ingest By Integration"
+    >
+
+The `Metric` namespace is quite monolithic.  This can make it challenging to understand what the source of all of this data is.  We can facet by `usage.Integration` to get a rough sense of where these are coming in.  It's possible to go deeper, but for a general baseline this is adquate.
+Some examples of `usage.Integration` values that will show up with this facet are:
+
+- com.newrelic.mssql (the New Relic MSSQL OHI)
+- com.newrelic.rabbitmq (the New Relic RabbitMQ OHI)
+- EC2 (the AWS EC2 integration)
+- Lambda (the Lambda integration)
+
+Run these queies in each sub-account or in a dashboard with account-specific charts
+
+*Estimate 30 Day Rate*
+
+```
+FROM Metric select rate(bytecountestimate()/10e8, 30 day) facet usage.integrationName since 1 week ago
+```
+
+*Seven Day Sum*
+
+
+```
+FROM Metric select bytecountestimate()/10e8 facet usage.integrationName since 1 week ago
+```
+
+  </Collapser>
+  <Collapser
+    id="ingest-by-k8s-cluster"
+    title="Ingest By K8s Cluster"
+    >
+
+*Estimate 30 Day Rate*
+
+```
+FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSample, K8sEndpointSample, K8sHpaSample, K8sNamespaceSample, K8sNodeSample, K8sPodSample, K8sReplicasetSample, K8sServiceSample, K8sVolumeSample select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingest' facet clusterName since 1 weeks ago
+```
+
+  </Collapser>
+  <Collapser
+    id="ingest-by-process-sample"
+    title="Process Samples"
+    >
+   ProcessSample can be quite a high volume event.  In this example we'll compute the 30 day ingest per commandline.
+
+    *Estimate 30 Day Rate By Command Name*
+
+    ```
+    FROM ProcessSample select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingested' facet commandName since 1 day ago
+    ```
+
+  </Collapser>
+ </CollapserGroup>
+</Collapser>
+
 </CollapserGroup>
 
 ## Install the data governance dashboard
@@ -279,201 +374,22 @@ Simply changing the facet field to `consumingAcountName` gives us this view:
 
 ![Lookout View Consuming Account](images/oma-oe-dg-lookout-view-consuming-account.png)
 
+## Install The Entity Breakdown Dashboard (Optional)
+
+In a previous section we installed the name ingest baseline dashboard that uses NrConsumption as it's primary source.  That's an important dashboard as it works nicely in a high level parent account or POA account.  In addition to that high level view we can create other visualizations that use `bytescountestimats()` to estimate ingest for nearly any event or metric.  A detailed overview of `bytescountestimate()` was discussed in the prerequisites section.
+
+1. In a new tab [open](https://github.com/newrelic/newrelic-quickstarts/blob/main/quickstarts/oma-data-gov/dashboards/data-ingest-baseline.json) the *Data Governance Entity Breakdown* dashboard JSON in Github.
+2. Download the file locally  
+3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
+4. Install it into any account that contains APM, Browser, Mobile appliactions or K8s clusters [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
+
+![Entity Breakdown Dashboard](images/oma-oe-dg-entity-breakdown-dash.png)
+
+Feel free to modify this dashboard to suit the specific types of entities you are monitoring in your accounts.  NOTE: these queries are more taxing since they are not working from a pre-aggregated data source like NrConsumption.  It may be necessary to adjust the time frames and take advantage of addtional where clauses and the `limit` clause to make them performant.
 
 
 ## Advanced Topics
 <CollapserGroup>
-  <Collapser
-    id="baseline-query-examples"
-    title="More Granular Analysis Using bytecountestimate()"
-    >
-
-We assume you'll need to customize them to some extent to match the organization specifics.
-
-<CollapserGroup>
-### Examples    
-  <Collapser
-    id="ingest-by-application"
-    title="Ingest By Application (APM|Browser|Mobile)"
-    >
-
-Run these queies in each sub-account or in a dashboard with account-specific charts
-
-*Daily Rate*
-
-_APM_
-
-```
-FROM Transaction, TransactionError, TransactionTrace, SqlTrace, ErrorTrace, Span select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks Days Ago
-```
-
-_BROWSER_
-
-```
-FROM PageAction, PageView, PageViewTiming, AjaxRequest, JavaScriptError select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks Ago
-```
-
-_MOBILE_
-
-```
-FROM Mobile, MobileRequestError, MobileSession select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet appName since 2 Weeks ago 
-```
-
-*Seven Day Sum*
-
-_APM_
-
-```
-FROM Transaction, TransactionError, TransactionTrace, SqlTrace, ErrorTrace, Span select bytecountestimate()/10e8 as 'GB Ingest' facet appName since 7 days ago
-```
-
-_BROWSER_
-
-```
-FROM PageAction, PageView, PageViewTiming, AjaxRequest, JavaScriptError select bytecountestimate()/10e8 as 'GB Ingest' facet appName since 7 days ago
-```
-
-_MOBILE_
-
-```
-FROM Mobile, MobileRequestError, MobileSession select bytecountestimate()/10e8 as 'GB Ingest' facet appName since 7 days ago
-```
-  </Collapser>
-  <Collapser
-    id="metric-ingest-by-integration"
-    title="Metric Ingest By Integration"
-    >
-
-The `Metric` namespace is quite monolithic.  This can make it challenging to understand what the source of all of this data is.  We can facet by `usage.Integration` to get a rough sense of where these are coming in.  It's possible to go deeper, but for a general baseline this is adquate.
-Some examples of `usage.Integration` values that will show up with this facet are:
-
-- com.newrelic.mssql (the New Relic MSSQL OHI)
-- com.newrelic.rabbitmq (the New Relic RabbitMQ OHI)
-- EC2 (the AWS EC2 integration)
-- Lambda (the Lambda integration)
-
-Run these queies in each sub-account or in a dashboard with account-specific charts
-
-*Daily Rate*
-
-```
-FROM Metric select rate(bytecountestimate()/10e8, 1 day) facet usage.integrationName since 2 weeks ago
-```
-
-*Seven Day Sum*
-
-
-```
-FROM Metric select bytecountestimate()/10e8 facet usage.integrationName since 1 weeks ago
-```
-
-  </Collapser>
-  <Collapser
-    id="ingest-by-k8s-cluster"
-    title="Ingest By K8s Cluster"
-    >
-
-*Daily Rate*
-
-```
-FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSample, K8sEndpointSample, K8sHpaSample, K8sNamespaceSample, K8sNodeSample, K8sPodSample, K8sReplicasetSample, K8sServiceSample, K8sVolumeSample select rate(bytecountestimate()/10e8, 1 day) as 'GB Ingest' facet clusterName since 2 weeks ago
-```
-
-*Seven Day Sum*
-
-```
-FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSample, K8sEndpointSample, K8sHpaSample, K8sNamespaceSample, K8sNodeSample, K8sPodSample, K8sReplicasetSample, K8sServiceSample, K8sVolumeSample select bytecountestimate()/10e8 as 'GB Ingest' facet clusterName since 1 week ago
-```
-
-  </Collapser>
-  <Collapser
-    id="ingest-by-data-center"
-    title="Ingest By Data Center"
-    >
-    This KPI is going to vary depending on how your organization classifies data center.  It wil depend on your cloud provider and whether you have a mixture of cloud and on-prem data centers.  Here is where having metadata standards will help. 
-    This is just an example to show how you can account for ingest cost by data center.  Often times you'll have a mixture of attributes like `zone`, 'datacenter', 'dc', etc.
-
-
-    *Daily Rate*
-
-    ```
-    FROM ProcessSample select rate(bytecountestimate()/10e8, 1 day) facet zone since 2 weeks ago  
-    ```
-
-    *Seven Day Sum*
-
-    ```
-    FROM ProcessSample select bytecountestimate()/10e8 facet zone 7 days ago
-    ```
-
-  </Collapser>
-  <Collapser
-    id="ingest-per-ohi"
-    title="Ingest Per OHI or Cloud Integration"
-    >
-
-    Data from On Host Interations or Cloud Integrations will show under NrConsumption as the usageMetric InfraIntegrationBytes.
-
-    It will help to understand for a given set of accounts how much ingest is being consumed overall.
-
-    ```
-    FROM NrConsumption select sum(GigabytesIngested) where usageMetric = 'InfraIntegrationBytes' sinc 7 days ago
-    ```
-
-    Now to break it down further we will need to know a little more about the integrations that are actually used.
-
-    Here are some examples...
-
-    *Daily Rate*
-
-    __MSSSQL__
-
-    ```
-    FROM MssqlDatabaseSample select rate(bytecountestimate()/10e8, 1 day) since 2 weeks ago
-    ```
-
-     __MongoDB__
-
-     ```
-     FROM MongoCollectionSample, MongoDatabaseSample, MongodSample, MongodTopSample select rate(bytecountestimate()/10e8, 1 day) since 2 weeks ago
-     ```
-
-     __GCP Big Table__
-
-    ```
-    FROM GcpBigtableClusterSample, GcpBigtableTableSample select rate(bytecountestimate(), 1 day)/10e8 since 2 weeks ago
-    ```
-
-     *Seven Day Sum*
-
-     __MSSSQL__
-
-    ```
-    FROM MssqlDatabaseSample select bytecountestimate()/10e8 since 7 days ago
-    ```
-
-     __MongoDB__
-
-    ```
-    FROM MongoCollectionSample, MongoDatabaseSample, MongodSample, MongodTopSample select bytecountestimate()/10e8 since 7 days ago
-    ```
-
-    __GCP Big Table__
-
-    ```
-    FROM GcpBigtableClusterSample, GcpBigtableTableSample select bytecountestimate()/10e8 since 7 days ago
-    ```
-
-    To find out exactly which event or metric data is delivered from each integration view [this documentation](https://docs.newrelic.com/docs/infrastructure/host-integrations/get-started/introduction-host-integrations/).  From their brose the list nad there will be a breakdown of the data structure created by each.
-  
-    <Callout variant="tip">
-    Infrasructure integrations are one of the most complex types of telemetry to track.  It helps to understand how to form your own ingest tracking queries as shown above, but we strongly suggest installing [this quickstarts dashboard library](https://onenr.io/0EPwJJO9Ow7).
-    </Callout>
-  
-  </Collapser>
-</CollapserGroup>
-</Collapser>
-
 <Collapser
   id="nrql-operators-for-baselining"
   title="Important NRQL Operators for Baselining & Change Modeling"
