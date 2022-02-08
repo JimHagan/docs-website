@@ -301,98 +301,9 @@ FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSampl
   </Collapser>
  </CollapserGroup>
 </Collapser>
-
-</CollapserGroup>
-
-## Install the data governance dashboard
-
-1. In a new tab [open](https://github.com/newrelic/newrelic-quickstarts/blob/main/quickstarts/oma-data-gov/dashboards/data-ingest-baseline.json) the *Data Governance Baseline* dashboard JSON in Github.
-2. Download the file locally  
-3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
-4. Install it into your NR1 Master Account or POA account using the [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
-
-The main tab shows a variety of charts including some powerful time series views.  
-
-![Org Wide View](images/oma-dg-org-wide-dashboard-dark.png)
-
-The second tab is for tabular baseline reports. 
-
-![Org Wide Tabular](images/oma-dg-org-wide-dashboard-tabular-dark.png)
-
-<Callout variant="tip">
-In addition to the custom queries used in the next section we suggest you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
-</Callout>
-
-## Generate your report
-
-1. Open the previously installed *Data governance baseline* dashboard.
-2. Click on the *Baseline report* tab.
-3. Click on `...` in the upper right of the "Last 30 Days" table and choose `Export as CSV`
-4. Import the CSV into *Google Sheets* or the spreadsheet of your choice.
-
-*Alternatively* if you did not install the dashboard you may simply use this query to create a custom chart in [Query Builder](https://docs.newrelic.com/docs/query-your-data/explore-query-data/query-builder/introduction-query-builder/):
-
-```
-SELECT sum(GigabytesIngested) AS 'gb_ingest_30_day_sum', rate(sum(GigabytesIngested), 1 day) AS 'gb_ingest_daily_rate', derivative(GigabytesIngested, 90 day) as 'gb_ingest_90_day_derivative' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago facet consumingAccountName, usageMetric  limit max
-```
-
-Below is an example of a sheet we imported into Google Sheets.  Feel free to view it [here](https://docs.google.com/spreadsheets/d/16HxvpAsPoLu3nJgApsN9zfMPF65ikCF1vAUBk9b_F7g/edit?usp=sharing).
-
-![DG Baseline Sheet](images/oma-oe-dg-baseline-sheet.png)
-
-The screenshot shows the table sorted by 30 day ingest total.
-
-Feel free to adjust your timeline and some of the details as needed.  For example, we chose to extract a *90 day derivative* to have some sense of change over the past few months.  You could easily alter the time period of the derivative to suite your objectives.
-
-## Customize your report
-
-Add useful columns to your report in order to facilitate other phases of data governance such as *optimize* and *forecast*.  The following fields will help guide optimization and planning decisions:
-
-- Notes: Note any growth anomalies and any relevant explanations for them.  Indicate any major expected growth if foreseen.
-- Technical Contact: Name of the manager of a given sub-account or someone related to a specific telemetry type.
-
-## Detecting Ingest Anomalies
-
-### Alerts
-
-Most organizations will want to setup some automated `alerts` that will give early warning of unexpected spikes in ingest usually on a day over day, week over week, or month over month basis.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
-
-In addition to using NR alerts to identify consumption anomalies, you can use New Relic's Lookout anomaly visualization tool to explore for any potential ingest anomalies.  This is particular useful against the NrConsumption data model.
-
-### Lookout View
-
-New Relic's Lookout allows you to provide nearly any NRQL query and it will search for anomalies over a given period of time.
-This view is based on the query
-
-```
-SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngest FROM NrConsumption WHERE productLine='DataPlatform' facet usageMetric 
-```
-
-![Lookout View Usage Metric](images/oma-oe-dg-lookout-view-telem-type.png)
-
-Simply changing the facet field to `consumingAcountName` gives us this view:
-
-![Lookout View Consuming Account](images/oma-oe-dg-lookout-view-consuming-account.png)
-
-## Install The Entity Breakdown Dashboard (Optional)
-
-In a previous section we installed the name ingest baseline dashboard that uses NrConsumption as it's primary source.  That's an important dashboard as it works nicely in a high level parent account or POA account.  In addition to that high level view we can create other visualizations that use `bytescountestimats()` to estimate ingest for nearly any event or metric.  A detailed overview of `bytescountestimate()` was discussed in the prerequisites section.
-
-1. In a new tab [open](https://github.com/newrelic/newrelic-quickstarts/blob/main/quickstarts/oma-data-gov/dashboards/data-ingest-baseline.json) the *Data Governance Entity Breakdown* dashboard JSON in Github.
-2. Download the file locally  
-3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
-4. Install it into any account that contains APM, Browser, Mobile appliactions or K8s clusters [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
-
-![Entity Breakdown Dashboard](images/oma-oe-dg-entity-breakdown-dash.png)
-
-Feel free to modify this dashboard to suit the specific types of entities you are monitoring in your accounts.  NOTE: these queries are more taxing since they are not working from a pre-aggregated data source like NrConsumption.  It may be necessary to adjust the time frames and take advantage of addtional where clauses and the `limit` clause to make them performant.
-
-
-## Advanced Topics
-<CollapserGroup>
 <Collapser
   id="nrql-operators-for-baselining"
-  title="Important NRQL Operators for Baselining & Change Modeling"
+  title="Understand These NRQL Operators for Baselining & Change Modeling"
 >
 
 ## Important NRQL Operators for Baselining & Change Modeling
@@ -563,14 +474,96 @@ SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatfo
 </Collapser>
 </CollapserGroup>
 </Collapser>
-<Collapser
-  id="visualize-infrastructure-integration-sources"
-  title="Visualize Infrastructure Integration Sources"
-  >
 
-  ### Infrastructure Integration Overview
+</CollapserGroup>
 
-This powerful dashboard set of dashboards can be installed [directly from New Relic I/O](https://onenr.io/0EPwJJO9Ow7).
+## Install the data governance dashboard
+
+1. In a new tab [open](https://github.com/newrelic/newrelic-quickstarts/blob/main/quickstarts/oma-data-gov/dashboards/data-ingest-baseline.json) the *Data Governance Baseline* dashboard JSON in Github.
+2. Download the file locally  
+3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
+4. Install it into your NR1 Master Account or POA account using the [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
+
+The main tab shows a variety of charts including some powerful time series views.  
+
+![Org Wide View](images/oma-dg-org-wide-dashboard-dark.png)
+
+The second tab is for tabular baseline reports. 
+
+![Org Wide Tabular](images/oma-dg-org-wide-dashboard-tabular-dark.png)
+
+<Callout variant="tip">
+In addition to the custom queries used in the next section we suggest you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
+</Callout>
+
+## Generate your report
+
+1. Open the previously installed *Data governance baseline* dashboard.
+2. Click on the *Baseline report* tab.
+3. Click on `...` in the upper right of the "Last 30 Days" table and choose `Export as CSV`
+4. Import the CSV into *Google Sheets* or the spreadsheet of your choice.
+
+*Alternatively* if you did not install the dashboard you may simply use this query to create a custom chart in [Query Builder](https://docs.newrelic.com/docs/query-your-data/explore-query-data/query-builder/introduction-query-builder/):
+
+```
+SELECT sum(GigabytesIngested) AS 'gb_ingest_30_day_sum', rate(sum(GigabytesIngested), 1 day) AS 'gb_ingest_daily_rate', derivative(GigabytesIngested, 90 day) as 'gb_ingest_90_day_derivative' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago facet consumingAccountName, usageMetric  limit max
+```
+
+Below is an example of a sheet we imported into Google Sheets.  Feel free to view it [here](https://docs.google.com/spreadsheets/d/16HxvpAsPoLu3nJgApsN9zfMPF65ikCF1vAUBk9b_F7g/edit?usp=sharing).
+
+![DG Baseline Sheet](images/oma-oe-dg-baseline-sheet.png)
+
+The screenshot shows the table sorted by 30 day ingest total.
+
+Feel free to adjust your timeline and some of the details as needed.  For example, we chose to extract a *90 day derivative* to have some sense of change over the past few months.  You could easily alter the time period of the derivative to suite your objectives.
+
+## Customize your report
+
+Add useful columns to your report in order to facilitate other phases of data governance such as *optimize* and *forecast*.  The following fields will help guide optimization and planning decisions:
+
+- Notes: Note any growth anomalies and any relevant explanations for them.  Indicate any major expected growth if foreseen.
+- Technical Contact: Name of the manager of a given sub-account or someone related to a specific telemetry type.
+
+## Detecting Ingest Anomalies
+
+### Alerts
+
+Most organizations will want to setup some automated `alerts` that will give early warning of unexpected spikes in ingest usually on a day over day, week over week, or month over month basis.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
+
+In addition to using NR alerts to identify consumption anomalies, you can use New Relic's Lookout anomaly visualization tool to explore for any potential ingest anomalies.  This is particular useful against the NrConsumption data model.
+
+### Lookout View
+
+New Relic's Lookout allows you to provide nearly any NRQL query and it will search for anomalies over a given period of time.
+This view is based on the query
+
+```
+SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngest FROM NrConsumption WHERE productLine='DataPlatform' facet usageMetric 
+```
+
+![Lookout View Usage Metric](images/oma-oe-dg-lookout-view-telem-type.png)
+
+Simply changing the facet field to `consumingAcountName` gives us this view:
+
+![Lookout View Consuming Account](images/oma-oe-dg-lookout-view-consuming-account.png)
+
+## Install The Entity Breakdown Dashboard (Optional)
+
+In a previous section we installed the name ingest baseline dashboard that uses NrConsumption as it's primary source.  That's an important dashboard as it works nicely in a high level parent account or POA account.  In addition to that high level view we can create other visualizations that use `bytescountestimats()` to estimate ingest for nearly any event or metric.  A detailed overview of `bytescountestimate()` was discussed [in the prerequisites section](http://localhost:8000/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#baseline-query-examples).
+
+1. In a new tab [open](https://raw.githubusercontent.com/JimHagan/docs-website/jhagan-data-governance-oma-module/src/content/docs/new-relic-solutions/observability-maturity/operational-efficiency/dashboards/data-governance-entity-breakdown.json) the *Data Governance Entity Breakdowns* dashboard JSON in Github.
+2. Download the file locally  
+3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
+4. Install it into any account that contains APM, Browser, Mobile appliactions or K8s clusters [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
+
+![Entity Breakdown Dashboard](images/oma-oe-dg-entity-breakdown-dash.png)
+
+Feel free to modify this dashboard to suit the specific types of entities you are monitoring in your accounts.  NOTE: these queries are more taxing since they are not working from a pre-aggregated data source like NrConsumption.  It may be necessary to adjust the time frames and take advantage of addtional where clauses and the `limit` clause to make them performant.
+
+## Install the Cloud Integration Dashboard (optional)
+
+Cloud Integrations can often be the source of data ingest growth.  Without good visualizations it can be very difficult to pinpoint where the growth is coming from.  This is partly because these integrations are so easy to configure and they are not part of an organizations normal CI/CD pipeline and may also not be part of a formal configuration management system.
+Fortunately this powerful set of dashboards can be installed [directly from New Relic I/O](https://onenr.io/0EPwJJO9Ow7).
 Individual dashboards installed by this pakage include:
 
 - AWS Integrations
@@ -580,11 +573,6 @@ Individual dashboards installed by this pakage include:
 - Kubernetes
 
 ![Infrastructure Integrations IO](images/oma-oe-dg-infra-integrations-nr-io.png)
-
-</Collapser>
-</CollapserGroup>
-
-
 
 ## Relevant Docs [#data-ingest-tech-resources]
 
