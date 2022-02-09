@@ -456,18 +456,50 @@ SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatfo
 
 ## Install the data governance dashboard
 
+### Option 1: Quick Install With New Relic IO
+
+1. Click on the New Relic Instant Observabilty icon at the top of the NR1 UI
+2. Check the `Dashboards` filter and enter the word `Governance` into the text filter
+
+![Data Governance Filter](images/oma-oe-dg-newrelic-io-governance-filter.png)
+
+3. Click `Install this Quickstart` in the upper right
+4. Select your top level master accoun tor POA account in the account drop down
+5. Click `Done` since there is no agent to install and then click `See your data`
+
+That will bring you to the newly installed dashboard
+
+### Option 2: Manually Install the Dashboard JSON
+
 1. In a new tab [open](https://github.com/newrelic/newrelic-quickstarts/blob/main/quickstarts/oma-data-gov/dashboards/data-ingest-baseline.json) the *Data Governance Baseline* dashboard JSON in Github.
 2. Download the file locally  
 3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
 4. Install it into your NR1 Master Account or POA account using the [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
 
-The main tab shows a variety of charts including some powerful time series views.  
+### Dashboard Overview 
+
+The main overview tab shows a variety of charts including some powerful time series views.  
 
 ![Org Wide View](images/oma-dg-org-wide-dashboard-dark.png)
 
 The second tab is for tabular baseline reports. 
 
 ![Org Wide Tabular](images/oma-dg-org-wide-dashboard-tabular-dark.png)
+
+The remaining tab are detailed view for specific telemetry types such as Logs, Traces, etc
+
+Detail tabs include:
+
+- APM
+- Tracing
+- Browser
+- Mobile
+- Infra (Host)
+- Infra (Process)
+- Infra (Integration)
+- Custom Events
+- Serverless
+- Pixie
 
 <Callout variant="tip">
 In addition to the custom queries used in the next section we suggest you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
