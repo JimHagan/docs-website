@@ -138,7 +138,7 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
     </tr>
     <tr>
       <td>
-        BrowserEventBytes
+        BrowserEventsBytes
       </td>
       <td>
         `Browser`, `Browser:EventLog`, `Browser:JSErrors`, `PcvPerf`, `PageViewTiming`
@@ -486,20 +486,24 @@ The second tab is for tabular baseline reports.
 
 ![Org Wide Tabular](images/oma-dg-org-wide-dashboard-tabular-dark.png)
 
-The remaining tab are detailed view for specific telemetry types such as Logs, Traces, etc
+The remaining tab are detailed view for specific telemetry types such as Logs, Traces, etc.  For example this screenshot shows the Browser detail page
+
+![Browser Detail Page](images/oma-dg-browser-detail-dark.png)
+
+
 
 Detail tabs include:
 
-- APM
-- Tracing
-- Browser
-- Mobile
-- Infra (Host)
-- Infra (Process)
-- Infra (Integration)
-- Custom Events
-- Serverless
-- Pixie
+- APM - `ApmEventsBytes`
+- Tracing - `TracingBytes`
+- Browser - `BrowserEventsBytes`
+- Mobile - `MobileEventsBytes`
+- Infra (Host) - `InfraHostBytes`
+- Infra (Process) - `InfraProcdessBytes`
+- Infra (Integration) - `InfraIntegrationBytes`
+- Custom Events - `CustomEventsBytes`
+- Serverless - `ServerlessBytes`
+- Pixie - `PixieBytes`
 
 <Callout variant="tip">
 In addition to the custom queries used in the next section we suggest you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
