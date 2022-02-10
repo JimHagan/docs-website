@@ -454,27 +454,17 @@ SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatfo
 
 </CollapserGroup>
 
-## Install the data governance dashboard
+## Install the data governance baseline dashboard
 
-### Option 1: Quick Install With New Relic IO
+### Quick Install With New Relic IO
 
-1. Click on the New Relic Instant Observabilty icon at the top of the NR1 UI
-2. Check the `Dashboards` filter and enter the word `Governance` into the text filter
-
-![Data Governance Filter](images/oma-oe-dg-newrelic-io-governance-filter.png)
-
+1. Go to this [New Relic IO Quickstart](https://onenr.io/0PoR8zpDYQG)
 3. Click `Install this Quickstart` in the upper right
-4. Select your top level master accoun tor POA account in the account drop down
-5. Click `Done` since there is no agent to install and then click `See your data`
+4. Select your top level master account or POA account in the account drop down
+5. Click `Done`
+6. When the quickstart is done installing open the 'Data Governance Baseline' dashboard.
 
-That will bring you to the newly installed dashboard
-
-### Option 2: Manually Install the Dashboard JSON
-
-1. In a new tab [open](https://github.com/newrelic/newrelic-quickstarts/blob/main/quickstarts/oma-data-gov/dashboards/data-ingest-baseline.json) the *Data Governance Baseline* dashboard JSON in Github.
-2. Download the file locally  
-3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
-4. Install it into your NR1 Master Account or POA account using the [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
+That will bring you to the newly installed dashboard.
 
 ### Dashboard Overview 
 
@@ -562,16 +552,18 @@ Simply changing the facet field to `consumingAcountName` gives us this view:
 
 ## Install The Entity Breakdown Dashboard (Optional)
 
-In a previous section we installed the name ingest baseline dashboard that uses NrConsumption as it's primary source.  That's an important dashboard as it works nicely in a high level parent account or POA account.  In addition to that high level view we can create other visualizations that use `bytescountestimats()` to estimate ingest for nearly any event or metric.  A detailed overview of `bytescountestimate()` was discussed [in the prerequisites section](http://localhost:8000/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#baseline-query-examples).
+In a previous section we installed the ingest `baseline` dashboard that uses NrConsumption as it's primary source.  That's an important dashboard as it works nicely in a high level parent account or POA account.  In addition to that high level view we can create other visualizations that use `bytescountestimats()` to estimate ingest for nearly any event or metric.  A detailed overview of `bytescountestimate()` was discussed [in the prerequisites section](http://localhost:8000/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#baseline-query-examples).
+Use the same newrelic 
 
-1. In a new tab [open](https://raw.githubusercontent.com/JimHagan/docs-website/jhagan-data-governance-oma-module/src/content/docs/new-relic-solutions/observability-maturity/operational-efficiency/dashboards/data-governance-entity-breakdown.json) the *Data Governance Entity Breakdowns* dashboard JSON in Github.
-2. Download the file locally  
-3. Edit the file to use your account id (This template uses an accountId of `0` as a placeholder).
-4. Install it into any account that contains APM, Browser, Mobile appliactions or K8s clusters [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import)
+1. Go to the [same New Relic IO Quickstart](https://onenr.io/0PoR8zpDYQG) you used for the baseline dashboard
+2. Click `Install this Quickstart` in the upper right
+3. You won't install this into a POA account.  You will install it into any account that contains APM, Browser, Mobile appliactions or K8s clusters [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import).  You may install it in multiple places.  You may also install it into a top-level parent account and modify the dashboard so you have account-specific charts all in one dashboard.
+4. Click `Done` since there is no agent to install.
+6. When the quickstart is done installing open the `Data Governance Entity Breakdowns` dashboard.
 
 ![Entity Breakdown Dashboard](images/oma-oe-dg-entity-breakdown-dash.png)
 
-Feel free to modify this dashboard to suit the specific types of entities you are monitoring in your accounts.  NOTE: these queries are more taxing since they are not working from a pre-aggregated data source like NrConsumption.  It may be necessary to adjust the time frames and take advantage of addtional where clauses and the `limit` clause to make them performant.
+*NOTE* these queries are more taxing since they are not working from a pre-aggregated data source like NrConsumption.  It may be necessary to adjust the time frames and take advantage of addtional where clauses and the `limit` clause to make them performant in some of your environments.
 
 ## Install the Cloud Integration Dashboard (optional)
 
