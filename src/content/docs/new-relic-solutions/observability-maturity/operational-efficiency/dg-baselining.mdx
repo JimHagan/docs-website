@@ -461,8 +461,8 @@ SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatfo
 1. Go to this [New Relic IO Quickstart](https://onenr.io/0PoR8zpDYQG)
 3. Click `Install this Quickstart` in the upper right
 4. Select your top level master account or POA account in the account drop down
-5. Click `Done`
-6. When the quickstart is done installing open the 'Data Governance Baseline' dashboard.
+5. Click `Done` since there is no agent to install.
+6. When the quickstart is done installing open the `Data Governance Baseline` dashboard.
 
 That will bring you to the newly installed dashboard.
 
@@ -553,7 +553,6 @@ Simply changing the facet field to `consumingAcountName` gives us this view:
 ## Install The Entity Breakdown Dashboard (Optional)
 
 In a previous section we installed the ingest `baseline` dashboard that uses NrConsumption as it's primary source.  That's an important dashboard as it works nicely in a high level parent account or POA account.  In addition to that high level view we can create other visualizations that use `bytescountestimats()` to estimate ingest for nearly any event or metric.  A detailed overview of `bytescountestimate()` was discussed [in the prerequisites section](http://localhost:8000/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#baseline-query-examples).
-Use the same newrelic 
 
 1. Go to the [same New Relic IO Quickstart](https://onenr.io/0PoR8zpDYQG) you used for the baseline dashboard
 2. Click `Install this Quickstart` in the upper right
@@ -562,6 +561,8 @@ Use the same newrelic
 6. When the quickstart is done installing open the `Data Governance Entity Breakdowns` dashboard.
 
 ![Entity Breakdown Dashboard](images/oma-oe-dg-entity-breakdown-dash.png)
+
+You can refer back to [this section](http://localhost:8000/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#understand-nr-consumption-metrics) to see exactly which event types are used in these breakdowns.
 
 *NOTE* these queries are more taxing since they are not working from a pre-aggregated data source like NrConsumption.  It may be necessary to adjust the time frames and take advantage of addtional where clauses and the `limit` clause to make them performant in some of your environments.
 
