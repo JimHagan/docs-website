@@ -212,9 +212,36 @@ View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-da
     title="Understand Your Organization's Monthly Ingest Target"
     >
 
-Under New Relic's consumption model data and users both contributed toward your consumption.  If you have an `Annual Pool of Funds` (APoF) agreement you likely have some monthly target budget for data ingest.   For example you may have set a target of 5TB per day and 100 FSO users.  In this type of plan data and users can be "traded off" but it's best to discuss this with other stakeholders in your organization to ensure you are getting the right mix for your observability goals.   New Relic also has `Pay as You Go` plans.  Even though their is no specific annual commitment your organization will likely have a data ingest target.  In addition our perpetual free tier allows for up to 100GB data ingest per month.  If you are currently working in a free tier account you can consider 100GB your monthly ingest target.  In a free tier account any additional data ingested over 100GB per month will be billed at 25 cents per GB.
+Under New Relic's consumption model data and users both contributed toward your consumption.
+
+There are three general types of usage plans and they will effect how you set ingest targets for your organization.
+
+### *APoF*
+
+If you have an `Annual Pool of Funds` (APoF) agreement you likely have some monthly target budget for data ingest.   For example you may have set a target of 5TB per day and 100 FSO users.  In this type of plan data and users can be "traded off" but it's best to discuss this with other stakeholders in your organization to ensure you are getting the right mix for your observability goals.  Although some customers will plan for variability in their consumption during the year let's assume for now our montly consumption budget is our APoF / 12.
+
+If you know the number of FSO and Core users you need you can use this formula:
+
+`(monthly_target_spend - (num_fso_users*per_fso_cost) - (num_core_users*per_core_cost))/0.25`
+
+*We divide by $0.25 in order to convert to get our monthly GB ingest target.*
+
+
+### *Pay As You Go*
+
+In a pay as you go plan you will not have a pre-determined yearly commit however, you will likely have an understood limit to your montly spend.  In this model you would take the following to determine your target ingest:
+
+`(monthly_target_spend - (num_fso_users*per_fso_cost) - (num_core_users*per_core_cost))/0.25`
+
+*We divide by $0.25 in order to convert to get our monthly GB ingest target.*
+
+
+### Free tier
+
+     In addition our perpetual free tier allows for up to 100GB data ingest per month.  If you are currently working in a free tier account you can consider 100GB your monthly ingest target.  In a free tier account any additional data ingested over 100GB per month will be billed at $0.25 per GB.
 
 See this [article](https://docs.newrelic.com/docs/licenses/license-information/usage-plans/new-relic-one-usage-plan-descriptions/) to understand all of the details of New Relic's usage plans. 
+As always consult with your New Relic account team to help refine your ingest targets.
 
 </Collapser>
   <Collapser
