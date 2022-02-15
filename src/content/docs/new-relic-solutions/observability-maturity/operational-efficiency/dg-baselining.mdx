@@ -207,7 +207,16 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
 
 View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-data-coming-new-relic/) for reference.
 </Collapser>
+<Collapser
+    id="understand-monthly-ingest-target"
+    title="Understand Your Organization's Monthly Ingest Target"
+    >
 
+Under New Relic's consumption model data and users both contributed toward your consumption.  If you have an `Annual Pool of Funds` (APoF) agreement you likely have some monthly target budget for data ingest.   For example you may have set a target of 5TB per day and 100 FSO users.  In this type of plan data and users can be "traded off" but it's best to discuss this with other stakeholders in your organization to ensure you are getting the right mix for your observability goals.   New Relic also has `Pay as You Go` plans.  Even though their is no specific annual commitment your organization will likely have a data ingest target.  In addition our perpetual free tier allows for up to 100GB data ingest per month.  If you are currently working in a free tier account you can consider 100GB your monthly ingest target.  In a free tier account any additional data ingested over 100GB per month will be billed at 25 cents per GB.
+
+See this [article](https://docs.newrelic.com/docs/licenses/license-information/usage-plans/new-relic-one-usage-plan-descriptions/) to understand all of the details of New Relic's usage plans. 
+
+</Collapser>
   <Collapser
     id="baseline-query-examples"
     title="Understand bytecountestimate() for more granular breakdown"
@@ -498,6 +507,24 @@ Detail tabs include:
 <Callout variant="tip">
 In addition to the custom queries used in the next section we suggest you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
 </Callout>
+
+## Add ingest target indicators to your dashboard
+
+In the prerequisites section we discussed the concept of a monthly usage target.  You may actually have several targets to help keep you on track.
+
+- An overall organizational target on daily rate or monthly ingest
+- Targets per data type to ensure the optimal breakdown (for example 1 TB per day for logs and 2 TB per day for metrics).
+- Targets for specific sub-accounts or business units.  
+
+In our example account we have an organization that would like to keep their total organizational ingest target to `<` 12TB daily.  This was a new target after having reduced ingest down from over 20TB per day.  We can get a threshold line to draw on our line chart by adding a static number to our `SELECT` statement.  Update the query for the daily ingest chart (lower left chart in the overview page) as follows:
+
+```
+SELECT 12000, rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries FROM NrConsumption WHERE productLine='DataPlatform' TIMESERIES AUTO since 9 months ago limit max COMPARE WITH 3 months ago
+```
+
+![Ingest Target Line](images/oma-oe-dg-ingest-target-line.png)
+
+
 
 ## Generate your report
 
