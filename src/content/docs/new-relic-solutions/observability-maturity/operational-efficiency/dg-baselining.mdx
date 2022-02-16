@@ -556,7 +556,7 @@ SELECT 360000, rate(sum(GigabytesIngested), 30 day) AS '30 Day Rate' FROM NrCons
 
 ![Ingest Target 30 Day](images/oma-oe-dg-ingest-target-30-day-rate-ts.png)
 
-We can also apply a daily rate target line.   Let's just divide 360000 by 30 and we'll use 12000 as our daily rate target like so:
+We can also apply a daily rate target line.   Let's just divide 360000 by 30 and we'll use 12000 as our daily rate target.  Update the `Daily Ingest Rate (Compare With 3 Months Prior)` chart:
 
 ```
 SELECT 12000, rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries FROM NrConsumption WHERE productLine='DataPlatform' TIMESERIES AUTO since 9 months ago limit max COMPARE WITH 3 months ago
