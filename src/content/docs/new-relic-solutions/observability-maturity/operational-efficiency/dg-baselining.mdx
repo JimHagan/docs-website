@@ -548,13 +548,22 @@ In the prerequisites section we discussed the concept of a monthly usage target.
 - Targets per data type to ensure the optimal breakdown (for example 1 TB per day for logs and 2 TB per day for metrics).
 - Targets for specific sub-accounts or business units.  
 
-In our example account we have an organization that would like to keep their total organizational ingest target to `<` 12TB daily.  This was a new target after having reduced ingest down from over 20TB per day.  We can get a threshold line to draw on our line chart by adding a static number to our `SELECT` statement.  Update the query for the daily ingest chart (lower left chart in the overview page) as follows:
+In our example account we have an organization that would like to keep their total organizational ingest target to `<` 360 Terrabytes monthly.  This was a new target after having reduced ingest down from over 20TB per day.  We can get a threshold line to draw on our line chart by adding a static number to our `SELECT` statement.  Update the query for the chart `30 Day Rate (All Accounts & Telemetry Types)`:
+
+```
+SELECT 360000, rate(sum(GigabytesIngested), 30 day) AS '30 Day Rate' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago limit max compare with 1 month ago TIMESERIES 7 days
+```
+
+![Ingest Target 30 Day](images/oma-oe-dg-ingest-target-30-day-rate-ts.png)
+
+We can also apply a daily rate target line.   Let's just divide 360000 by 30 and we'll use 12000 as our daily rate target like so:
 
 ```
 SELECT 12000, rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries FROM NrConsumption WHERE productLine='DataPlatform' TIMESERIES AUTO since 9 months ago limit max COMPARE WITH 3 months ago
 ```
 
-![Ingest Target Line](images/oma-oe-dg-ingest-target-line.png)
+![Ingest Target Daily](images/oma-oe-dg-ingest-target-line.png)
+
 
 
 
