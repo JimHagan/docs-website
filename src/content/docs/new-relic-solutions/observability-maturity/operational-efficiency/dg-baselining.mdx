@@ -536,8 +536,14 @@ Detail tabs include:
 - Serverless - `ServerlessBytes`
 - Pixie - `PixieBytes`
 
-<Callout variant="tip">
-In addition to the custom queries used in the next section we suggest you familarize yourself with the built-in [data ingest drilldown tool](https://docs.newrelic.com/whats-new/2021/06/data-ingest-drill-down/) in the NR1 Platform.
+<Callout variant="caution">
+If you install this dashboard into a POA account when faceting by consumingAccount the POA acount itself will not be including in any facets by `consumingAccountName`.  However if you install it in a parent account that parent account itself is a *consuming account*.  The consumption value of that parent account is the `sum` of data ingested directly to the parent account and data sent to any sub-accounts.  For when faceting on monthly ingest you may see something like:
+
+- Parent Account Ingest: 100GB
+- Sub Account 1 Ingest: 50GB
+- Sub Account 2 Ingest: 20GB
+
+Where `Parent Account Ingest` includes data for sub accounts 1 and 2 and an additional 30GB that is sent directly to the parent account.
 </Callout>
 
 ## Add ingest target indicators to your dashboard
