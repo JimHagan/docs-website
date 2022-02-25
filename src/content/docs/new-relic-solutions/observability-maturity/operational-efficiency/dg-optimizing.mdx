@@ -60,8 +60,8 @@ Alignment to these objectives are what allow us to make flexible and intuitive d
 
 </Collapser>
 <Collapser
-  id="prioritize-your-telemetry"
-  title="Prioritize Your Telemetry"
+  id="develop-optimization-recommendation"
+  title="Develop an Optimization Recommendation"
 >
 
 In this section we'll make two core assumptions
@@ -69,14 +69,13 @@ In this section we'll make two core assumptions
 - We have the tools and techniques from the [Baselining](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining) section to have a proper accounting of where our ingset comes from.
 - We have a good understanding of the [OM Value Drivers](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/introduction/) as presented in New Relic's OMA framework.  This will be crucial in applying a value and a priority to groups of telemetry
 
+Use the following examples to help you visualize how you would assess your own telemetry ingest and make the sometimes hard decisions that are needed to get within budget.  Although each of these examples tries to focus on a value driver, we believe instrumentation will always be able to serve more than one value driver.  This is the hardest part of data ingest governance and we don't pretend that ambiguity doesn't exist.
 
 <CollapserGroup>
 <Collapser
   id="case-study-1"
-  title="Example 1: Prioritize Uptime and Reliability"
+  title="Example 1: Focus on Uptime and Reliability"
 >
-
-### Prioritizing Exercise 1: Top Priority - Uptime and Reliability
 
 An account is ingesting about 20% more than they had budgeted for.  They have been asked by a manager to find some way to reduce consumption.  Their most important value driver is `Uptime and Reliability`
 
@@ -111,10 +110,8 @@ After executing those changes the team is 5% below their budget and has freed up
 </Collapser>
 <Collapser
   id="case-study-2"
-  title="Example 2: Prioritize Customer Experience"
+  title="Example 2: Focus on Customer Experience"
 >
-
-### Prioritizing Exercise 2: Top Priority - Customer Experience
 
 A team responsible for a new user facing platform with an emphasis on Mobile and Browser is running 50% over budget.  They will need to right size their ingest, but they are adament about not sacrificing any `Customer Experience` observability.
 
@@ -151,7 +148,7 @@ After executing the changes they are now just 5% over their original budget, but
 </Collapser>
 <Collapser
   id="case-study-3"
-  title="Example 3: Prioritize Innovation"
+  title="Example 3: Focus on Prioritize Innovation"
 >
 
 A team is in the process of refactoring a large Python monolith to four microservices.  The monolith shares much infrastructure with the new architecture including a customer database, and a cache layer.  They are 70% over budget and have two months to go before they can officially decommision the monolith.
@@ -190,7 +187,7 @@ Their estate includes:
 
 <Collapser
   id="techniques-for-reduction"
-  title="Reduce Ingest Based on Your Priorities"
+  title="Reduce Ingest Based on Your Recommendation"
 >
 
 At this stage we assume you've given some good thought to all of the kinds of telemetry in your account(s) and how they relate to your value drivers.  This section will provide detailed technical instructions and examples on how to reduce a variety of telemetry types.
