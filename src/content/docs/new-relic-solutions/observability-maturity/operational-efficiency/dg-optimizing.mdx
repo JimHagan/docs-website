@@ -60,8 +60,8 @@ Alignment to these objectives are what allow us to make flexible and intuitive d
 
 </Collapser>
 <Collapser
-  id="develop-optimization-recommendation"
-  title="Develop an Optimization Recommendation"
+  id="develop-optimization-plan"
+  title="Develop an Optimization Plan"
 >
 
 In this section we'll make two core assumptions
@@ -93,7 +93,7 @@ Their estate includes:
 - Logs (Dev, Staging, Prod - Including Debug)
 
 
-<Callout variant='IMPORTANT' title='Optimization Recommendations'>
+<Callout variant='IMPORTANT' title='Optimization Plan'>
 - Omit debug logs (knowning they can be turned on if there is an issue) (saves 5%)
 - Omit several K8s state merics which are not required to display the Kubernetes Cluster Explore (saves 10%)
 - Drop some custom Browser events they were collecting back when they were doing a lot of A/B testing of new features (saves 10%)
@@ -130,7 +130,7 @@ Their estate includes:
 - Logs from their serverless functions
 - Various cloud integrations
 
-<Callout variant='IMPORTANT' title='Optimization Recommendations'>
+<Callout variant='IMPORTANT' title='Optimization Plan'>
 - Omit the serverless logs (they are basically redundant to what they get from their Lambda integration)
 - Decrease the process sample rate on their hosts to every one minute
 - Drop process sample data in DEV environments
@@ -168,7 +168,7 @@ Their estate includes:
 - MSSQL (future DB for the microservice architecture)
 - Load Balancer Logging (microservices and host monitoring)
 
-<Callout variant='IMPORTANT' title='Optimization Recommendations'>
+<Callout variant='IMPORTANT' title='Optimization Plan'>
 - Configure load balancer logging to only monitor 5xx response codes (monolith)
 - Cust sample rate on ProcessSample, StorageSample, and NetworkSample to 60s for hosts running the monolith
 - Disable MSSQL monitoring since currently the new architecture does not use it.
@@ -187,7 +187,7 @@ Their estate includes:
 
 <Collapser
   id="techniques-for-reduction"
-  title="Reduce Ingest Based on Your Recommendation"
+  title="Reduce Ingest Based on Your Plan"
 >
 
 At this stage we assume you've given some good thought to all of the kinds of telemetry in your account(s) and how they relate to your value drivers.  This section will provide detailed technical instructions and examples on how to reduce a variety of telemetry types.
