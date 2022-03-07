@@ -248,9 +248,9 @@ For your data to appear in this section, make sure it has the following:
   * `otel.status_code = ERROR`
   * Facets by span name
 
-### Externals [#externals]
+### External services [#externals]
 
-Externals capture calls to out-of-process services such as web services, resources in the cloud, and other network entities.
+The external services feature captures calls to out-of-process services such as web services, resources in the cloud, and other network entities.
 
 For your data to appear in this section, make sure it has the following:
 
@@ -258,17 +258,16 @@ For your data to appear in this section, make sure it has the following:
   * `span.kind = client` or `producer`
   * `db.system` is not present
 
-### JVMs
+For more details, see [External services](/docs/apm/apm-ui-pages/monitoring/external-services/external-services-intro).
 
-When you drill into a specific JVM, the UI display charts driven by JVM metric data:
+### JVMs [#jvms]
 
-  * JVM metrics follow the general [semantic conventions for runtime environment metrics](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/semantic_conventions/runtime-environment-metrics.md#runtime-environment-specific-metrics---runtimeenvironment).
-  * The Java specific runtime metrics are not well documented. The [implementation](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/runtime-metrics/library/src/main/java/io/opentelemetry/instrumentation/runtimemetrics) is effectively the documentation and may be subject to change. 
+When you drill into a specific JVM, the UI display charts driven by JVM metric data. The Java specific runtime metrics are not well documented. The [implementation](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/runtime-metrics/library/src/main/java/io/opentelemetry/instrumentation/runtimemetrics) is effectively the documentation and may be subject to change. 
 
 For your data to appear in this section, make sure it has the following:
 
-  * Requires a unique `service.instance.id` attribute for rendering the list of JVMs
-  * `Service.instance.id` is an OpenTelemetry resource attribute
+  * A unique `service.instance.id` attribute for rendering the list of JVMs
+  * An OpenTelemetry resource attribute `service.instance.id`
 
 ### Logs [#logs]
 
