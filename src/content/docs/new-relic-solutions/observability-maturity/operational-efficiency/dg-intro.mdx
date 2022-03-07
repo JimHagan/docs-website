@@ -20,157 +20,58 @@ redirects:
 
 ## Overview [#overview]
 
-Data ingest governance is the practice of ensuring optimal value for telemetry data collected. This practice is especially important to complex organizations with numerous business units and working groups. The objective is to get the appropriate ROI for investiment in telemetry data.
+Data ingest governance is the practice of ensuring optimal value for telemetry data collected. This practice is especially important to complex organizations with numerous business units and working groups. This guide is for readers who need granularity that goes beyond the [data management views](/docs/data-apis/manage-data/manage-your-data/) in New Relic One.
 
-This guide is built around several separate modules that can be adopted independently or as part of a complete practice.  These include:
-
-- [Baseline your ingest data](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining) - Analyze your organization's current data ingest rates.
-- [Optimize your ingest data](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing) - Right-size your data ingest
-- Forecast your ingest data - Estimate future data ingest rates <font color="green"><sup>coming soon!</sup></font>
-
-## Desired outcomes [#desired-outcome]
+## Desired outcome [#desired-outcome]
+ 
+Ensure a high return on investment in telemetry data.  
 
 <CollapserGroup>
 <Collapser
     id="noise-reduction"
-    title="Noise Reduction"
+    title="Noise reduction"
     >
 
-As part of the data governance process you will develop the knowledge and confidence to reduce data that is redundant or not necessary for your observability goals.
+Reduce redundant or unnecessary data with confidence. 
 </Collapser>
 
 
 <Collapser
     id="increased-transparency"
-    title="Increased Transparency"
+    title="Increased transparency"
     >
 
-Complex organizations often struggle to understand exactly which groups within the org are contributing which data.  This process aims to provide a method to raise visibility of the sources of telemetry and to enable organizations to reduce *silos* in the management of observability data.
+Understand exactly which groups within the org are contributing which data. Expose where your telemetry data is coming from and reduce data management silos.
 </Collapser>
 
 <Collapser
     id="cost-optimization-predictability"
-    title="Cost Optimization & Predictability"
+    title="Cost optimization & predictability"
     >
 
-Data ingest governance allows you to account for our ingest costs in a clear and concise way.  It also provides you with practical tools for adjusting your ingest volume with full context of the observability value of the data.  Taken together, *Baseline your ingest data*, *Optimize your ingest data*, and *Forecast your ingest data* give you a complete tool kit to reduce suprises and to plan further into the future.
+Account for ingest costs in a clear and concise way.  Adjust your ingest volume with full context of the observability value of the data.
 
 </Collapser>
 </CollapserGroup>
 
+## Process [#process]
+This guide is built around several modules that should be adopted in order as part of a complete practice.  These include:
 
-## Governance Roles & Practices [#prerequisites]
+- [Establish data ingest management roles and practices](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe)
+- [Baseline your ingest data](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining) - Analyze your organization's current data ingest rates.
+- [Optimize your ingest data](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing) - Right-size your data ingest
+- Forecast your ingest data - Estimate future data ingest rates <font color="green"><sup>coming soon!</sup></font>
 
-Every organization will have different structure in place to manage its technology and observability specifically.  We recommend you consider designinating a few explit roles and practices in order to ensure a level of context and accountability in your ingest planning.  At very minimum we recommend you designate a *Governance Team* and schedule some face-to-face check-ins throughout the year to plan and adapt as needed.
+## Additional resources [#additional-resources]
 
-<CollapserGroup>
-<Collapser
-    id="stakeholders-and-participants"
-    title="Stakeholders and Participants"
-    >
+[Manage Incoming Data](/docs/data-apis/manage-data/manage-data-coming-new-relic/)
 
-Regardless of how your organization's core teams are structured it is necessary to identify some individuals who will participate in the data governance process.  Selection of the team can be ad hoc but it should include representation from a broad enough cross section of teams so that when priorities and decisions must be made you will have the right stakeholders.  The team should have one individual who can be considered the overall observability manager.  This may be the person who manages the New Relic account or an overriding team leader responsible for the sytems and infrastructure monitored by New Relic.
+[Data Management Hub](/docs/data-apis/manage-data/manage-your-data/)
 
-### Telemetry Manager
+[Drop Data Using Nerdgraph](/docs/data-apis/manage-data/drop-data-using-nerdgraph/)
 
-This is the go-to person to help resolve conflicts and to communicate with upper management as needed.  When the organization contains `gray areas` of ownership leading to questions like "Who owns this Kubernetes Cluster" this individual is instrumental.
-
-### The Governance Team
-
-The *Telemetry Manager* functions as the lead for this team.  The members of this team bring in practicial technical knowledge of the systems and services that are monitored in New Relic.  Organizationally they may be peers of the Telemetry Manager so collaboration is key.
-If you have a pre-existing structure such as an Observability Centre of Excellence (OCoE) your governance team can be comprised primarily from an existing group like the *OCoE Core Team*.
-
-New Relic's Centre of Excellence Guide describes the OCoE Core Team as:
-
-*A central team responsible for maintaining  the Observability Centre of Excellence*
-
-The primary responsibility of the OCoE Core Team are:
-
-- Maintain relationship with New Relic
-- Administrators and coordinators of accounts and users
-- Onboarding of new teams and individuals
-- Maintenance of resources and knowledge base
-- Promotion of collaboration and sharing amongst teams
-
-To which we may add:
-
-*Implement Observability Data Governance Plan*
-
-
-The main pillars of the governance team responsibilities are:
-
-- Work with Telemetry Manager to create monthly ingest targets. 
-- Monitor data ingest baseline reports and respond to anomalies
-- Draft and approve plans for data optimization/reduction as needed
-- Participate in scheduled check-ins where baseline data is analyzed and compared to ingest targets.
-- Make modifications to to ingest targets as needed
-
-### The New Relic Account Team
-
-The New Relic account team may be used as a resource in your data goverance practice.  For example the Technical Account Manager (TAM) will be able to help validate your baselining efforts and to provide good recommendations when optimizing is needed.  The TAM will also keep you up on all of the latest innovations in the NR1 platform many of which may affect future instrumentation choices.  The account executive (AE) will help ensure that you have full transparency into the financial ramifications of data and user consumption.  This is an important benefit especialy to large enterprises with a complex account structure.
-
-
-</Collapser>
-<Collapser
-    id="timelines-and-checkins"
-    title="Timelines and Check-Ins"
-    >
-
-Our aim is not to micro-manage the process but we recommend that certain scheduled milestones be maintained throughout the year.  Some of these may be marked by an in-person (or virtual face to face) meeting of the data governance team.
-Recomended milestones:
-
-### Yearly ingest target planning
-
-Meet to maintain an organization wide telemetry ingest target.  This can be broken out into as many facets as is useful for your organization.  For example you may adopt the following ingest targets...
-
-Organization Wide (Monthly): 100TB
-Team A (Monthly): 500TB
-Team B (Monthly): 300TB
-Team C (Monthly): 100TB
-
-This rough set of targets leaves 100TB as a buffer for uncertainty.   We may also choose some specific limits based on certain highly variable telemetry.  For example we may set organization or team based limits on Log or Metrics ingest.
-
-### Monthly ingest check-ins
-
-During these sessions you'll track ingest against plan and produce action items needed to stay on target.
-
-### Ad Hoc anomaly resolution
-
-Occasionally some system refactor or organizational change could lead to an unexpected increase in data ingest.  In such a scenario it may be necessary to call some ad hoc face-to-face meetings to address the specific topic.  Some scenarios to watch for:
-
-- Some new software deployment increased log volume by 3x
-- A team enables a handful of new cloud integrationst have unexpectedly increased metrics ingest 200px
-- An acquisition of a new company has led to increase in overall telemetry volume
-- Peak business season activity combined with some pre-peak refactors results in a higher than expected custom events volume.
-
-- Quarter check-in with the New Relic technical account manager
-
-</Collapser>
-
-
-<Collapser
-    id="collaboration-with-new-relic"
-    title="Collaboration With New Relic"
-    >
-We recommend you incorporate the New Relic technical account team led by the TAM (Technical Account Manager) wherever possible.  They will be able to leverage experience working on dozens of large accounts in helping your organization optimize your ingest.
-
-- The TAM will be able to update you on NR1 roadmap items that impact ingest
-- Provide optimized configurations and reduction strategies where needed
-- Work with engineering to explain any ingest anomalies as they arise
-- Work closely with the NR1 Account Excecutive (AE) to ensure that your commercial terms are structure properly for your data ingest requirements.
-
-</Collapser>
-</CollapserGroup>
-## Relevant documents [#data-ingest-tech-resources]
-
-[Manage Incoming Data](https://docs.newrelic.com/docs/data-apis/manage-data/manage-data-coming-new-relic/)
-
-[Data Management Hub](https://docs.newrelic.com/docs/data-apis/manage-data/manage-your-data/)
-
-[Drop Data Using Nerdgraph](https://docs.newrelic.com/docs/data-apis/manage-data/drop-data-using-nerdgraph/)
-
-[Alert on Data Ingest Anomalies](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/)
+[Alert on Data Ingest Anomalies](/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/)
 
 [Automating Telemetry Workflows](https://developer.newrelic.com/automate-workflows/)
 
-[Metrics Aggregation and Events to Metrics](https://docs.newrelic.com/docs/data-apis/convert-to-metrics/create-metrics-other-data-types/)
+[Metrics Aggregation and Events to Metrics](/docs/data-apis/convert-to-metrics/create-metrics-other-data-types/)
