@@ -12,11 +12,11 @@ pages:
         path: /docs/accounts/accounts-billing/account-setup/choose-your-data-center        
       - title: Release notes
         path: /docs/release-notes/org-user-mgmt-release-notes       
-  - title: Access problems
+  - title: Login and access troubleshooting
     pages: 
-      - title: Lack of access to data or features
+      - title: Overview of permissions and access factors
         path: /docs/accounts/accounts-billing/account-structure/factors-affecting-access-features-data 
-      - title: Password and login problems
+      - title: Login troubleshooting
         path: /docs/accounts/accounts-billing/account-setup/troubleshoot-new-relics-password-email-address-login-problems                
   - title: Billing and usage
     path: /docs/accounts/accounts-billing/new-relic-one-pricing-billing
@@ -47,6 +47,8 @@ pages:
             path: /docs/accounts/original-accounts-billing/original-product-based-pricing/introduction-new-relic-subscription-usage-data
           - title: Data retention
             path: /docs/accounts/original-accounts-billing/product-based-pricing/overview-data-retention-components
+          - title: Event data retention
+            path: /docs/accounts/original-accounts-billing/original-data-retention/event-data-retention-original-pricing-plan
           - title: Trial and Lite accounts
             path: /docs/accounts/original-accounts-billing/product-based-pricing/trial-lite-accounts-deprecated
           - title: Set session timeouts
@@ -121,7 +123,7 @@ pages:
         path: /docs/accounts/accounts/account-maintenance/account-email-settings
       - title: Password requirements
         path: /docs/accounts/accounts/account-maintenance/change-passwords-user-preferences
-      - title: Default time zone setting
+      - title: Set time zone
         path: /docs/accounts/accounts-billing/general-account-settings/default-time-zone-setting
       - title: Change name
         path: /docs/accounts/accounts/account-maintenance/change-your-new-relic-account-name

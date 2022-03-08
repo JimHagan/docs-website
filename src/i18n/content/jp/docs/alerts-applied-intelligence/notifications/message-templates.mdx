@@ -1,19 +1,13 @@
 ---
 title: 通知メッセージテンプレート
 tags:
-  - Alerts and Applied Intelligence
+  - Alerts and applied intelligence
   - Applied intelligence
-  - Incident Intelligence
+  - Incident intelligence
   - Notification templates
 metaDescription: Read about various notification message templates you can use and apply.
 translationType: machine
 ---
-
-<Callout title="アーリーアクセス">
-  ここで説明されている機能は早期アクセスです。アーリーアクセスプログラムに参加されていない方は、これらの機能を使用することはできません。
-
-  関連する機能の詳細については、 [Alerts notification channels](/docs/alerts-applied-intelligence/new-relic-alerts/alert-notifications/notification-channels-control-where-send-alerts/) 、 [Incident Intelligence destinations](/docs/alerts-applied-intelligence/applied-intelligence/incident-intelligence/incident-intelligence-destination-examples/) 、 [Proactive Detection notifications](https://docs.newrelic.com/docs/alerts-applied-intelligence/applied-intelligence/proactive-detection/proactive-detection-applied-intelligence/#set-up) のドキュメントを参照してください。
-</Callout>
 
 通知メッセージのテンプレートを使うと、サードパーティの送信先に送信する前に、通知イベントデータをカスタマイズすることができます。テンプレートは、お客様のカスタム値をサードパーティの送信先で使用される値にマッピングします。
 
@@ -90,7 +84,7 @@ Handlebars言語は、基本的な変数の置き換えに加えて、 [ネス�
 
   <Collapser
     className="freq-link"
-    id="eq"
+    id="equality"
     title="平等性"
   >
     変数を比較するには、equality `{{#eq}}` ヘルパーを使用します。
@@ -108,9 +102,35 @@ Handlebars言語は、基本的な変数の置き換えに加えて、 [ネス�
 
     {{eq a b}}
 
-    Render 'y' or 'n':
+    Renders 'y' or 'n':
 
     {{eq a b yes='y' no='n'}}
+    ```
+  </Collapser>
+
+  <Collapser
+    className="freq-link"
+    id="contains"
+    title="収録内容"
+  >
+    変数を比較するには、 `{{#contains}}` ヘルパーを使用します。
+
+    ```handlebars
+    Asserts that b contains a, renders 'yes' or 'no':
+
+    {{#contains a b}} yes {{else}} no {{/contains}}
+
+    Asserts that variable b contains string value "a", renders 'yes' or 'no':
+
+    {{#contains "a" b}} yes {{else}} no {{/contains}}
+
+    Renders 'true' or 'false':
+
+    {{contains a b}}
+
+    Renders 'y' or 'n':
+
+    {{contains a b yes='y' no='n'}}
     ```
   </Collapser>
 

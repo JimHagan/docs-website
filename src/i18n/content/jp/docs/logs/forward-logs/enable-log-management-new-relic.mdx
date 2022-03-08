@@ -11,9 +11,9 @@ translationType: machine
 New Relic のログ管理機能を使えば、ログデータの収集、処理、探索、照会、警告を行うことができます。ログをNew Relicに取り込むには、以下の方法があります。
 
 * [既存のログ転送ソリューション](#log-forwarding) を利用して、ログを収集し、New Relic に転送するメタデータを拡張します。
-* 当社の [インフラストラクチャエージェント](/docs/logs/enable-new-relic-logs/1-enable-logs/forward-your-logs-using-new-relic-infrastructure-agent) を、追加のソフトウェアを使用することなく、軽量のデータコレクタとして使用します。
-* [Log API](/docs/logs/log-management/log-api/introduction-log-api/) を使用して、HTTP経由でログを転送します。
-* syslogプロトコルを使用して、 [TCPエンドポイントを介してログを転送する](/docs/logs/log-management/log-api/use-tcp-endpoint-forward-logs-new-relic/) 。
+* 当社の [インフラエージェント](/docs/logs/forward-logs/forward-your-logs-using-infrastructure-agent) を軽量なデータコレクタとして使用することで、追加のソフトウェアを使用することなく、データ収集が可能です。
+* [Log API](/docs/logs/log-api/introduction-log-api) を利用して、HTTP経由でログを転送します。
+* [TCPエンドポイント](/docs/logs/log-api/use-tcp-endpoint-forward-logs-new-relic)を介してログを転送するには、syslogプロトコルを使用します。
 
 ## 使用方法 [#enable]
 
@@ -30,6 +30,14 @@ New Relic のログ管理機能を使えば、ログデータの収集、処理�
 ログフォワーダ（当社のインフラ監視エージェント、Fluentd、Logstashなど）を設定すると、ログデータを拡張し、エンリッチすることもできます。 [ログをコンテキスト](/docs/logs/enable-log-management-new-relic/configure-logs-context/configure-logs-context-apm-agents/) に設定することで、ログエンリッチャーは、フォーマットされたログデータを、アプリケーションやホストからの追加のトランザクション情報とリンクさせます。
 
 これにより、ログファイルは、強化されたメタデータとコンテクストのあるロギングデータで強化されます。あなたのログフォワーダーは、ファイルを私たちのロギングエンドポイントに送って処理します。そこからは、New Relic のログ管理機能を使って、ログの表示、照会、アラートの設定などを行うことができます。
+
+ここでは、ホストのUIのログの例を示します。選択した期間のイベントのコンテキストでログを表示したり、ハイライトされた属性の詳細データにドリルダウンしたりできます。さらに多くの機能を利用するには、 **Query logs** from here をクリックして、 **Logs** UI に直接アクセスします。
+
+![ホストのコンテキストでログを表示](./images/demotron-host-logs-123021.png "ホストのコンテキストでログを表示")
+
+<figcaption>
+  ここでは、あるイベントに関連したホストのログの例を紹介します。
+</figcaption>
 
 ## ログフォワーダーを始めよう [#compatibility-requirements]
 
@@ -51,6 +59,13 @@ New Relic のログ管理機能を使えば、ログデータの収集、処理�
 
 * [](/docs/logs/enable-log-management-new-relic/configure-logs-context/configure-logs-context-apm-agents/)
 * [](/docs/logs/enable-log-management-new-relic/configure-logs-context/configure-logs-context-apm-agents/)[インフラ監視エージェント](/docs/logs/forward-logs/forward-your-logs-using-infrastructure-agent/)
+
+ガイド付きインストールプロセスを使用して、ログ管理とインフラ監視を一緒に素早く簡単にインストールすることができます。ガイド付きインストールプロセスの仕組みや、New Relic One で表示されるログデータの使用方法については、YouTube の Nerdlog ビデオ（14分46秒）をご覧ください。
+
+<Video
+  id="_II9Y-jOE7k"
+  type="youtube"
+/>
 
 Amazon.co.jp
 
@@ -79,14 +94,14 @@ CDN、ハードウェアデバイス、マネージドサービスなど、状�
 
 ## ログのAPI [#enable-api]
 
-プラグインをインストールせずに New Relic に接続したい場合は、HTTP 入力のインテグレーションを提供しています。このオプションでは、監視対象のログデータを [Log API](/docs/logs/log-management/log-api/introduction-log-api/) を介して New Relic に直接送信します。
+プラグインをインストールせずにNew Relicに接続したい場合は、HTTP入力の統合を提供しています。このオプションは、 [Log API](/docs/logs/log-api/introduction-log-api) を介して、監視対象のログデータを直接 New Relic に送信します。
 
 ## 次のステップ [#what-next]
 
 ログフォワーダーを有効にした後は、ログ管理機能を使ってNew Relicのデータを最大限に活用しましょう。
 
-* [Logs UI](/docs/logs/log-management/ui-data/use-logs-ui/) を使って、プラットフォーム全体のロギングデータを調べてみましょう。
-* [APM UI](/docs/logs/log-management/ui-data/use-logs-ui/#links) で、アプリケーションのパフォーマンスのコンテキストでログを確認できます。 [エラーのトラブルシューティング](/docs/apm/apm-ui-pages/error-analytics/errors-page-find-fix-verify-problems/) [分散型トレース](/docs/apm/distributed-tracing/ui-data/understand-use-distributed-tracing-data) 、スタックトレース、アプリケーションログなどを使用します。
-* 当社の [インフラストラクチャ監視エージェント](/docs/logs/forward-logs/forward-your-logs-using-infrastructure-agent/) でログを転送している場合、アプリケーションとプラットフォームの両方のパフォーマンスデータをより深く可視化できます。 [インフラストラクチャ・ログ](/docs/logs/log-management/ui-data/use-logs-ui/#links) を UI で確認します。
+* [Logs UI](/docs/logs/ui-data/use-logs-ui) を使って、プラットフォーム全体のログデータを調査してください。
+* [APM UI](/docs/logs/ui-data/use-logs-ui/#links) で、ログをアプリのパフォーマンスの文脈で見ることができます。 [エラーのトラブルシューティング](/docs/apm/apm-ui-pages/error-analytics/errors-page-find-fix-verify-problems/) [分散トレース](/docs/apm/distributed-tracing/ui-data/understand-use-distributed-tracing-data) 、スタックトレース、アプリケーションログ、その他。
+* [インフラ監視エージェント](/docs/logs/forward-logs/forward-your-logs-using-infrastructure-agent/) でログを転送している場合、アプリケーションとプラットフォームの両方のパフォーマンスデータについてより深い可視性を得ることができます。UI で [インフラストラクチャ・ログ](/docs/logs/ui-data/use-logs-ui/#links) を確認します。
 * [アラートの設定](/docs/alerts-applied-intelligence/new-relic-alerts/alert-conditions/create-alert-conditions/).
-* [データのクエリ](/docs/query-your-data/explore-query-data/get-started/introduction-querying-new-relic-data/) と [ダッシュボードの作成](/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/) 。例えば、データ・パーティション・ルールの照会と管理については、 [NerdGraph チュートリアル](/docs/apis/nerdgraph/examples/nerdgraph-data-partition-rules-tutorial/) を参照してください。
+* [データを照会する](/docs/query-your-data/explore-query-data/get-started/introduction-querying-new-relic-data/) と [ダッシュボードを作成する](/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/).例えば、 [データパーティションルール](/docs/apis/nerdgraph/examples/nerdgraph-data-partition-rules-tutorial) と [ログ解析ルール](/docs/apis/nerdgraph/examples/nerdgraph-log-parsing-rules-tutorial) の問い合わせと管理については、NerdGraph のチュートリアルをご覧ください。
