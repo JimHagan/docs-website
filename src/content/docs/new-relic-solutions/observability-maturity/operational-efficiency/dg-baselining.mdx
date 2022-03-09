@@ -32,39 +32,34 @@ In addition you'll learn how to create highly granular breakdowns including:
 - Application (APM|Browser|Mobile)
 - K8s Cluster
 - Infrastructure Integration
-- etc.
 
-
+## Desired outcomes [#desired-outcome]
+Understand exactly which groups within the org are contributing which types of data and how much.
+ 
 ## Prerequisites
 
 <CollapserGroup>
 <Collapser
     id="understand-nr-consumption-metrics"
-    title="Understand NrConsumption: New Relic's built-in ingest model"
+    title="Understand consumption event types"
     >
 
-All billable telemetry is tracked in the `NrConsumption` and `NrMTDConsumption` events.  In each of those events the attribute `usageMetric` denotes a general group of billable telemetry. 
+All billable telemetry is tracked in the `NrConsumption` and `NrMTDConsumption` event types. This guide focuses on how to query the `NrConsumption` event type, which provides more granular, real time data than `NrMTDConsumption`. The `NrConsumption` attribute `usageMetric` denotes the telemetry type.
 
-* `NrConsumption` records usage every hour, and is the equivalent of "real-time" usage. Use this event to observe usage trends over time. 
-* `NrMTDConsumption` generates aggregate values from the `NrConsumption` event. Use this event to see usage or estimated cost by monthly billing period. For organizations on the core user release, this is the best event for querying user count. 
-
-
-In NRQL we can ask a question like "How much browser data have we ingested in the last 30 days and break it down by sub-account and compare it against the previous 30 days"
+Using `NrConsumption` you can ask questions like "How much browser data has each sub-account ingested in the last 30 days?  How have the ingest changed since the previous 30 days?"
  
 ```
-FROM NrConsumption select sum(GigabytesIngested) where usageMetric = 'BrowserEventsBytes' since 30 days ago compare with 30 days ago facet consumingAccountName
+FROM NrConsumption SELECT sum(GigabytesIngested) WHERE usageMetric = 'BrowserEventsBytes' SINCE 30 days AGO COMPARE WITH 30 days AGO FACET consumingAccountName
 ```
 
-The response shows us how many GB of Browser data we've brought in by account.
+The response shows you how many GBs of Browser data you've ingested by account.
 
 ```
 Banking Platform, 75 GB, +2.9%
 Marketing Platform, 40 GB, -1.3%
 ```
 
-
-It's important to note that our granularity is to the `usageMetric` and `consumingAccountName`.  The NrMTDConsumption event is a more aggregated data strucutre that does not include that level of granularity.
-
+Below is a break down of the different `usageMetric` types, the constituent events (event types where the data is stored), and the type of agent or mechanism responsible for creating the data ingest. 
 
 *Billable Telemetry Breakdown*
 
@@ -85,7 +80,7 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
   <tbody>
     <tr>
       <td>
-        `InfraHostBytes`
+        InfraHostBytes
       </td>
       <td>
         `SystemSample`, `StorageSample`, `ContainerSample`, `InfrastructureEvent`
@@ -96,7 +91,7 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
     </tr>
     <tr>
       <td>
-        `InfraProcessBytes`
+        InfraProcessBytes
       </td>
       <td>
         `ProcessSample`
@@ -107,13 +102,13 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
     </tr>
     <tr>
       <td>
-        `InfraIntegrationBytes`
+        InfraIntegrationBytes
       </td>
       <td>
         Various Events
       </td>
       <td>
-        [On-Host-Integrations](https://docs.newrelic.com/docs/infrastructure/host-integrations/get-started/introduction-host-integrations/) and Certain [Cloud Integrations](https://docs.newrelic.com/docs/infrastructure/infrastructure-integrations/get-started/introduction-infrastructure-integrations/#cloud)
+        [On-Host-Integrations](/docs/infrastructure/host-integrations/get-started/introduction-host-integrations/) and Certain [Cloud Integrations](/docs/infrastructure/infrastructure-integrations/get-started/introduction-infrastructure-integrations/#cloud)
       </td>
     </tr>
     <tr>
@@ -165,10 +160,10 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
         SeverlessBytes
       </td>
       <td>
-        Cloud-specific (i.e., AWS Lambda Events)
+        Cloud-specific (i.e., AWS Lambda events)
       </td>
       <td>
-        Cloud-specific (i.e., AWS Lambda Integration)
+        Cloud-specific (i.e., AWS Lambda integration)
       </td>
     </tr>
     <tr>
@@ -179,7 +174,7 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
         `Log` as well as partition-specific events of the pattern `[partition].Log`
       </td>
       <td>
-        Various (Fluentd, FluentBit, Syslog, Cloud-specific streaming services)
+        Various (Fluentd, FluentBit, Syslog, cloud-specific streaming services)
       </td>
     </tr>
     <tr>
@@ -190,7 +185,7 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
         `Metric`
       </td>
       <td>
-        Various dimensional metrics (Prometheus, Cloud-specific streamed metrics, agent-specific dimensional metrics)
+        Metrics API or agents such as browser agent, apm agent, or mobile agent. Metrics coming via the metrics API include various dimensional metrics (Prometheus, cloud-specific streamed metrics). Metrics generated by agents are dimensional timeslices.
       </td>
     </tr>
     <tr>
@@ -207,26 +202,25 @@ It's important to note that our granularity is to the `usageMetric` and `consumi
   </tbody>
 </table>
 
-View this [guide](https://docs.newrelic.com/docs/data-apis/manage-data/manage-data-coming-new-relic/) for reference.
 </Collapser>
 <Collapser
-    id="understand-monthly-ingest-target"
-    title="Understand Your Organization's Monthly Ingest Target"
+    id="understand-monthly-ingest-targets"
+    title="Understand your organization's monthly ingest targets"
     >
 
-Under New Relic's consumption model data and users both contributed toward your consumption.
+Under New Relic's consumption model, telemetry data and users both contribute to your consumption. This guide is focused on maximizing the value of telemetry data. The mention of users in this section is to help you understand different options for balancing users and data.
 
-There are three general types of usage plans and they will effect how you set ingest targets for your organization.
+There are three general types of usage plans. You usage plan may affect how you set ingest targets for your organization.
 
 ### *APoF*
 
-If you have an `Annual Pool of Funds` (APoF) agreement you likely have some monthly target budget for data ingest.   For example you may have set a target of 5TB per day and 100 FSO users.  In this type of plan data and users can be "traded off" but it's best to discuss this with other stakeholders in your organization to ensure you are getting the right mix for your observability goals.  Although some customers will plan for variability in their consumption during the year let's assume for now our montly consumption budget is your APoF / 12.
+If you have an `Annual Pool of Funds` (APoF) agreement you will likely have a monthly target budget for data ingest.   For example you may have set a target of 5TB per day and 100 FSO users.  In this type of plan data and users can be "traded off" but it's best to discuss this with other stakeholders in your organization to ensure you are getting the right mix for your observability goals.  Although some customers will plan for variability in their consumption during the year let's assume for now our montly consumption budget is your APoF / 12.
 
 If you know the number of FSO and Core users you need you can use this formula:
 
 `(monthly_target_spend - (num_fso_users*per_fso_cost) - (num_core_users*per_core_cost))/0.25`
 
-*We divide by $0.25 in order to convert to get our monthly GB ingest target.*
+*Divide by $0.25 in order to convert to get our monthly GB ingest target.*
 
 
 ### *Pay As You Go*
@@ -235,20 +229,19 @@ In a pay as you go plan you will not have a pre-determined yearly commit however
 
 `(monthly_target_spend - (num_fso_users*per_fso_cost) - (num_core_users*per_core_cost))/0.25`
 
-*We divide by $0.25 in order to convert to get our monthly GB ingest target.*
+*Divide by $0.25 in order to convert to get our monthly GB ingest target.*
 
 
 ### Free tier
 
-     In addition our perpetual free tier allows for up to 100GB data ingest per month.  If you are currently working in a free tier account you can consider 100GB your monthly ingest target.  In a free tier account any additional data ingested over 100GB per month will be billed at $0.25 per GB.
+The perpetual free tier allows for up to 100GB data ingest per month.  If you are currently working in a free tier account you can consider 100GB your monthly ingest target.  In a free tier account any additional data ingested over 100GB per month will be billed at $0.25 per GB.
 
-See this [article](https://docs.newrelic.com/docs/licenses/license-information/usage-plans/new-relic-one-usage-plan-descriptions/) to understand all of the details of New Relic's usage plans. 
-As always consult with your New Relic account team to help refine your ingest targets.
+You can find more information on this topic in [Usage plans](/docs/licenses/license-information/usage-plans/new-relic-one-usage-plan-descriptions/). 
 
 </Collapser>
 <Collapser
   id="nrql-operators-for-baselining"
-  title="Understand These NRQL Operators for Baselining & Change Modeling"
+  title="Understand NRQL Operations useful for baselining & change modeling"
 >
 <CollapserGroup>
   <Collapser
@@ -257,17 +250,16 @@ As always consult with your New Relic account team to help refine your ingest ta
     >
 
 <Callout variant='IMPORTANT' title='When to Use'>
-use the `rate` operator when you need to take a sample of data pulled from a certain time period and produce a given rate.  For example take a daily sample of data and compute a 30 day rate based on that.
+Use the `rate` operator when you need to take a sample of data pulled from a certain time period and produce a given rate.  For example take a daily sample of data and compute a 30 day rate based on that.
 </Callout>
 
 *Compute rate based on a given sample of data*
 
-Let's first see what our daily average ingest has been for the past month.  
+See what your daily average ingest has been for the past month.  
 
 ```
-SELECT rate(sum(GigabytesIngested), 1 day) AS 'Daily Ingest Rate (GB)'  FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 30 days AGO
+SELECT rate(sum(GigabytesIngested), 1 day) AS 'Daily Ingest Rate (GB)' FROM NrConsumption WHERE productLine = 'DataPlatform' LIMIT MAX SINCE 30 days AGO
 ```
-*Note the use of the `rate` operator.  This will be very useful when querying the NrConsumption model.*
 
 Our simple response for the entire organization is
 
@@ -275,8 +267,7 @@ Our simple response for the entire organization is
 Daily Ingest Rate: 30.4 k
 ```
 
-That's a little over 30,000 GB or 30 TB per day or overy 900TB per month.  While that's a very impressive number and is meaningful to the procurement department and whoever needs ot know this months bill.  It is only the starting point to setup a data governance plan.   Let's assume our organization has a yearly budget for the current fiscal for 12TB per year.  We could infer that we are at about 90% of budget with the calculation but that assumes we are consuming at steady rate of 900TB each month.  Due to seasonality and observavabily needs evolving that is almost never the case.  Here is our actual consumption over the past 12 months. Let's do a simple `sum` rather than a rate since we have all the data collected.  Note that December 2021 will be incomplete since we are not all the way through the month.
-
+This query shows that the daily ingest rate was approximately 30 TB per day for the last month.
 
 </Collapser>
   <Collapser
@@ -291,7 +282,7 @@ When it's important to constrain an ingest calculation to specific calendar mont
 *Facet by calendar month*
 
 ```
-SELECT sum(GigabytesIngested) AS 'Daily Ingest Rate (GB)'  FROM NrConsumption WHERE productLine = 'DataPlatform' facet monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO
+SELECT sum(GigabytesIngested) AS 'Daily Ingest Rate (GB)' FROM NrConsumption WHERE productLine = 'DataPlatform' FACET monthOf(timestamp) LIMIT MAX SINCE 56 weeks AGO
 ```
 
 The resulting table shows fairly high variability.  Note that things were fairly `hot` in `august` and September.  Some of that is our organization seasonality but also was related to some increasing the breadth of our telemetry coverage.
@@ -323,7 +314,7 @@ When you want to evaluate the amount of change in ingest volume or rate between 
 *Simple Change Analysis*
 
 ```
-SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform'  and usageMetric = 'BrowserEventsBytes' since 6 months ago until 1 week ago TIMESERIES 7 weeks COMPARE WITH 2 months ago
+SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' AND usageMetric = 'BrowserEventsBytes' SINCE 6 months AGO UNTIL 1 week AGO TIMESERIES 7 weeks COMPARE WITH 2 months ago
 ```
 
 ![Simple Compare With Time Series](images/oma-oe-dg-simple-compare-with-time-series.png)
@@ -332,28 +323,26 @@ SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatfo
 
 <Collapser
    id="sliding-window"
-   title="Sliding Window"
+   title="Sliding window"
    >
 
 <Callout variant='IMPORTANT' title='When to Use'>
 When you need to remove the effects of regular variability of ingest to see the broader pattern.
 </Callout>
 
-
-
-Telemetry is inherently noisy.  Real world phenomeno happen in spurts leaving with many random peaks and troughs in the signal.  This is good in a way since it lets us view the full comlexity of a phenomenon.  However when we are seeking to see trends we can be distracted by detail.  NRQL provides a powerful to smoothing out any time series by cominging each data point with slightly older points  This let's us focus on the overall temporal trend rather than one extreme `increase` or `decrease`
+Telemetry is inherently noisy.  Real world phenomena happen in spurts leaving with many random peaks and troughs in the signal.  This is good in a way since it lets us view the full comlexity of a phenomenon.  However when we are seeking to see trends we can be distracted by detail.  NRQL provides a powerful to smoothing out any time series by cominging each data point with slightly older points  This let's us focus on the overall temporal trend rather than one extreme `increase` or `decrease`.
 
 
 Note the jaggedness of the raw timeseries for 1 day ingest rate:
 
 ```
-FROM NrConsumption SELECT rate(sum(GigabytesIngested), 1 day) WHERE productLine = 'DataPlatform' since 26 weeks ago TIMESERIES 1 day
+FROM NrConsumption SELECT rate(sum(GigabytesIngested), 1 day) WHERE productLine = 'DataPlatform' SINCE 26 weeks AGO TIMESERIES 1 DAY 
 ```
 
 ![Jagged Daily Rate](images/oma-oe-dg-jagged-daily-rate-timeseries.png)
 
 
-Now if we use a [sliding window](https://docs.newrelic.com/docs/query-your-data/nrql-new-relic-query-language/nrql-query-tutorials/create-smoother-charts-sliding-windows/) of 4 days to reduce the impact of single day events we will see a clearer picture.  Four days is a good choice since it will blur the impact of `weekends` so data for a Sunday will be combined somewhat with data for a Friday etc.
+Now if we use a [sliding window](/docs/query-your-data/nrql-new-relic-query-language/nrql-query-tutorials/create-smoother-charts-sliding-windows/) of 4 days to reduce the impact of single day events we will see a clearer picture.  Four days is a good choice since it will blur the impact of `weekends` so data for a Sunday will be combined somewhat with data for a Friday etc.
 
 
 ```
@@ -372,10 +361,10 @@ FROM NrConsumption SELECT rate(sum(GigabytesIngested), 1 day) WHERE productLine 
 Use to estimate the statistical rate of change over a given time period.  The rate of change is calculated using a linear least-squares regression to approximate the derivative
 </Callout>
 
-NRQL provides us some tools to assess the rate of change.  This is useful since as we see in the previous example we had a very large increase over the past several months in Browser metrics.  This rate of change analysis uses the `derivative` operator and it gives us some confidence that the main growth happened back in early September.  It seems as though our growth rate based on the 7 day derivative is somewhat negative so we may have reached a new plateau at the moment in BrowserEventsBytes ingest.
+NRQL provides us some tools to assess the rate of change.  This is useful since as we see in the previous example we had a very large increase over the past several months in browser metrics.  This rate of change analysis uses the `derivative` operator and it gives us some confidence that the main growth happened back in early September.  It seems as though our growth rate based on the 7 day derivative is somewhat negative so we may have reached a new plateau at the moment in BrowserEventsBytes ingest.
 
 ```
-SELECT derivative(sum(GigabytesIngested) , 7 day) FROM NrConsumption WHERE productLine = 'DataPlatform'  and usageMetric = 'BrowserEventsBytes'  LIMIT MAX SINCE 3 MONTHS AGO UNTIL THIS MONTH TIMESERIES 1 MONTH slide by 3 days compare with 1 week ago
+SELECT derivative(sum(GigabytesIngested) , 7 day) FROM NrConsumption WHERE productLine = 'DataPlatform'  and usageMetric = 'BrowserEventsBytes'  LIMIT MAX SINCE 3 MONTHS AGO UNTIL THIS MONTH TIMESERIES 1 MONTH slide by 3 days COMPARE WITH 1 WEEK AGO 
 ```
 
 ![Rate of Growth Time Series](images/oma-oe-dg-rate-of-growth-time-series.png)
@@ -385,7 +374,7 @@ In this scenario the uptick was so blatant a simple time series of the rate will
 Here is the simple plot of the SUM
 
 ```
-SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform'  and usageMetric = 'BrowserEventsBytes'  TIMESERIES  7 days since 6 months ago
+SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform'  and usageMetric = 'BrowserEventsBytes'  TIMESERIES  7 days SINCE 6 MONTHS AGO
 ```
 
 ![Simple SUM Time Series](images/oma-oe-dg-simple-raw-sum-time-series.png)
@@ -401,44 +390,41 @@ SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatfo
 Use this operator whenever you need to estimate the ingest data footprint for a subset of raw events or metrics.
 </Callout>
 
-We assume you'll need to customize them to some extent to match the organization specifics.
-
 <CollapserGroup>
 ### Examples    
   <Collapser
     id="ingest-by-application"
-    title="Ingest By Application (APM|Browser|Mobile)"
+    title="Ingest by application (APM|Browser|Mobile)"
     >
 
 Run these queies in each sub-account or in a dashboard with account-specific charts.  The queries estimate a 30 day rate based on 1 week of collection.
 
-*Estimate 30 Day Rate*
+*Estimate 30 day rate*
 
 _APM_
 
 ```
-FROM Transaction, TransactionError, TransactionTrace, SqlTrace, ErrorTrace, Span select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingest' facet appName since 1 week ago
+FROM Transaction, TransactionError, TransactionTrace, SqlTrace, ErrorTrace, Span SELECT rate(bytecountestimate()/10e8, 30 day) AS 'GB Ingest' FACET appName SINCE 1 WEEK AGO 
 ```
 
 _BROWSER_
 
 ```
-FROM PageAction, PageView, PageViewTiming, AjaxRequest, JavaScriptError select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingest' facet appName since 1 week ago
+FROM PageAction, PageView, PageViewTiming, AjaxRequest, JavaScriptError SELECT rate(bytecountestimate()/10e8, 30 day) AS 'GB Ingest' FACET appName SINCE 1 WEEK AGO 
 ```
 
 _MOBILE_
 
 ```
-FROM Mobile, MobileRequestError, MobileSession select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingest' facet appName since 1 week ago 
+FROM Mobile, MobileRequestError, MobileSession SELECT rate(bytecountestimate()/10e8, 30 day) AS 'GB Ingest' FACET appName SINCE 1 WEEK AGO 
 ```
 
   </Collapser>
   <Collapser
     id="metric-ingest-by-integration"
-    title="Metric Ingest By Integration"
+    title="Metric ingest by integration"
     >
 
-The `Metric` namespace is quite monolithic.  This can make it challenging to understand what the source of all of this data is.  We can facet by `usage.Integration` to get a rough sense of where these are coming in.  It's possible to go deeper, but for a general baseline this is adquate.
 Some examples of `usage.Integration` values that will show up with this facet are:
 
 - com.newrelic.mssql (the New Relic MSSQL OHI)
@@ -446,19 +432,19 @@ Some examples of `usage.Integration` values that will show up with this facet ar
 - EC2 (the AWS EC2 integration)
 - Lambda (the Lambda integration)
 
-Run these queies in each sub-account or in a dashboard with account-specific charts
+Run these queries in each sub-account or in a dashboard with account-specific charts
 
-*Estimate 30 Day Rate*
-
-```
-FROM Metric select rate(bytecountestimate()/10e8, 30 day) facet usage.integrationName since 1 week ago
-```
-
-*Seven Day Sum*
-
+*Estimate 30 day rate*
 
 ```
-FROM Metric select bytecountestimate()/10e8 facet usage.integrationName since 1 week ago
+FROM Metric SELECT rate(bytecountestimate()/10e8, 30 day) FACET usage.integrationName SINCE 1 WEEK AGO
+```
+
+*Seven day sum*
+
+
+```
+FROM Metric SELECT bytecountestimate()/10e8 FACET usage.integrationName SINCE 1 WEEK AGO 
 ```
 
   </Collapser>
@@ -467,10 +453,10 @@ FROM Metric select bytecountestimate()/10e8 facet usage.integrationName since 1 
     title="Ingest By K8s Cluster"
     >
 
-*Estimate 30 Day Rate*
+*Estimate 30 day rate*
 
 ```
-FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSample, K8sEndpointSample, K8sHpaSample, K8sNamespaceSample, K8sNodeSample, K8sPodSample, K8sReplicasetSample, K8sServiceSample, K8sVolumeSample select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingest' facet clusterName since 1 weeks ago
+FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSample, K8sEndpointSample, K8sHpaSample, K8sNamespaceSample, K8sNodeSample, K8sPodSample, K8sReplicasetSample, K8sServiceSample, K8sVolumeSample SELECT rate(bytecountestimate()/10e8, 30 day) AS 'GB Ingest' FACET clusterName SINCE 1 WEEK AGO 
 ```
 
   </Collapser>
@@ -480,10 +466,10 @@ FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSampl
     >
    ProcessSample can be quite a high volume event.  In this example we'll compute the 30 day ingest per commandline.
 
-    *Estimate 30 Day Rate By Command Name*
+    *Estimate 30 day rate by command name*
 
     ```
-    FROM ProcessSample select rate(bytecountestimate()/10e8, 30 day) as 'GB Ingested' facet commandName since 1 day ago
+    FROM ProcessSample SELECT rate(bytecountestimate()/10e8, 30 day) AS 'GB Ingested' FACET commandName SINCE 1 DAY AGO
     ```
 
   </Collapser>
@@ -495,33 +481,39 @@ FROM K8sClusterSample, K8sContainerSample,K8sDaemonsetSample, K8sDeploymentSampl
 
 </CollapserGroup>
 
-## Install the data governance baseline dashboard
+## Process
 
-### Quick Install With New Relic IO
+[Install the data governance baseline dashboard](#install-dashboard)  
+[Add ingest target indicators to your dashboard](#add-target-indicators)  
+[Generate a tabular 30 day ingest report](#generate-report)  
+[Customize your report](#customize-report)  
+[Detect ingest anomalies](#detect-anamolies)  
+[Install the entity breakdown dashboard (Optional)](#install-entity-breakdown-dashboard)  
+[Install the cloud integration dashboard (optional)](#install-cloud-integration-dashboard)
 
-1. Go to this [New Relic IO Quickstart](https://onenr.io/0PoR8zpDYQG)
-3. Click `Install this Quickstart` in the upper right
-4. Select your top level master account or POA account in the account drop down
+### Install the data governance baseline dashboard [#install-dashboard]
+
+1. Navigate to the [data governance quickstart](https://onenr.io/0PoR8zpDYQG).
+3. Click `Install this quickstart` in the upper right portion of your browser window.
+4. Select your top level master account or POA account in the account drop down.
 5. Click `Done` since there is no agent to install.
 6. When the quickstart is done installing open the `Data Governance Baseline` dashboard.
 
 That will bring you to the newly installed dashboard.
 
-### Dashboard Overview 
+#### Dashboard Overview 
 
 The main overview tab shows a variety of charts including some powerful time series views.  
 
 ![Org Wide View](images/oma-dg-org-wide-dashboard-dark.png)
 
-The second tab is for tabular baseline reports. 
+The second tab provides baseline report by sub-account and usage metric. 
 
 ![Org Wide Tabular](images/oma-dg-org-wide-dashboard-tabular-dark.png)
 
-The remaining tab are detailed view for specific telemetry types such as Logs, Traces, etc.  For example this screenshot shows the Browser detail page
+The remaining tabs provide detailed views of specific telemetry types such as browser data, apm data, logs, and traces.  For example this screenshot shows the browser detail page
 
 ![Browser Detail Page](images/oma-dg-browser-detail-dark.png)
-
-
 
 Detail tabs include:
 
@@ -530,14 +522,16 @@ Detail tabs include:
 - Browser - `BrowserEventsBytes`
 - Mobile - `MobileEventsBytes`
 - Infra (Host) - `InfraHostBytes`
-- Infra (Process) - `InfraProcdessBytes`
+- Infra (Process) - `InfraProcessBytes`
 - Infra (Integration) - `InfraIntegrationBytes`
 - Custom Events - `CustomEventsBytes`
 - Serverless - `ServerlessBytes`
 - Pixie - `PixieBytes`
 
 <Callout variant="caution">
-If you install this dashboard into a POA account when faceting by consumingAccount the POA acount itself will not be including in any facets by `consumingAccountName`.  However if you install it in a parent account that parent account itself is a *consuming account*.  The consumption value of that parent account is the `sum` of data ingested directly to the parent account and data sent to any sub-accounts.  For when faceting on monthly ingest you may see something like:
+If you are using a POA account, be aware that it will not be included facets by `consumingAccountName`.  If you install the dashboard into a parent account the consumption value of that parent account is the `sum` of data ingested directly to the parent account and data sent to any sub-accounts.  
+
+For example, when faceting on monthly ingest you may see something like:
 
 - Parent Account Ingest: 100GB
 - Sub Account 1 Ingest: 50GB
@@ -546,21 +540,23 @@ If you install this dashboard into a POA account when faceting by consumingAccou
 Where `Parent Account Ingest` includes data for sub accounts 1 and 2 and an additional 30GB that is sent directly to the parent account.
 </Callout>
 
-## Add ingest target indicators to your dashboard
+### Add ingest target indicators to your dashboard [#add-target-indicators]
 
-In the prerequisites section we discussed the concept of a monthly usage target.  You may actually have several targets to help keep you on track.
+In the prerequisites section we discussed the concept of a monthly usage target.  You may actually have several targets to help keep you on track:
 
-- An overall organizational target on daily rate or monthly ingest
+- An overall organizational target on daily rate or monthly ingest.
 - Targets per data type to ensure the optimal breakdown (for example 1 TB per day for logs and 2 TB per day for metrics).
 - Targets for specific sub-accounts or business units.  
 
-In our example account we have an organization that would like to keep their total organizational ingest target to `<` 360 Terrabytes monthly.  This was a new target after having reduced ingest down from over 20TB per day.  We can get a threshold line to draw on our line chart by adding a static number to our `SELECT` statement.  Update the query for the chart `30 Day Rate (All Accounts & Telemetry Types)`:
+In our example we have an organization that targets their total organizational ingest to `<` 360 TB per month.  This was a new target after having reduced ingest down from over 20TB per day (600 TB per month). 
+
+To make the target easier to measure against we added a threshold line chart by adding the static number `360000` to our `SELECT` statement.
 
 ```
 SELECT 360000, rate(sum(GigabytesIngested), 30 day) AS '30 Day Rate' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago limit max compare with 1 month ago TIMESERIES 7 days
 ```
 
-![Ingest Target 30 Day](images/oma-oe-dg-ingest-target-30-day-rate-ts.png)
+![Ingest target 30 day](images/oma-oe-dg-ingest-target-30-day-rate-ts.png)
 
 We can also apply a daily rate target line.   Let's just divide 360000 by 30 and we'll use 12000 as our daily rate target.  Update the `Daily Ingest Rate (Compare With 3 Months Prior)` chart:
 
@@ -570,23 +566,20 @@ SELECT 12000, rate(sum(GigabytesIngested), 1 day) AS avgGbIngestTimeseries FROM 
 
 ![Ingest Target Daily](images/oma-oe-dg-ingest-target-line.png)
 
-
-
-
-## Generate a tabular 30 day ingest report 
+### Generate a tabular 30 day ingest report [#generate-report] 
 
 1. Open the previously installed *Data governance baseline* dashboard.
 2. Click on the *Baseline report* tab.
 3. Click on `...` in the upper right of the "Last 30 Days" table and choose `Export as CSV`
 4. Import the CSV into *Google Sheets* or the spreadsheet of your choice.
 
-*Alternatively* if you did not install the dashboard you may simply use this query to create a custom chart in [Query Builder](https://docs.newrelic.com/docs/query-your-data/explore-query-data/query-builder/introduction-query-builder/):
+*Alternatively* if you did not install the dashboard you may simply use this query to create a custom chart in [Query Builder](/docs/query-your-data/explore-query-data/query-builder/introduction-query-builder/):
 
 ```
 SELECT sum(GigabytesIngested) AS 'gb_ingest_30_day_sum', rate(sum(GigabytesIngested), 1 day) AS 'gb_ingest_daily_rate', derivative(GigabytesIngested, 90 day) as 'gb_ingest_90_day_derivative' FROM NrConsumption WHERE productLine='DataPlatform' since 30 days ago facet consumingAccountName, usageMetric  limit max
 ```
 
-Below is an example of a sheet we imported into Google Sheets.  Feel free to view it [here](https://docs.google.com/spreadsheets/d/16HxvpAsPoLu3nJgApsN9zfMPF65ikCF1vAUBk9b_F7g/edit?usp=sharing).
+Below is an example of a sheet we imported into Google Sheets.  
 
 ![DG Baseline Sheet](images/oma-oe-dg-baseline-sheet.png)
 
@@ -594,55 +587,58 @@ The screenshot shows the table sorted by 30 day ingest total.
 
 Feel free to adjust your timeline and some of the details as needed.  For example, we chose to extract a *90 day derivative* to have some sense of change over the past few months.  You could easily alter the time period of the derivative to suite your objectives.
 
-## Customize your report
+### Customize your report [#customize-report]
 
 Add useful columns to your report in order to facilitate other phases of data governance such as *optimize* and *forecast*.  The following fields will help guide optimization and planning decisions:
 
 - Notes: Note any growth anomalies and any relevant explanations for them.  Indicate any major expected growth if foreseen.
 - Technical Contact: Name of the manager of a given sub-account or someone related to a specific telemetry type.
 
-## Detecting Ingest Anomalies
+### Detect ingest anomalies [#detect-anamolies]
 
-### Alerts
+#### Alert on ingest anomalies
 
-Most organizations will want to setup some automated `alerts` that will give early warning of unexpected spikes in ingest usually on a day over day, week over week, or month over month basis.  We highly recommend you study [this guide](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) on using NRQL Alerts to notify your organization when consumption anomalies (data or user) occur.
+Use [this ingest alerts guide](/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/) to make sure that an increase in data consumption doesn't catch you by surprise.
+At a minimum, create:
+* A threshold alert to notify if you exceed monthly targets for data ingest beyond seasonal increases 
+* A baseline alert to notify you of a sudden sharp increase ingest data 
 
-In addition to using NR alerts to identify consumption anomalies, you can use New Relic's Lookout anomaly visualization tool to explore for any potential ingest anomalies.  This is particular useful against the NrConsumption data model.
+In addition to using alerts to identify consumption anomalies, you can use lookout to explore potential ingest anomalies. 
 
-### Lookout View
+#### Lookout View
 
-New Relic's Lookout allows you to provide nearly any NRQL query and it will search for anomalies over a given period of time.
+Lookout allows you to provide nearly any NRQL query and it will search for anomalies over a given period of time.
 This view is based on the query
 
 ```
-SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngest FROM NrConsumption WHERE productLine='DataPlatform' facet usageMetric 
+SELECT rate(sum(GigabytesIngested), 1 day) AS avgGbIngest FROM NrConsumption WHERE productLine='DataPlatform' FACET usageMetric 
 ```
 
 ![Lookout View Usage Metric](images/oma-oe-dg-lookout-view-telem-type.png)
 
-Simply changing the facet field to `consumingAcountName` gives us this view:
+Change the facet field to `consumingAcountName` to get this view:
 
 ![Lookout View Consuming Account](images/oma-oe-dg-lookout-view-consuming-account.png)
 
-## Install The Entity Breakdown Dashboard (Optional)
+### Install the entity breakdown dashboard (Optional) [#install-entity-breakdown-dashboard]
 
-In a previous section we installed the ingest `baseline` dashboard that uses NrConsumption as it's primary source.  That's an important dashboard as it works nicely in a high level parent account or POA account.  In addition to that high level view we can create other visualizations that use `bytescountestimats()` to estimate ingest for nearly any event or metric.  A detailed overview of `bytescountestimate()` was discussed [in the prerequisites section](http://localhost:8000/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#baseline-query-examples).
+In a previous section you installed the ingest `baseline` dashboard that uses NrConsumption as its primary source. In addition to that high level view you can create other visualizations that use `bytescountestimate()` to estimate ingest for nearly any event or metric.  A detailed overview of `bytescountestimate()` was discussed [in the prerequisites section](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#baseline-query-examples).
 
-1. Go to the [same New Relic IO Quickstart](https://onenr.io/0PoR8zpDYQG) you used for the baseline dashboard
-2. Click `Install this Quickstart` in the upper right
-3. You won't install this into a POA account.  You will install it into any account that contains APM, Browser, Mobile appliactions or K8s clusters [import dashboard function](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import).  You may install it in multiple places.  You may also install it into a top-level parent account and modify the dashboard so you have account-specific charts all in one dashboard.
+1. Go to the [same quickstart](https://onenr.io/0PoR8zpDYQG) you used for the baseline dashboard.
+2. Click `Install this quickstart` in the upper right section of your browser window.
+3. Don't install this instance of the dashboard into a POA account.  Instead, install it into any account that contains APM, Browser, Mobile appliactions or K8s clusters [import dashboard function](/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/#dashboards-import).  You can install this dashboard into multiple accounts.  You can install it into a top-level parent account and modify the dashboard so you have account-specific charts all in one dashboard.
 4. Click `Done` since there is no agent to install.
 6. When the quickstart is done installing open the `Data Governance Entity Breakdowns` dashboard.
 
-![Entity Breakdown Dashboard](images/oma-oe-dg-entity-breakdown-dash.png)
+![Entity breakdown dashboard](images/oma-oe-dg-entity-breakdown-dash.png)
 
-You can refer back to [this section](http://localhost:8000/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#understand-nr-consumption-metrics) to see exactly which event types are used in these breakdowns.
+You can refer back to [this section](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#understand-nr-consumption-metrics) to see exactly which event types are used in these breakdowns.
 
-*NOTE* these queries are more taxing since they are not working from a pre-aggregated data source like NrConsumption.  It may be necessary to adjust the time frames and take advantage of addtional where clauses and the `limit` clause to make them performant in some of your environments.
+*NOTE* these queries consume more resources since they are not working from a pre-aggregated data source like NrConsumption.  It may be necessary to adjust the time frames and take advantage of additional `where` clauses and the `limit` clause to make them performant in some of your environments.
 
-## Install the Cloud Integration Dashboard (optional)
+### Install the cloud integration dashboard (optional) [#install-cloud-integration-dashboard]
 
-Cloud Integrations can often be the source of data ingest growth.  Without good visualizations it can be very difficult to pinpoint where the growth is coming from.  This is partly because these integrations are so easy to configure and they are not part of an organizations normal CI/CD pipeline and may also not be part of a formal configuration management system.
+Cloud Integrations can often be a signficant source of data ingest growth.  Without good visualizations it can be very difficult to pinpoint where the growth is coming from.  This is partly because these integrations are so easy to configure and they are not part of an organizations normal CI/CD pipeline. They may also not be part of a formal configuration management system.
 Fortunately this powerful set of dashboards can be installed [directly from New Relic I/O](https://onenr.io/0EPwJJO9Ow7).
 Individual dashboards installed by this pakage include:
 
@@ -654,16 +650,19 @@ Individual dashboards installed by this pakage include:
 
 ![Infrastructure Integrations IO](images/oma-oe-dg-infra-integrations-nr-io.png)
 
-## Relevant Docs [#data-ingest-tech-resources]
+## Conclusion
+The [process](#process) section of this page took you through the creation of data ingest visualizations and reports. You can now review data ingest with a data driven visual approach that you and your peers can use to collaborate around.
 
-[Manage Incoming Data](https://docs.newrelic.com/docs/data-apis/manage-data/manage-data-coming-new-relic/)
+Going forward, decide which visualizations to use for:
+- For [monthly ingest check-ins](docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe#monthly-ingest-check-ins) 
+- For [yearly ingest planning meetings](docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe#yearly-ingest-target-planning) 
+- As best practice visualizations for anyone managing data ingest for one or more sub-accounts
 
-[Data Management Hub](https://docs.newrelic.com/docs/data-apis/manage-data/manage-your-data/)
+## Additional resources [#additional-resources]
 
-[Drop Data Using Nerdgraph](https://docs.newrelic.com/docs/data-apis/manage-data/drop-data-using-nerdgraph/)
-
-[Alert on Data Ingest Anomalies](https://docs.newrelic.com/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/)
-
-[Automating Telemetry Workflows](https://developer.newrelic.com/automate-workflows/)
-
-[Metrics Aggregation and Events to Metrics](https://docs.newrelic.com/docs/data-apis/convert-to-metrics/create-metrics-other-data-types/)
+[Manage Incoming Data](/docs/data-apis/manage-data/manage-data-coming-new-relic/)  
+[Data Management Hub](/docs/data-apis/manage-data/manage-your-data/)  
+[Drop Data Using Nerdgraph](/docs/data-apis/manage-data/drop-data-using-nerdgraph/)  
+[Alert on Data Ingest Anomalies](/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts/)  
+[Automating Telemetry Workflows](https://developer.newrelic.com/automate-workflows/)  
+[Metrics Aggregation and Events to Metrics](/docs/data-apis/convert-to-metrics/create-metrics-other-data-types/)
