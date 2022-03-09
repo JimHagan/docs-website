@@ -27,7 +27,7 @@ Optimizing is a very overloaded term.  However in our context it means maximimiz
 ## Aligning to Value
 Consumption based observability platforms have revolutionized the way in which organizations can achieve maximum visibility in to their cloud-based and on-prem platforms and services.  Like with a migration to cloud compute consumption based SaaS platforms give business fine grained control over what they pay.  This enables them to align costs more closesly to identifid business value.  However this paradigm does require some additional thought into the value of collected telemtry in order to exploit the benefits.
 
-When executed properly this approach will allow us to move beyond purely reactive efforts to reduce and troubhleshoot unexplained increases or low value telemetry.  Adopting a value driven approach to optimization is a clear indicator of *observability maturity*.
+When executed properly this approach will allow us to move beyond purely reactive efforts to reduce and troubleshoot unexplained increases or low value telemetry.  Adopting a value driven approach to optimization is a clear indicator of *observability maturity*.
 
 <Callout variant="tip">
 This may be a good time to familiarize yourself with the [observability maturity principles](/docs/new-relic-solutions/observability-maturity/introduction/).  This will make the concept of observability `value` drivers more concrete from an observability standpoint.
@@ -1145,7 +1145,7 @@ Drop filter rules help you accomplish several important goals:
 
 *A note of caution*
 
-When creating drop rules, you are responsible for ensuring that the rules accurately identify and discard the data that meets the conditions that you have established. You are also responsible for monitoring the rule, as well as the data you disclose to New Relic.
+When creating drop rules, you are responsible for ensuring that the rules accurately identify and discard the data that meets the conditions that you have established. You are also responsible for monitoring the rule, as well as the data you disclose to New Relic.  Always test and re-test your queries and after the drop rule was installed, make sure it works as intended.  Creating a dashboard to monitor your data pre and post drop will help.
 
 <CollapserGroup>
 <Collapser
@@ -1269,6 +1269,14 @@ mutation {
 ```
 
 
+
+</Collapser>
+<Collapser
+  id="other-events-and-metrics"
+  title="Other Events and Metrics"
+>
+
+The preceding examples should show you all you need to know to use these techniques on any other event or metric in NRDB.  If you can query it you can drop it.  Reach out to New Relic if you questions about the precise way to structure a query for a drop rule.
 
 </Collapser>
 </CollapserGroup>
