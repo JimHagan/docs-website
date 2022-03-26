@@ -49,14 +49,14 @@ In the [Baselining section](https://docs.newrelic.com/docs/new-relic-solutions/o
     id="complete-the-optimizing-stage"
     title="Complete the optimizing stage"
     >
-In the [Optimizing section](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing) we showed a strctured approach to optimize ingest for all telemetry types.  It is important to know if any optimization plans are in flight as you are forecasting for the future.  By completing the optimizing stage you will understand the practices that allow you to rightsize your ingest.  Even if you cannot quickly complete the optimizing plans they should be considered in your forecasting discussions.  For example.  Let's say we plan on adding 20% more hosts into an account over the coming six months.   We could naively assume that `InfraHostBytes` and `ProcessSampleBytes` could increase by the same amount.  However knowning that we have an optimization plan in place for the same time period to reduce process sample bytes impacts our forecast in a major way.
+In the [Optimizing section](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing) we showed a structured approach to optimize ingest for all telemetry types.  It is important to know if any optimization plans are in flight as you are forecasting for the future.  By completing the optimizing stage you will understand the practices that allow you to rightsize your ingest.  Even if you cannot quickly complete the optimizing plans they should be considered in your forecasting discussions.  For example.  Let's say we plan on adding 20% more hosts into an account over the coming six months.   We could naively assume that `InfraHostBytes` and `ProcessSampleBytes` could increase by the same amount.  However knowning that we have an optimization plan in place for the same time period to reduce process sample bytes impacts our forecast in a major way.
 
 </Collapser>
 <Collapser
     id="integrate-other-forecast-knowledge"
     title="Integrate Other Forecast Knowledge"
     >
-Any modern digital business is doing at least quarterly capacity reports.  These are used to reserve capacity with a cloud endor as well as the procure on premise hardware.  Often these reports roll up to a VP level manager who may be directly involved for things like:
+Any modern digital business is doing at least quarterly capacity reports.  These are used to reserve capacity with a cloud endor as well as the procure on premise hardware.  Often these reports roll up to a VP level manager who may be directly involved in negotiating with a cloud vendor or hardware provider.  Things often included in these reports are:
 
 - How many VMs (or vCPU) are needed in the coming quarter
 - How many more SQL instances are needed in the coming quarter
