@@ -57,6 +57,22 @@ In this section you'll make two core assumptions:
 - You have the tools and techniques from the [Baseline your data ingest](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining) section to have a proper accounting of where our ingset comes from.
 - You have a good understanding of the [observability maturity value drivers](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/introduction/).  This will be crucial in applying a value and a priority to groups of telemetry
 
+In addition it is recommended to do a simple impact assessment for any potential ingest optimiztions.
+
+The folowing impact assesment model can be used to acknowledge the impact of the cuts.
+
+- Observability Impact
+  - Innovation cycle will be impacted (y/n)
+  - Deployment velocity will be impacted (y/n)
+  - A production system will have substantially reduced observability (y/n)
+  - Mean time to discover and recover is impacted (y/n)
+
+- Business Impact
+  - A new acquision or business unit will lack significant visibility (y/n)
+  - Our understanding of customer experience and attrition indicators is diminished (y/n)
+  - Our ability to resolve SEV1 incidents will be impacted (y/n)
+  - Changes to our product inventory and rollout schedule is impacted (y/n)
+
 Use the following examples to help you visualize how you would assess your own telemetry ingest and make the sometimes hard decisions that are needed to get within budget.  Although each of these examples tries to focus on a value driver, most instrumentation serves more than one value driver.  This is the hardest part of data ingest governance.
 
 <CollapserGroup>
