@@ -23,16 +23,16 @@ import newRelicDataIngestCostEstimator from 'images/new-relic-data-ingest-cost-e
 
 ここでは、New Relic アカウントから使用量を推定するためのヒントをご紹介します。
 
-* New Relicにサインアップしたばかりの方は、今後必要となる環境に近いものをテストインストールすることを検討してください。そして、テスト版のベースラインインジェストを使用して、本番環境に必要なものを推定します。これを行うには、 [新しい無料アカウントを作成し](https://newrelic.com/signup) 、 [instant observability options](https://newrelic.com/instant-observability/) を使用してデータの報告を開始します。なお、APM、インフラ監視、ログがお客様のデータの大部分を占める傾向にありますが、これは様々です。
-* 既存のお客様の場合は、 [データマネジメントハブ](/docs/data-apis/manage-data/manage-your-data/#where-to-find-the-data-management-hub) からの消費情報、または [データインジェスト](/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts) へのクエリを使用して、新規または追加のインジェストを推定します。
+* New Relicにサインアップするだけの場合は、今後必要となる環境と同様の環境でテストインストールを作成することを検討してください。次に、トライアルからのベースライン取り込みを使用して、完全な環境に必要なものを推定します。これを行うには、[新しい無料のアカウントを作成し](https://newrelic.com/signup)、[インスタント可観測性オプション](https://newrelic.com/instant-observability/)を使用してデータのレポートを開始します。 APM、インフラストラクチャモニタリング、およびログは、ほとんどの顧客のデータの大部分を生成する傾向がありますが、それは異なる可能性があることに注意してください。
+* 既存の顧客の場合は、[データ管理ハブ](/docs/data-apis/manage-data/manage-your-data/#where-to-find-the-data-management-hub)からの消費情報を使用するか[、データの取り込みをクエリ](/docs/accounts/accounts-billing/new-relic-one-pricing-billing/usage-queries-alerts)して、新規または追加の取り込みを推定します。
 
 ## スプレッドシートによるコスト試算 [#cost-estimator]
 
 [テスト用の New Relic アカウントを作成したくない場合は、](#use-account) コスト見積もり用のスプレッドシートをご利用いただけます。まずは、この Google スプレッドシート [のコピーを作成してください](https://docs.google.com/spreadsheets/d/1natQ4YhmjDIH8YgkPblIRP2R8h07V4TNAw3EJDu91_g/edit?usp=sharing) 。以下の説明では、スプレッドシートへの記入方法を説明しており、推定コストが自動入力されます。 **なお、このスプレッドシートは、あくまでもお見積り** であり、拘束力のある請求書ではありません。
 
 <img
-  title="スプレッドシートのコスト見積もり"
-  alt="スプレッドシートのコスト見積もり"
+  title="Cost estimator spreadsheet"
+  alt="Cost estimator spreadsheet"
   src={newRelicDataIngestCostEstimator}
 />
 
@@ -73,6 +73,7 @@ import newRelicDataIngestCostEstimator from 'images/new-relic-data-ingest-cost-e
       スプレッドシートにAPM agent ingestを追加します。
 
     1. 監視するAPMエージェントの数を追加します。
+
     2. エージェントに必要なインジェストの量を概算し、オプションを選択します。一般的には、Standard価格版（新しい組織が開始する価格版）であれば、 **Low** を選択できるでしょう。
 
        データインジェストを管理する方法については、 [Manage data ingest](/docs/data-apis/manage-data/manage-data-coming-new-relic/#adjust-ingest) を参照してください。
@@ -147,6 +148,7 @@ import newRelicDataIngestCostEstimator from 'images/new-relic-data-ingest-cost-e
     リテンションを考慮しています。
 
     * 保存期間が1ヶ月（30日）延長されるごとに、1ヶ月に取り込まれるGBあたり0.05ドルとなります。
+
     * 保存期間は、最大で395日まで、すべてのネームスペースに均等に追加されます。1つのネームスペースだけで保持期間を延長することはできません（例：ログやカスタムイベントだけ）。延長されたレートは、取り込まれたすべてのデータに適用されます。
 
       スプレッドシートのセクション6では、必要な追加保持月数を選択します。

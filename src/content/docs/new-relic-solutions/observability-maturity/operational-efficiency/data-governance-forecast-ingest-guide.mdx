@@ -1,0 +1,180 @@
+---
+title: "Forecast your data ingest"
+tags:
+  - Observability maturity
+  - Operational efficiency
+  - Data ingest cost
+  - Sampling rate
+  - Drop rules
+  - Observability as code
+  - Value drivers
+  - Bill and Usage Data
+  - Data ingest cost
+metaDescription: "Part four of New Relic's data ingest governance series on optimizing how you ingest and use your telemetry data: this focuses on forecasting data ingest."
+redirects: 
+  - /docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-forecasting
+---
+
+import forecastingicon from 'images/oma-oe-dg-forecasting-icon.png'
+
+import monthlyingestcheckin from 'images/oma-oe-dg-monthly-ingest-checkin-icon.png'
+
+import adhocanomalyicon from 'images/oma-oe-dg-adhoc-anomaly-icon.png'
+
+<img
+  src={forecastingicon}
+  alt="Forecast"
+  style={{ height: '76px', width: '100px', verticalAlign: 'middle', horizontalAlign: 'right'}}
+/>
+
+**Data ingest governance** is a practice of getting optimal value for the telemetry data collected by an organization. This is especially important for a complex organization that has numerous business units and working groups. 
+
+**This is a placeholder for the fourth part of a four-part guide to optimizing your New Relic data ingest. This will be coming soon.**
+
+In this stage you will:
+* Use your baseline data to understand growth trends.
+* Identify and prioritize observability objectives.
+* Coordinate stakeholders in your organization to develop consensus ingest targets.
+* Publish forecast and work with NR account team to steer toward the targets.
+
+## Desired outcome [#desired-outcome]
+
+Use the analysis produced in the baselining stage along with the observability value goals from the optimizing stage to produce future looking estimates for ingest for the coming months, and even years.
+
+## Prerequisites
+
+<CollapserGroup>
+<Collapser
+    id="complete-the-baselining-stage"
+    title="Complete the baselining stage"
+    >
+
+In order to forecast you will need to have a clear understanding of current ingest streams including:
+
+- Ingest by Account  Telemetry Type
+- Ingest by Team and/or Business unit
+- Ingset by Application, K8s Cluster, etc.
+
+In the [Baselining section](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining) we show you how to create a [tabular ingest report](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-baselining#generate-report).  This report can be an important input to this process.  The baselining dashboards you installed in that section will be used in our checkings to validate any optimization activiites that are in flight, but also to track our forecast estimates over time.
+
+</Collapser>
+<Collapser
+    id="complete-the-optimizing-stage"
+    title="Complete the optimizing stage"
+    >
+In the [Optimizing section](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-optimizing) we showed a structured approach to optimize ingest for all telemetry types.  It is important to know if any optimization plans are in flight as you are forecasting for the future.  By completing the optimizing stage you will understand the practices that allow you to rightsize your ingest.  Even if you cannot quickly complete the optimizing plans they should be considered in your forecasting discussions.  For example.  Let's say we plan on adding 20% more hosts into an account over the coming six months.   We could naively assume that `InfraHostBytes` and `ProcessSampleBytes` could increase by the same amount.  However knowning that we have an optimization plan in place for the same time period to reduce process sample bytes impacts our forecast in a major way.
+
+</Collapser>
+<Collapser
+    id="integrate-other-forecast-knowledge"
+    title="Integrate Other Forecast Knowledge"
+    >
+Any modern digital business is doing at least quarterly capacity reports.  These are used to reserve capacity with a cloud endor as well as the procure on premise hardware.  Often these reports roll up to a VP level manager who may be directly involved in negotiating with a cloud vendor or hardware provider.  Things often included in these reports are:
+
+- How many VMs (or vCPU) are needed in the coming quarter
+- How many more SQL instances are needed in the coming quarter
+- How many load balancer instances are needed in the coming quarterly
+- What is our expected CDN volume increase?
+- How many more Kafka brokers and topics are needed?
+
+There are many more things are included into such a forecast.  We strongly recommend you align your ingest forecast with these reports.  This may mean removing a silo between infra/platform teams and application teams.  This is a high value area where our observability manager can step in and bridge the gap.
+
+</Collapser>
+<Collapser
+    id="Be aware of organization changes"
+    title="Be aware of organization changes"
+    >
+In large complex enterprises one of the main contributor to surprise ingest are organization shifts such as a merger or acquisition of a new business unit.  Accounding for added, unexpected telemetry growth is a necessity.  Involve your New Relic account team earlier in planning for these shifts.
+</Collapser>
+</CollapserGroup>
+
+## Process [#process]
+
+### Artifacts and Activities
+
+When properly executed the forecasting stage will create a simple but actionable estimate of your organizations ingest for at least the next six months to one year.
+As with the previous stages in this framework we try to keep things light.  There is one simple input and one simple output artifact in the forecasting stage.  In addition there are two planned activities, one for creating the forecast and one for validating our actual ingest against the forecast.
+
+*Artifacts*
+- Input: Baseline ingest report
+  - A simple spreadsheet derived in the baselinging stage. 
+  - Preferably this spreadsheet includes relevant changes made during the optimization section.
+- Output: Telemetry forecast sheet
+  - An data driven yet informal description of relevant predicted growth in relevant accounts
+  - Detailed explanations of growth drivers that are expected to occur
+
+*Activities*
+- [Yearly Ingest target planning](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe#ingest-target)
+- [Monthly Ingest Checkin](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe#check-ins)
+
+*Roles*
+- [Observability Manager](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe#manager)
+- [Data Ingest Governance Team](https://docs.newrelic.com/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe#governance-team)
+
+
+
+### Analyze and summarize growth drivers
+
+In the prerequisites section we discussed the importance of incorportaing infrastructure and platform estimates into our forecasting process.  In addition we'll need to incorporate more granular insights that team leads and SREs can provide to build a realistic picture of grwoth.
+
+Let's look in more detail at the growth drivers for some of the teams in a hypothetical organization
+
+|Team|Growth Driver|
+|---|---|
+|Streaming Video| This team is refactoring some K8s infrastructure.  Currently the have on-prem K8s clusters managed in their data center.  They expect to be spinning up some new clusters in their AWS VPC and for much of the quarter they may have redundant infra.  The K8s Telemetry SME helped them arrive a growth rate of just under 5% for the quarter.  In the quarter after this they may have a flat or negative reate as they bring down the on-prem clusters  |
+|Cloud Platform Team| This team has plans to reduce log volume substantiall by getting rid of some excessively chatty, low value logs from some of their cloud services.  Using a deep dive analysis using `bytecountestimate()` they came up with a plan to reduce ingest by 5% over the quarter.  So they should see negative growth rate over 90 days|
+|International Services|This teams plan to add support for two additional countries.   Working with the APM K8s and Mobile SMEs they were able to come up with an estimate of 7.25% growth, mustly coming from increased Mobile events.  Since they have good forecasts of how much user activity they should see they were able to built a relatively good model based on current ingest with the 5 countries they currently support.|
+|Shipping & Receiving|This team plans to add application logs this quarter.  Using estimates derived from the number of logs current recorded to disk and using some factors to account for the additional logs-in-context tags that will be added.  This team expects a 12.6% growth this quarter.  The Logging SME has given them excellent guidance on using New Relic drop rules as well as how to streamline the data in Fluentbit so they are confident that they will be able to steer into this estimate|
+|Marketing Technology|This team is refactoring a Java monolith into 3 or 4 separate microservices.  Based on some code analysis from other refactors and a careful audit of the Telemetry behavior of the monolith thsi team has forecast a 26.7% growth rate.  This is relatively large.  However this is the kind of refactor that should leave the code base relatively stable for another 3 to 5 years.|
+
+
+This framework does not outline a formal mechanism for development the estimates, only the general form of the estimates.  However best practice is to do the following:
+
+- For each consuming account evaluate each telemetry type
+  - For each telemetry type assess what growth drivers are relevant in the coming months
+  - Roll up the final estimates to the account level for a final report
+
+### Developing Your Telemetry Forecast Sheet
+In this section we'll work through an example telemetry forecast sheet and give a broad overview of the kinds of considerations that must be taken to manage data ingest in a complex organization.
+
+![Telemetry Forecast Sheet](images/oma-oe-dg-telemetry-budget-sheet-ex.png)
+
+
+In this sheet we track the forecast at the level of individual accounts.  In a model where many disparate teams share the same account the line items in the sheet can be `teams` and it's possible there will be more than one team per account.
+
+The minimal requirements for the sheet are:
+
+
+|Column|Description|
+|---|---|
+|*Account Name*|New Relic Account Name|
+|*Contact*|Manages forecast for a given account|
+|*Last 30 Day Ingest (GB)*|30 Day Ingest Total.  Use a different period if desired |
+|*Target Growth (GB)*|30 Day Ingest Total 3 Months From Now.  Use a differend period if desired|
+|*Target Growth (PCT)*|Growth target expressed as percentage|
+|*Buffer (PCT)*| An optional buffer to allow for slightly higher growth than forecast.  Here we default to 2.5|
+|*Buffered Forecast (GB)*| Revised forecast taking into account the forecast buffer|
+|*Forecast Notes*|Any relevant notes about growth drivers impacting this account.  Use links to detailed docs if needed|
+
+
+
+### *Monthly ingest checkin*
+<img src={monthlyingestcheckin} alt="Monthly Ingest Checkin" style={{ height: '66px', width: '75px', verticalAlign: 'middle'}} />
+In our section on [roles and practices](/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe) we strongly suggest periodic checkins to track ingest against your ingest targets.  In the case where you have conducted the forecasting stage.  The forecast report will be a major part of your plan.  The following questions help guide the agenda of that checkin:
+
+- Is our overall organization over budget or under budget
+- Are certain sub-accounts that are serious over or under
+
+### Anomaly resolution
+<img src={adhocanomalyicon} alt="Ad Hoc Anomaly Resolution" style={{ height: '66px', width: '75px', verticalAlign: 'middle'}} />
+
+If we determine that there is a misalignment between our forecast and actual ingest target we recommend you call an [*Ad Hoc Anomaly* session](http://localhost:8000/docs/new-relic-solutions/observability-maturity/operational-efficiency/dg-coe#ad-hoc) with your data governance team.  That is the proper former for choosing a course of action.  Fundamentally there are a handful of actions that could be warranted:
+
+- Accept the overage as an unavoidable necessity and re-budget according
+- Work on an optimization plan to bring the excessive consumption down
+- Work out a "trade" in ingest alotments
+-- For example there may an account that is over by 1TB per month and another tha is under by a similar amount.  There may be an opportunity to swap those alotments since there is no net overage for the main account.
+
+<Callout variant='IMPORTANT' title='Your Account Team is Here to Help'>
+As always consult your New Relic account team for support early in the process and they will be able to bring expert resources to help find a suitable solution for your organization.
+</Callout>

@@ -4,7 +4,7 @@ tags:
   - Integrations
   - Open source telemetry integrations
   - OpenTelemetry
-metaDescription: The New Relic UI offers a lot of options for filtering and viewing your data.
+metaDescription: The New Relic UI offers a lot of options for filtering and viewing data from OpenTelemetry.
 translationType: machine
 ---
 
@@ -17,6 +17,8 @@ import viewSpanEvents from 'images/view-span-events.png'
 import spanEventsExceptions from 'images/span-events-exceptions.png'
 
 import metricExplorer from 'images/metric-explorer.png'
+
+import errorgroupOccurences from 'images/errorgroupOccurences.png'
 
 OpenTelemetry のデータを New Relic にインポートした後は、さまざまなツールを使って分析することができます。これらのUIオプションを見てみましょう。
 
@@ -36,8 +38,8 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
 2. 左のサイドバーで「 **サービス」-「OpenTelemetry」** をクリックします。
 
    <img
-     title="OpenTelemetryのフィルターで、これらのエンティティのみを表示します。"
-     alt="OpenTelemetryサービスのフィルタリング方法を示すスクリーンキャプチャ。"
+     title="Filter for OpenTelemetry to see only those entities."
+     alt="Screen capture showing how to filter for OpenTelemetry services."
      src={explorerOtelServices}
    />
 
@@ -47,9 +49,9 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
 
 エンティティを取得したら、サービスからのデータをフィルタリングすることができます。
 
-フィルターバー **Narrow data to...** を使えば、サービスに記録されたテレメトリの特定の面を強調することができます。例えば、カナリア・インスタンスにデプロイしたサービスの特定のバージョンのエラー・レートを見たい場合は、 `service.version='1.2.3'` のフィルターを追加します。
+フィルタバー**を使用してデータを絞り込む...** 、サービス用に記録されたテレメトリの特定のファセットを強調表示できます。たとえば、カナリアインスタンスにデプロイしたサービスの特定のバージョンのエラー率を確認したい場合は、 `service.version='1.2.3'`のフィルターを追加します。
 
-フィルターは、サービスのデータの異なるビュー間を移動する際に保存されます。例えば、 `service.version='1.2.3'` のフィルターは、 **Transactions** のビューに引き継がれ、サービスのバージョン1.2.3を実行しているエンドポイント（トランザクション）へのリクエストに関するテレメトリーが表示され、他のバージョンは表示されません。
+サービスのデータのさまざまなビュー間を移動するときに、フィルターは保持されます。たとえば、 `service.version='1.2.3'`のフィルタは**トランザクション**ビューに引き継がれるため、サービスのバージョン1.2.3を実行しているエンドポイント（トランザクション）へのリクエストのテレメトリが表示され、他のバージョンは表示されません。
 
 フィルターは、 **Summary**, **Transactions**, **Databases**, **Externals**, **Errors**, **JVMs** のビュー間を移動する際にも保持されます。
 
@@ -83,7 +85,7 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        `span.kind = server` or `consumer`
+        `span.kind = server` または `consumer`
       </td>
     </tr>
 
@@ -93,7 +95,7 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        `span.kind = server` or `consumer`
+        `span.kind = server` または `consumer`
       </td>
     </tr>
 
@@ -103,7 +105,7 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        * `span.kind = server` or `consumer`
+        * `span.kind = server` または `consumer`
         * `otel.status_code = ERROR`
       </td>
     </tr>
@@ -114,7 +116,7 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        `service.instance.id` （通常はOTel resource APIで設定します。）
+        `service.instance.id` （通常、OTelリソースAPIを介して設定されます）
       </td>
     </tr>
   </tbody>
@@ -156,7 +158,7 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        スパンの種類は通常、 [スパンを開始する際に設定されます](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#span-creation) 。New Relic は `span.kind` を使って、あるスパンが特定のサービスへのエントリーポイントであることを推測します。 `span.kind = server` or `consumer` の場合は、エントリーポイントであると考えられます。 `span.kind = client` or `producer` の場合は、外部サービスやデータベースシステムへの呼び出しとみなされます。
+        スパンの種類は、通常[、スパンを開始する](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#span-creation)ときに設定されます。 New Relicは`span.kind`を使用して、スパンが特定のサービスへのエントリポイントであることを推測します。 `span.kind = server`または`consumer`の場合、エントリポイントと見なされます。 `span.kind = client`または`producer`の場合、外部サービスまたはデータベースシステムへの呼び出しと見なされます。
       </td>
     </tr>
 
@@ -166,8 +168,8 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        * スパンの [ステータスは、スパン API を使用して](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#set-status) 設定されます。 `otel.status_code` 属性は、New Relic でどのように表示されるかを示しています。
-        * UIは主に、エラーを識別する目的で、 `otel.status_code` を使用しています。
+        * スパンの[ステータスは、スパンAPIを使用して設定され](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#set-status)ます。 `otel.status_code`属性は、NewRelicによってどのように表されるかを示しています。
+        * UIは主に、エラーを識別する目的で`otel.status_code`を使用します。
       </td>
     </tr>
   </tbody>
@@ -180,7 +182,7 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
 1. 欲しいトレースを見つけるには、フィルターバーで以下のようなクエリを実行します。
 
    * `service.name = YOUR_SERVICE_NAME`
-   * `TRACE.ID = YOUR_TRACE_ID`
+   * `trace.id = YOUR_TRACE_ID`
 
 2. 興味深いトレースを見つけたら、それをクリックすると、トレースのスパンを示すウォーターフォール図が表示されます。
 
@@ -195,14 +197,14 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
 トレースウォーターフォールビューでスパンをクリックすると、右パネルの **エラーの詳細** にスパンのエラーが表示されます。
 
 <img
-  title="エラーの詳細セクションがある右ペインのスクリーンショット"
-  alt="エラーの詳細セクションがある右ペインのスクリーンショット"
+  title="Screenshot showing the right pane with Error details section"
+  alt="Screenshot showing the right pane with Error details section"
   src={viewSpanErrors}
 />
 
-エラーの詳細は、 `otel.status_code = ERROR` を含むスパンによって入力され、 `otel.status_description` の内容を表示します。
+エラーの詳細には、 `otel.status_code = ERROR`を含むスパンが入力され、 `otel.status_description`の内容が表示されます。
 
-エラーのあるスパンを絞り込んで検索するには、 `otel.status_code = ERROR` を分散型トレースのフィルターバーに直接入力します。
+エラーのあるスパンの検索を絞り込むには、分散トレースフィルターバーに直接`otel.status_code = ERROR`を入力します。
 
 #### スパンのイベントを見る
 
@@ -218,16 +220,16 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
 2. 右ペインで、 **View span events** をクリックするか、 **Error details** を展開して、エラーの下部にあるリンクをクリックします。
 
    <img
-     title="スパンイベントの2つのリンクが表示されている右ペインのスクリーンショット"
-     alt="スパンイベントの2つのリンクが表示されている右ペインのスクリーンショット"
+     title="Screenshot showing the right pane showing the two links for span events"
+     alt="Screenshot showing the right pane showing the two links for span events"
      src={viewSpanEvents}
    />
 
 3. スパンイベントで、例外のみを表示したい場合は、トグルをスライドさせます **Only show exceptions**.
 
 <img
-  title="スパンのイベントと、例外を除いてフィルタリングする方法を示すスクリーンショット"
-  alt="スパンのイベントと、例外を除いてフィルタリングする方法を示すスクリーンショット"
+  title="Screenshot showing span events and how you can filter just for exceptions"
+  alt="Screenshot showing span events and how you can filter just for exceptions"
   src={spanEventsExceptions}
 />
 
@@ -261,7 +263,7 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        * `span.kind = client` or `producer`
+        * `span.kind = client` または `producer`
         * `db.system`
         * スパン名によるファセット
       </td>
@@ -273,9 +275,9 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        * `span.kind = client` or `producer`
+        * `span.kind = client` または `producer`
         * `db.system`
-        * `db.systemによるFacets`
+        * ファセット `db.system`
       </td>
     </tr>
 
@@ -285,21 +287,56 @@ New Relic **Explorer** タブは、サービスに関する情報収集を始め
       </td>
 
       <td>
-        * `span.kind = client` or `producer`
+        * `span.kind = client` または `producer`
         * `db.system`
-        * `db.systemによるFacets`
+        * ファセット `db.system`
       </td>
     </tr>
   </tbody>
 </table>
 
-### エラー [#errors]
+## エラー受信ボックスでサービスのエラーを表示する [#errorsinbox]
+
+[エラー受信ボックス](https://docs.newrelic.com/docs/errors-inbox/errors-inbox/)を含むエラーを検出、トリアージ、およびアクションを実行します。
+
+これで、OpenTelemetryトレースを備えたサービスのエラー受信ボックス内のエラーグループを優先順位付けできます。エラーの原因を特定するために必要なスタックトレース、スパンイベント、スパン属性データなどの詳細をすぐに表示できます。
+
+### どうすれば始められますか？ [#errors-inbox-get-started]
+
+エラー受信ボックスには、特定のエンティティを介して[スコープレベル](https://docswebsitedevelop-meda123docswebsitepatch13.gtsb.io/docs/errors-inbox/errors-inbox/#scoped)でアクセスするか、「エラー受信ボックス」というラベルの付いた上部のナビゲーションリンクを介してグローバルレベルでアクセスできます。グローバルエクスペリエンスでは、[ワークロード](https://docs.newrelic.com/docs/new-relic-solutions/new-relic-one/workloads/use-workloads/)を設定する必要があります。
+
+<img
+  title="Scoped errors inbox through an OpenTelemetry entity"
+  alt="Scoped errors inbox through an OpenTelemetry entity"
+  src={errorgroupOccurences}
+/>
+
+<figcaption>
+  OpenTelemetryエンティティを介したスコープエラーの受信トレイ。
+</figcaption>
+
+### 一意の指紋はどのように作成されますか？ [#unique-fingerprints]
+
+スパンエラーイベントが取り込まれると、フィンガープリントを出力する一連の管理されたルールを介してイベントが実行されます。すべての一意のフィンガープリントには、1つのエラーグループが関連付けられています。イベントは、UUID、16進値、電子メールアドレスなどの識別値を無視することによって正規化されます。
+
+`otel.status_code = ERROR`およびスパンの種類が`server`または`consumer`のスパンは、個別のエラーインスタンスとして扱われます。エラーグループは、一意のフィンガープリントを共有する一意のエラーインスタンスのセットです。
+
+エラーグループメッセージの値は、次の順序で決定されます。
+
+* otel.status_description
+* rpc.grpc.status_code
+* http.status_code
+* `undefined` 上記の3つすべてが存在しない場合
+
+トラブルシューティング：受信トレイのノイズが多すぎる場合は、[次のヒントを確認してください](https://docs.newrelic.com/docs/errors-inbox/errors-inbox/#similar-events)。一方、エラー受信ボックスにエラーデータが表示されない場合は、開始するための[要件](https://docs.newrelic.com/docs/errors-inbox/errors-inbox#requirements)を確認してください。
+
+## エラー [#errors]
 
 Errorsページでは、エラーの総数や、エラー数やエラー率を示すグラフを見ることができます。
 
 このセクションに表示されるデータは、以下の条件を満たしている必要があります。
 
-* `span.kind = server` or `consumer`
+* `span.kind = server` または `consumer`
 * `otel.status_code = ERROR`
 * スパン名によるファセット
 
@@ -309,19 +346,72 @@ Errorsページでは、エラーの総数や、エラー数やエラー率を�
 
 このセクションに表示されるデータは、以下の条件を満たしている必要があります。
 
-* `span.kind = client` or `producer`
-* `db.system` は存在しません。
+* `span.kind = client` または `producer`
+* `db.system` 存在しません
 
 詳しくは、 [外部サービス](/docs/apm/apm-ui-pages/monitoring/external-services/external-services-intro) をご覧ください。
 
 ### JVM [#jvms]
 
-特定のJVMにドリルインすると、JVMメトリクスデータに基づいたチャートがUIに表示されます。Java固有のランタイム・メトリクスは、十分に文書化されていません。 [実装](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/runtime-metrics/library/src/main/java/io/opentelemetry/instrumentation/runtimemetrics) は、事実上のドキュメントであり、変更される可能性があります。
+OpenTelemetryを備えたサービスのJVMページでは、どのサービスインスタンスが異常または異常なパフォーマンスパターンを持っているかを特定できます。主要なメトリック（応答時間、スループット、エラー率、ガベージコレクション時間、メモリ使用量）の要約に基づいて、比較する複数のサービスインスタンスを選択できます。次に、時系列チャートを使用してOpenTelemetryインストルメンテーションによって収集されたすべてのインスタンスのJVMメトリックを比較し、問題を特定できます。
 
-このセクションに表示されるデータは、以下の条件を満たしている必要があります。
+典型的なワークフローをご紹介します。
 
-* JVMのリストをレンダリングするための一意の `service.instance.id` 属性。
-* OpenTelemetry のリソース属性 `service.instance.id`
+1. **JVMs** をクリックします。
+
+2. 要約されたヘルスメトリクスのテーブルを使用して、興味深いJVMを見つけます。
+
+   * フィルターバーを使って、検索結果を絞り込むことができます。
+   * ソートして外れ値を探す
+
+3. それらの興味深いJVMを選択します。
+
+4. **Compare** をクリックすると、JVMでファセットされたヘルスメトリクスとランタイムメトリクスが表示されます。
+
+JVMの使用に関する以下の追加トピックをご覧ください。
+
+<CollapserGroup>
+  <Collapser
+    className="freq-link"
+    id="metric-details"
+    title="ランタイムメトリックの詳細"
+  >
+    特定のJVMにドリルインすると、JVMメトリクスデータに基づいたチャートがUIに表示されます。Java固有のランタイム・メトリクスは、十分に文書化されていません。 [実装](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/runtime-metrics/library/src/main/java/io/opentelemetry/instrumentation/runtimemetrics) は、事実上のドキュメントであり、変更される可能性があります。
+  </Collapser>
+
+  <Collapser
+    className="freq-link"
+    id="config-steps"
+    title="データを確実に表示する方法"
+  >
+    このセクションに表示されるデータは、以下の条件を満たしている必要があります。
+
+    * JVMのリストをレンダリングするための一意の`service.instance.id`属性。
+    * OpenTelemetryリソース属性`service.instance.id` 。
+  </Collapser>
+
+  <Collapser
+    className="freq-link"
+    id="jvms-and-metric-types"
+    title="ゲージとカウンターの比較"
+  >
+    OpenTelemetry Java エージェント 1.10.0 から、JVM メモリ使用量の収集方法が、非同期ゲージから非同期アップダウンカウンタに変更されました。これは、エクスポートされるデータに影響を与えます。ゲージとカウンターではエクスポート方法が異なります。
+
+    * 非同期ゲージはOTLPゲージとしてエクスポートされます。
+
+    * 非同期アップダウンカウンターは、OTLP非単調合計としてエクスポートされます。
+
+      デルタ集計のテンポラリティ（カウンターおよびヒストグラムインスツルメントがNew Relicで機能するために必要）を使用してメトリックをエクスポートするようにSDKを構成すると、非単調なデルタ合計としてエクスポートされる非同期のアップダウンカウンターが生成されます。 New Relicは、非単調なデルタ合計データの有用な分析を実行できません。
+
+      現時点での解決策は（OpenTelemetry メトリックの仕様でより良い解決策が整理されるまで）、View API を使用して、非同期アップダウンカウンターをデフォルトの合計集約ではなく、 [最終値集約](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/sdk.md#last-value-aggregation) を使用して集約するように指示することです。これにより、JVM メモリ使用量がゲージデータとしてエクスポートされ、New Relic での有用な体験に必要な情報が得られます。
+
+      View APIの構成方法は、OpenTelemetryJavaエージェントを使用しているかどうかによって異なります。
+
+    * OpenTelemetry Javaエージェントを使用していない場合は、 `SdkMeterProvider`の構成時にビューを登録する方法を示すこの簡単な[例](https://github.com/newrelic/newrelic-opentelemetry-examples/pull/89/files#diff-da355ef6d1092534a55829e95160ab8468884bdd521f9018feeaaa66aea6ac5bR82-R86)を確認してください。
+
+    * OpenTelemetry Javaエージェントを使用している場合は、 [拡張機能](https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/agent-config.md#extensions)でViewAPIを構成する必要があります。拡張機能を使用すると、（とりわけ）SDK構成にフックして、環境変数またはシステムプロパティでは使用できないプログラム構成を適用できます。この[例](https://github.com/newrelic/newrelic-opentelemetry-examples/tree/main/java/agent-nr-config)は、拡張機能を使用して`SdkMeterProvider`のビューを[カスタマイズ](https://github.com/newrelic/newrelic-opentelemetry-examples/blob/main/java/agent-nr-config/config-extension/src/main/java/com/newrelic/otel/extension/Customizer.java#L28-L37)する方法を示しています。
+  </Collapser>
+</CollapserGroup>
 
 ### ログ [#logs]
 
@@ -330,15 +420,15 @@ Errorsページでは、エラーの総数や、エラー数やエラー率を�
 このセクションに表示されるデータは、以下の条件を満たしている必要があります。
 
 * `service.name`
-* トレースデータと相関させるために、ログには `trace.id` と `span.id` の属性が含まれている必要があります。
+* トレースデータと相関させるには、ログに`trace.id` }属性と`span.id`属性が含まれている必要があります。
 
 ### メトリクスエクスプローラー [#metric-explorer]
 
 選択されたOpenTelemetry言語では、このセクションでメトリクスに関する情報を見ることができます。また、OpenTelemetryでPrometheusエクスポーターを使用している場合は、ここでメトリックデータを見ることができます。
 
 <img
-  title="メトリクス・エクスプローラーのスクリーンショット"
-  alt="メトリクス・エクスプローラーのスクリーンショット"
+  title="Screen shot showing the metric explorer"
+  alt="Screen shot showing the metric explorer"
   src={metricExplorer}
 />
 
@@ -348,7 +438,7 @@ Errorsページでは、エラーの総数や、エラー数やエラー率を�
 
 New Relic の概念である [トランザクション](https://docs.newrelic.com/docs/apm/transactions/intro-transactions/transactions-new-relic-apm#txn-defined) は、ソフトウェアアプリケーションにおける 1 つの論理的な作業単位をカプセル化したもので、一般的には単一のプロセスによって実行される作業を指します。
 
-OpenTelemetry では、トレースデータを New Relic のトランザクションの概念にマッピングするために、 [`SpanKind`](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#spankind) を使用しています。 `SpanKind` of `server` or `consumer` は、プロセスのエントリーポイントを識別するために使用されます。つまり、これらはリモートプロセスのルートスパンまたは子スパンのいずれかであるスパンです。
+OpenTelemetryでは、トレースデータをNewRelicのトランザクションの概念にマッピングするために[`SpanKind`](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#spankind)に依存しています。 `server`または`consumer`の`SpanKind`は、プロセスのエントリポイントを識別するために使用されます。つまり、これらは、リモートプロセスのルートスパンまたは子スパンのいずれかであるスパンです。
 
 このセクションに表示されるデータは、以下の条件を満たしている必要があります。
 
@@ -368,11 +458,11 @@ OpenTelemetry では、トレースデータを New Relic のトランザクシ�
   <tbody>
     <tr>
       <td>
-        トップ・トランザクション
+        トップトランザクション
       </td>
 
       <td>
-        * `span.kind = server` or `consumer`
+        * `span.kind = server` または `consumer`
         * スパン名によるファセット
       </td>
     </tr>
@@ -383,7 +473,7 @@ OpenTelemetry では、トレースデータを New Relic のトランザクシ�
       </td>
 
       <td>
-        * `span.kind = server` or `consumer`
+        * `span.kind = server` または `consumer`
         * スパン名によるファセット
       </td>
     </tr>
