@@ -16,6 +16,7 @@ redirects:
 ---
 
 import omaoedgForecastingIcon from 'images/oma-oe-dg_icon_forecasting.png'
+import omaoedgForecastExampleTimeseries from 'images/oma-oe-dg-screenshot-forecast-timeseries1.png'
 
 <img
   src={omaoedgForecastingIcon}
@@ -25,13 +26,12 @@ import omaoedgForecastingIcon from 'images/oma-oe-dg_icon_forecasting.png'
 
 **Data ingest governance** is the practice of getting optimal value for the telemetry data collected by an organization. This is especially important for a complex organization that has numerous business units and working groups. 
 
-**This is a placeholder for the fourth part of a four-part guide to optimizing your New Relic data ingest. This will be coming soon.**
+**Forecasting is the process of using knowlege about previous ingest volumes and change rates to estimate future volumes.  There are many assumptions and unknown in a real enterprise account so we recommend keeping the models fairly simple and focus on the biggest areas of growth to start.**
 
 In this stage you will:
 * Use your baseline data to understand growth trends.
-* Identify and prioritize observability objectives.
-* Coordinate stakeholders in your organization to develop consensus ingest targets.
-* Publish forecast and work with NR account team to steer toward the targets.
+* Be introduced to several simple computation models to preduct linear growth trends
+* Use knowlege of known changes (platform, organization) to improve forecasts
 
 ## Desired outcome [#desired-outcome]
 
@@ -39,4 +39,212 @@ Use the analysis produced in the baselining stage along with the observability v
 
 ## Process [#process]
 
-**Coming soon!**
+### Use a linear trend on your baseline data
+
+There are three basic things you want to know about your baseline data
+
+- What was the average ingest per month (all accounts, all telemetry types) for the past 12 months
+- What was the average ingest per month by account for the past 12 months
+- What was the average ingest per month by telemetry type for the past 12 months
+
+To start we can look at one telemetry type to start.  Let's use Logs from one account.
+
+Use the following query:
+
+```
+SELECT sum(GigabytesIngested) FROM NrConsumption WHERE productLine = 'DataPlatform' and usageMetric = 'LoggingBytes' since 100 days ago facet consumingAccountId, consumingAccountName, monthOf(timestamp) limit max where consumingAccountName = 'Demotron V2'
+```
+
+We used a 130 day window to ensure we had three full calendar months, this covers a partial calendar month (January), but we'll only use 3 calendar months.
+
+<table>
+  <thead>
+    <tr>
+      <th style={{ width: "200px" }}>
+        Account
+      </th>
+
+      <th style={{ width: "200px" }}>
+        Calendar Month
+      </th>
+
+      <th>
+        GB Ingest (Sum)
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        Demotron V2
+      </td>
+
+      <td>
+        January 2023
+      </td>
+
+      <td>
+        3.56k
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Demotron V2
+      </td>
+
+      <td>
+        February 2023
+      </td>
+
+      <td>
+        2.43k
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Demotron V2
+      </td>
+
+      <td>
+        March 2023
+      </td>
+
+      <td>
+        4.14k
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+We can visualize a line graph for the same period to assess to visualize the shape of change
+
+<img
+  src={omaoedgForecastExampleTimeseries}
+  alt="Estimating growth using a three month sample window."
+  title="Estimating growth using a three month sample window."
+/>
+
+#### Simple linear model with a short sample window
+
+If we have only been ingesting logs for a short period of time, it may only make sense to look at the last few months.
+
+Let's use the model...
+
+*Projected Data Volume = Last 3 months' average data volume x (Growth rate `x` 12)*
+
+
+Where:
+
+- Last 3 months' average data volume is the average amount of log data you have sent to New Relic in the last 3 months (in TB).
+- Growth rate is the rate at which your log data is growing (in TB per month).
+
+To calculate the growth rate, you can use the following formula:
+
+*growth_rate = (latest_month_volume - earliest_month_volume) / (n_months-1)*
+
+or
+
+`0.29`
+
+applying this growth rate over a 12 month period we get the estimated ingest at the end of 12 months of `14.4k`.  Given month to month volatility thats a fairly start growth rate but that is based on the model we chose.
+
+
+
+
+
+In a period of rapid growth in ingests linear forecast can be quite volatile and it helps to use "inside knowledge" such as when each team that will be using logs have completed their instrumentation.
+
+
+
+### Using moving average for our monthly samples
+
+One thing we can try is to use a moving average for our monthly samples.  The idea is that this could create a smoother result in the case of mont-to-month variability.  There is no guarantee that it will produce a more accurate growth rate, but if you feel as though there is volatility in your samples it could help.
+
+The previous sample numbers along with the 2-month moving average.  The moving average is the sum of GB ingest for that month averaged with the previous.
+
+<table>
+  <thead>
+    <tr>
+      <th style={{ width: "200px" }}>
+        Account
+      </th>
+      <th style={{ width: "200px" }}>
+        Calendar Month
+      </th>
+      <th>
+        GB Ingest (Sum)
+      </th>
+      <th>
+        Two month moving average
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        Demotron V2
+      </td>
+
+      <td>
+        January 2023
+      </td>
+
+      <td>
+        3.56k
+      </td>
+      <td>
+        3.11k
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Demotron V2
+      </td>
+
+      <td>
+        February 2023
+      </td>
+
+      <td>
+        2.43k
+      </td>
+      <td>
+        2.99k
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Demotron V2
+      </td>
+      <td>
+        March 2023
+      </td>
+      <td>
+        4.14k
+      </td>
+      <td>
+        3.28k
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+Re-generating the growth rate using January and March we get:
+
+`(3.28-3.11)/2`
+
+or a growth rate of `0.085`.
+
+
+If we use the March raw number we predict an ingest of 4.22k.
+Using the moving average for March we predict an ingest of 3.35k.
+
+This kind of extrapolation needs to be used cautiously and doing the forecast out to 12 months may not be prudent.  If you find after a few months that the model over or under predicts you can apply a correction factor such as assume a baseline growth of a few % over a year.  You can use this to adjust the computed growth rate as needed.
+
+
+
+### Focusing on seasonable shape of the data
+
